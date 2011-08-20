@@ -11,6 +11,9 @@ Background
 
 This is a rewrite and clean-up of previous slideshow9000 attempt.
 
+Music rhytm data is extracted using Echo Nest Remix API.
+Rhytm data must be pregenerated prior real-time photo show run.
+
 Componets
 ------------
 
@@ -30,8 +33,6 @@ Player
 =======================
 
 Player plays the ready show plan in a <canvas>.
-
-
         
 Unit tests
 ------------
@@ -153,12 +154,42 @@ Installing prerequisitements (OSX)::
 Installing JSDuck::
 
         # --pre installs 2.0 beta version
-        gem install --pre jsduck
+        sudo gem install --pre jsduck
                               
 Building docs with JSDuck::
                 
-        jsduck src --verbose --output docs
+        jsduck src --verbose --output docs/apidocs
 
 More info
 
 * https://github.com/nene/jsduck
+
+Music
+-------
+
+The out of the box project contains CC licensed music files for testing purposes 
+
+* http://www.jamendo.com/en/artist/Emerald_Park
+
+* http://www.jamendo.com/en/artist/manguer
+
+Echo Nest REMIX
+-----------------
+
+Echo Nest Remix API works by uploading data to Echo Nest servers for audio analysis.
+First MP3 is decoded with ffmpeg and then raw data is uploaded(?).
+    
+Echo Nest remix API Python bindings can be installed:    
+
+::
+
+    source pyramid/bin/activate
+    svn checkout http://echo-nest-remix.googlecode.com/svn/trunk/ echo-nest-remix
+    cd echo-nest-remix
+    # Apparently this puts some crap to /usr/local and /usr/local/bin 
+    sudo python setup.py install
+    sudo ln -s `which ffmpeg` /usr/local/bin/en-ffmpeg
+    
+    
+
+TODO: How to build rhytm .json data files by hand.      

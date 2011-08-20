@@ -86,10 +86,10 @@ TimelinerTest.prototype.testHasAnimationTypes = function() {
 TimelinerTest.prototype.testJQueryEasing = function() {
        
         var func = jQuery.easing.linear;
-        var val = krusovice.ease("linear", 0.5, 0, 1);
+        var val = krusovice.utils.ease("linear", 0.5, 0, 1);
         assertEquals(0.5, val);
         
-        val = krusovice.ease("linear", 0.2, 0, 1);
+        val = krusovice.utils.ease("linear", 0.2, 0, 1);
         assertEquals(0.2, val);
 }
 
@@ -112,23 +112,23 @@ TimelinerTest.prototype.testShowElementEase = function() {
 
 	// Assert midpoint in one second
 	
-        val = krusovice.calculateElementEase(plan[0], -0.1);
+        val = krusovice.utils.calculateElementEase(plan[0], -0.1);
         assertEquals(0, val.value);  	
         assertEquals("notyet", val.animation);     
 	
-	var val = krusovice.calculateElementEase(plan[0], 0.5);
+	var val = krusovice.utils.calculateElementEase(plan[0], 0.5);
 	assertEquals(0.5, val.value);
         assertEquals("transitionin", val.animation);     
         
-        val = krusovice.calculateElementEase(plan[0], 1.5);
+        val = krusovice.utils.calculateElementEase(plan[0], 1.5);
         assertEquals(0.5, val.value);
         assertEquals("onscreen", val.animation);     
 
-        val = krusovice.calculateElementEase(plan[0], 2.5);
+        val = krusovice.utils.calculateElementEase(plan[0], 2.5);
         assertEquals(0.5, val.value);
         assertEquals("transitionout", val.animation);     
         
-        val = krusovice.calculateElementEase(plan[0], 3.0);
+        val = krusovice.utils.calculateElementEase(plan[0], 3.0);
         assertEquals(0, val.value);
         assertEquals("gone", val.animation);     
 
@@ -154,28 +154,28 @@ TimelinerTest.prototype.testShowElementEase2sec = function() {
 
         // Assert midpoint in one second
         
-        val = krusovice.calculateElementEase(plan[0], -0.1);
+        val = krusovice.utils.calculateElementEase(plan[0], -0.1);
         assertEquals(0, val.value);     
         assertEquals("notyet", val.animation);     
         
-        var val = krusovice.calculateElementEase(plan[0], 1);
+        var val = krusovice.utils.calculateElementEase(plan[0], 1);
         assertEquals(0.5, val.value);
         assertEquals("transitionin", val.animation);     
         
-        val = krusovice.calculateElementEase(plan[0], 3);
+        val = krusovice.utils.calculateElementEase(plan[0], 3);
         assertEquals(0.5, val.value);
         assertEquals("onscreen", val.animation);     
 
-        val = krusovice.calculateElementEase(plan[0], 5);
+        val = krusovice.utils.calculateElementEase(plan[0], 5);
         assertEquals(0.5, val.value);
         assertEquals("transitionout", val.animation);     
 
-        val = krusovice.calculateElementEase(plan[0], 5.5);
+        val = krusovice.utils.calculateElementEase(plan[0], 5.5);
         assertEquals(0.25, val.value);
         assertEquals("transitionout", val.animation);     
 
         
-        val = krusovice.calculateElementEase(plan[0], 7);
+        val = krusovice.utils.calculateElementEase(plan[0], 7);
         assertEquals(0, val.value);
         assertEquals("gone", val.animation);     
         

@@ -181,7 +181,7 @@ krusovice.TimelineVisualizer.prototype = {
 				var elem = this.plan[i];
 							
 				// Add 50% alpha
-				var acolor = krusovice.pickRandomColor(128);
+				var acolor = krusovice.utils.pickRandomColor(128);
 				context.strokeStyle = acolor;
 				
 				var startX = elem.wakeUpTime / this.secondsPerPixel;
@@ -197,7 +197,7 @@ krusovice.TimelineVisualizer.prototype = {
 					var clock = l*this.secondsPerPixel;
 					
 					
-					var animation = krusovice.calculateElementEase(elem, clock);
+					var animation = krusovice.utils.calculateElementEase(elem, clock);
 					var value;
 					
 					if(animation.animation == "onscreen") {

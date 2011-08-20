@@ -204,11 +204,11 @@ krusovice.Timeliner.prototype = {
 		
 		if(type == "random") {
 			if(animation == "screen") {
-				effect.type = krusovice.pickRandomElement(this.onScreenEffects);
+				effect.type = krusovice.utils.pickRandomElement(this.onScreenEffects);
 			} else if(animation == "transitionout") {
-				effect.type = krusovice.pickRandomElement(this.transitionOutEffects);
+				effect.type = krusovice.utils.pickRandomElement(this.transitionOutEffects);
 			} else {
-				effect.type = krusovice.pickRandomElement(this.transitionInEffects);
+				effect.type = krusovice.utils.pickRandomElement(this.transitionInEffects);
 			}
 		}
 		
