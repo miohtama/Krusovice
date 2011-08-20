@@ -328,7 +328,9 @@ krusovice.TimelineVisualizer.prototype = {
 		
 };
 
-/* Play song over timeline visualization to see if beats match song data */
+/**
+ *  Play song over timeline visualization to see if beats match song data 
+ */
 krusovice.TimelinePlayer = function(visualization, src) {
 	this.visualization = visualization;
 	
@@ -353,14 +355,39 @@ krusovice.TimelinePlayer = function(visualization, src) {
 }
 
 krusovice.TimelinePlayer.prototype = {
+	
+	stop : function() {
+		this.visualization.setPositionIndicator(0, false);
+	},
 		
-		stop : function() {
-			this.visualization.setPositionIndicator(0, false);
-		},
-			
-		
-		onTimeUpdate : function() {
-			var ctime = this.audio.currentTime;
-			this.visualization.setPositionIndicator(ctime, true);
-		}
+	
+	onTimeUpdate : function() {
+		var ctime = this.audio.currentTime;
+		this.visualization.setPositionIndicator(ctime, true);
+	}
+	
+}
+
+/**
+ * Display a simple pop-up during the loading of a show.
+ */
+krusovice.SimpleLoadingNote = function(show) {
+    
+    var note = $("<div class=loading-note>");
+    
+    var container = $(show.canvas).parent();
+    
+    $(show).bind("loadstart", function() {
+        container.append(note);
+    }   
+
+    $(show).bind("loadprogress", function(progress) {
+        var number = Math.round(progress, 2);
+        note.text("Loading " + number + "%");
+    }   
+
+    $(show).bind("loadend", function() {
+        note.remove();
+    }   
+
 }

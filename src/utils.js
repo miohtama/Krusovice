@@ -179,5 +179,10 @@ krusovice.utils = {
         });
     },
         
-    
+    /**        
+     * Loads an Image object.
+     */
+    loadImage : function(url, callback) {
+        
+    }
 }

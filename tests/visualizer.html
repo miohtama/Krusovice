@@ -42,9 +42,24 @@
                                 setupVisualizer(visualizer);                                
                                 visualizer.render(div);          
                                 
-                                var player = new krusovice.TimelinePlayer(visualizer, "../testdata/sample-song.mp3");
+                                var songURL = "../testdata/sample-song.mp3";
+                                var player = new krusovice.TimelinePlayer(visualizer, songURL);
                                 $("#player").append(player.audio);      
-                          
+                                
+                                
+                                var cfg = {
+                                        rhytmData : sampleSongData,
+                                        songURL : "../testdata/sample-song.mp3",
+                                        timeline : plan,
+                                        backgroundType : "plain",
+                                        plainColor : "#ffffff",
+                                        controls : false                                                                                
+                                };
+                                
+                                var show = new krusovice.Show(cfg);
+                                show.prepare();
+                                show.bindToAudio(player.audio);                                
+                                                          
 			});
                 </script>		
        	</head>
