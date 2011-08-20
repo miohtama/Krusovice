@@ -3,6 +3,8 @@
 var krusovice = krusovice || {};
 
 /**
+ * @class krusovice.utils
+ *
  * Misc. utility methods used by various modules.
  */
 krusovice.utils = {
@@ -18,7 +20,11 @@ krusovice.utils = {
     /**
      * Pick a random element in an array
      * 
+     *
      * http://stackoverflow.com/questions/5876757/how-do-i-pick-a-random-element-from-an-array/5876763#5876763
+     * 
+     * @param {Array} array List of source elements
+     * 
      */
     pickRandomElement : function(array) {
     	return array[Math.floor(Math.random() * array.length)];
@@ -161,6 +167,16 @@ krusovice.utils = {
             return "rgb(" + r + "," + b + "," + g + ")";	    
     	}
     	//return "#" + Math.floor(r).toString(16) + Math.floor(g).toString(16) + Math.floor(b).toString(16);
-    }
+    },
+    
+    /**
+     * Shallow copy named attributes of an object
+     */
+    copyAttrs : function(target, source, attr) {
+        $.each(source, function(name, value) {
+            target[name] = value;
+        });
+    },
+        
     
 }

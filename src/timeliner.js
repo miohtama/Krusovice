@@ -108,7 +108,7 @@ krusovice.Timeliner.prototype = {
 			var out = {};
 			
 			// Populate it with default values from input
-			this.copyAttrs(out, elem, ["id", "type", "text", "label"]);
+			krusovice.utils.copyAttrs(out, elem, ["id", "type", "text", "label"]);
 			
 			if(!elem.duration) {
 				throw "Element duration missing";
@@ -184,15 +184,6 @@ krusovice.Timeliner.prototype = {
 		out.transitionOut = {
 				duration : transitionOut.duration					
 		};		
-	},
-	
-	/**
-	 * Shallow copy named attributes of an object
-	 */
-	copyAttrs : function(target, source, attr) {
-		$.each(source, function(name, value) {
-			target[name] = value;
-		});
 	},
 	
 	/**
