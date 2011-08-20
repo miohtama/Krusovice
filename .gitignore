@@ -5,7 +5,6 @@
 *.egg
 *.EGG
 *.EGG-INFO
-bin
 build
 downloads/*
 eggs/*

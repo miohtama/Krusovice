@@ -158,7 +158,7 @@ Installing JSDuck::
                               
 Building docs with JSDuck::
                 
-        jsduck src --verbose --output docs/apidocs
+        bin/build-docs.sh
 
 More info
 
