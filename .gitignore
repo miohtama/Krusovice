@@ -43,7 +43,6 @@ releases
 .DS_Store
 docs/apidocs/*
 
-
 *.min.js
 *.debug.js
 *.min.css

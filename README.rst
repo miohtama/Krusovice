@@ -1,3 +1,4 @@
+.. contents :: :local:
 
 Introduction
 -------------
@@ -5,119 +6,32 @@ Introduction
 Krusovice is a high quality HTML5 rhytmic photo show creator
 which you can integrate to your website.
 
+Background
+----------
 
-Data formats
---------------
+This is a rewrite and clean-up of previous slideshow9000 attempt.
 
-Animation types
-==================
+Componets
+------------
 
-Animation: one of 
+Timeliner
+=======================
 
-* *in*: appearing show element
+Timeliner takes in a set of show elements (images, text slides) and puts
+them on a timeline based on music rhytm data.
 
-* *out*: fading out show element
+Timeline visualization
+=======================
 
-* *screen*: currently primary element being shown
+Timeline visualization is an utility which shows your built 
+timeline, so you can see where slides come in and out.
 
-Timeline input element
-=============================
+Player
+=======================
 
-Describe photo or text we want to have placed
-on a timeline.
+Player plays the ready show plan in a <canvas>.
 
-Input::
 
-        {
-                
-                showElements,
-                rhytmData,
-                settings,
-                transitionEffectIds,
-                onScreenEffectIds,                        
-        }
-
-Show elements:
-
-        {
-                id,
-                
-                type : "image" | "text"
-                                               
-                label,
-                
-                text,
-                
-                duration,
-                
-                imageId,        
-        }     
-                
-Rhytm data::
-
-        { // Echo nest API output }
-        
-        
-Match data (how to match transitions to rhytm)::
-        
-        {
-                type : "beat",
-                window : 5.0 // Search window in seconds (to future)
-        
-        }
-
-Settings::
-
-        {
-                //  Where we start to sync with rhytm data
-                musicStartTime : 0, 
-                
-                transitionIn : {
-                        type : "",
-                        duration : 2.0,                                                
-                },
-                
-                transitionOut : {
-                        type : "",
-                        duration : 2.0,          
-                        clockSkip : 0.0 // How many seconds we adjust the next object coming to the screen
-                }   
-                
-                onScreen : {
-                        type : "",
-                        duration : 2.0,
-                }                                
-        }       
-                
-
-Effects:
-
-        {
-                type : "",
-                easing : "",
-                duration : 5,                
-                position : [ [0,0,0], [0,0,0] ]
-                rotations : [ [0,0,0,0], [0,0,0,0] }
-                opacity : [ 0, 0 ],
-                                                
-        }
-
-Generated timeline objects::
-
-        {
-                id,
-                
-                wakeUpTime : 0.0,
-                
-                transitionIn : { ... }                
-                onScreen : { ... }
-                transitionOut : { }        
-                      
-        }
-
-        
-Plan Data (internal to Plan object):
-        [ show object 1, show object 2, .... ]
         
 Unit tests
 ------------
@@ -226,3 +140,25 @@ Instructions for Safari, but should apply to other browsers as well.
 
 * Now your browser should stop in the breakpoint
 
+Documentation
+---------------
+
+Building API documentation
+==============================
+
+Installing prerequisitements (OSX)::
+
+        sudo gem install rdiscount json parallel rspec
+
+Installing JSDuck::
+
+        # --pre installs 2.0 beta version
+        gem install --pre jsduck
+                              
+Building docs with JSDuck::
+                
+        jsduck src --verbose --output docs
+
+More info
+
+* https://github.com/nene/jsduck
