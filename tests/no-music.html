@@ -1,0 +1,55 @@
+<html>
+	<!-- Manual inspection of visualizer renderer output -->
+	<head>
+		<script src=../thirdparty/jquery.js></script>
+                <script src=../thirdparty/jquery.easing.1.3.js></script>                		
+                <script src=../src/utils.js></script>
+                <script src=../src/rhytmanalysis.js></script>
+                <script src=../src/timeliner.js></script>
+                <script src=../src/timelinevisualizer.js></script>
+
+                <script src=../testdata/simple-plan.js></script>
+                <script src=../testdata/sample-song-data.js></script>
+
+                <link href=../media/visualizer.css rel=stylesheet></link>
+		
+                <script type="text/javascript">
+                	$(document).ready(function() {
+				
+				// Visualization without music
+			        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+			        var plan = timeliner.createPlan();			        
+			        
+			        
+			        // Use linear easing for better debugger
+			        plan.forEach(function(e) {
+			             e.transitionIn.easing = e.onScreen.easing = "linear";    
+			             e.transitionOut.easing = "-linear"; 
+			        });
+			        
+			        var visualizer = new krusovice.TimelineVisualizer(plan);			        
+			        
+			        visualizer.secondsPerPixel = 0.02;
+			        visualizer.clockSpan = 50;
+			        
+			        var div = document.getElementById("visualizer-no-rhytm");			        
+			        visualizer.render(div);					                          
+			});
+                </script>		
+       	</head>
+	
+	<body>
+		<h1>No rhytm</h1>
+		<div id="visualizer-no-rhytm">
+			
+		</div>
+
+                <h1>Rhytm</h1>
+                <div id="player"></div>
+                <div id="visualizer-rhytm">
+                        
+                </div>
+
+		
+	</body>
+</html>

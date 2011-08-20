@@ -1,0 +1,29 @@
+/**
+ * Timeline visualizer styles
+ */
+
+.timeline-visualization {
+}
+
+ .timeline {
+ 	height: 40px;
+	border-top: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+ }
+ 
+ .timeline .label {
+        position: absolute;
+	z-inde: 2;
+	float: left;
+ }
+ 
+ .timeline  {
+ 	width: 100%;
+ }
+
+/* Hide until playback starts */
+.timeline-visualization .position-indicator {
+        display: none;
+	border: 0;
+	background: black;	
+}

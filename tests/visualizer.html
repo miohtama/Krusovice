@@ -1,0 +1,66 @@
+<html>
+	<!-- Manual inspection of visualizer renderer output -->
+	<head>
+		<script src=../thirdparty/jquery.js></script>		
+                <script src=../thirdparty/jquery.easing.1.3.js></script>                
+                <script src=../src/utils.js></script>
+                <script src=../src/rhytmanalysis.js></script>
+                <script src=../src/timeliner.js></script>
+                <script src=../src/timelinevisualizer.js></script>
+
+                <script src=../testdata/simple-plan.js></script>
+                <script src=../testdata/sample-song-data.js></script>
+
+                <link href=../media/visualizer.css rel=stylesheet></link>
+		
+                <script type="text/javascript">
+                	$(document).ready(function() {
+				
+				
+				function setupVisualizer(visualizer) {
+                                        visualizer.secondsPerPixel = 0.02;
+                                        visualizer.lineLength = 2000;				        
+				}
+				
+				// Visualization without music
+			        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+			        var plan = timeliner.createPlan();			        
+			        var visualizer = new krusovice.TimelineVisualizer(plan);			        
+			        var div = document.getElementById("visualizer-no-rhytm");	
+			        setupVisualizer(visualizer);		        
+			        visualizer.render(div);					
+
+                                // Visualization with music
+                                if(!sampleSongData) {
+                                        throw "No music";
+                                }
+                                var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, sampleSongData);
+                                var plan = timeliner.createPlan();                              
+                                
+                                var visualizer = new krusovice.TimelineVisualizer(plan, sampleSongData);                                
+                                var div = document.getElementById("visualizer-rhytm");                               
+                                setupVisualizer(visualizer);                                
+                                visualizer.render(div);          
+                                
+                                var player = new krusovice.TimelinePlayer(visualizer, "../testdata/sample-song.mp3");
+                                $("#player").append(player.audio);      
+                          
+			});
+                </script>		
+       	</head>
+	
+	<body>
+		<h1>No rhytm</h1>
+		<div id="visualizer-no-rhytm">
+			
+		</div>
+
+                <h1>Rhytm</h1>
+                <div id="player"></div>
+                <div id="visualizer-rhytm">
+                        
+                </div>
+
+		
+	</body>
+</html>
