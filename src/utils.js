@@ -4,6 +4,7 @@ var krusovice = krusovice || {};
 
 /**
  * @class krusovice.utils
+ * @singleton
  *
  * Misc. utility methods used by various modules.
  */

@@ -25,7 +25,7 @@
 				// Visualization without music
 			        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 			        var plan = timeliner.createPlan();			        
-			        var visualizer = new krusovice.TimelineVisualizer(plan);			        
+			        var visualizer = new krusovice.TimelineVisualizer({plan:plan});			        
 			        var div = document.getElementById("visualizer-no-rhytm");	
 			        setupVisualizer(visualizer);		        
 			        visualizer.render(div);					
@@ -37,7 +37,7 @@
                                 var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, sampleSongData);
                                 var plan = timeliner.createPlan();                              
                                 
-                                var visualizer = new krusovice.TimelineVisualizer(plan, sampleSongData);                                
+                                var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:sampleSongData});                                
                                 var div = document.getElementById("visualizer-rhytm");                               
                                 setupVisualizer(visualizer);                                
                                 visualizer.render(div);          
