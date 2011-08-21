@@ -369,6 +369,8 @@ krusovice.TimelinePlayer.prototype = {
 }
 
 /**
+ * @static
+ * 
  * Display a simple pop-up during the loading of a show.
  */
 krusovice.attachSimpleLoadingNote = function(show) {

@@ -180,9 +180,15 @@ krusovice.utils = {
     },
         
     /**
+     * @method requestAnimationFrame
+     * 
      * Use browser native animation refresh clock or fake one
      *
      * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+     *
+     * @param {Function} callback
+     *
+     * @param {Object} element For which DOM element rendering we sync our animations (Usually <canvas>)
      *
      */
     requestAnimationFrame : (function(){

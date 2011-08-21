@@ -1,9 +1,20 @@
 var krusovice = krusovice || {};
 
 /**
- * HTML5 <canvas> photo show kicking llama's ass 
+ * HTML5 canvas photo show which is too cool to kick llama's ass
  *
- * @param {krusovice.Show} cfg Show to play 
+ * - Construct show based on timeline input and show settings (background, etc).
+ *   These are given in the configuration.
+ *
+ * - Bind Show object to {@link krusovice.Show#bindToAudio HTML5 audio playback} or if you have no music
+ *   use real-time object. You need to have something calling onClock() method or animation won't
+ *   go anywhere.
+ *
+ * - Call {@link krusovice.Show#prepare prepare()} method to start async media loading
+ *
+ * - {@link krusovice.Show#play play()} will be called automatically by associated clock source
+ *
+ * @param {Object} cfg Configuration object 
  */
 krusovice.Show = function(cfg) {
     $.extend(this, cfg);
@@ -20,7 +31,7 @@ krusovice.Show = function(cfg) {
 krusovice.Show.prototype = {
 
     /**
-     * @cfg {Object} jQuery wrapped DOM element which will contain the show 
+     * @cfg {Object} elem jQuery wrapped DOM element which will contain the show 
      */
     elem : null,
 
