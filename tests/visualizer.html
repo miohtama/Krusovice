@@ -7,7 +7,10 @@
                 <script src=../src/rhytmanalysis.js></script>
                 <script src=../src/timeliner.js></script>
                 <script src=../src/timelinevisualizer.js></script>
-
+                <script src=../src/showobjects.js></script>
+                <script src=../src/show.js></script>
+                <script src=../src/loader.js></script>
+                 
                 <script src=../testdata/simple-plan.js></script>
                 <script src=../testdata/sample-song-data.js></script>
 
@@ -53,13 +56,16 @@
                                         timeline : plan,
                                         backgroundType : "plain",
                                         plainColor : "#ffffff",
-                                        controls : false                                                                                
+                                        controls : false,
+                                        elem : $("#show")                                                                                
                                 };
                                 
                                 var show = new krusovice.Show(cfg);
+                                show.bindToAudio(player.audio);   
+                                
+                                krusovice.attachSimpleLoadingNote(show);                                                                                                                                
                                 show.prepare();
-                                show.bindToAudio(player.audio);                                
-                                                          
+                                                                                        
 			});
                 </script>		
        	</head>
@@ -69,6 +75,8 @@
 		<div id="visualizer-no-rhytm">
 			
 		</div>
+
+                <div id=show></div>
 
                 <h1>Rhytm</h1>
                 <div id="player"></div>

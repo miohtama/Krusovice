@@ -2,6 +2,42 @@
 
 var krusovice = krusovice || {};
 
+
+/**
+ * Describe one of transition in, transition out or on screen animation for TimelineElement
+ */
+krusovice.TimelineAnimation = function() {
+}
+
+/**
+ * TimelineElement describes element inserted on the timeline
+ */
+krusovice.TimelineElement = function() {
+}
+
+krusovice.TimelineElement.prototype = {
+    id :  null,
+    type : null,
+    text : null,
+    label : null,
+    imageURL : null,
+    
+    /**
+     * @type krusovice.TimelineAnimation 
+     */
+    transitionIn : null,
+
+    /**
+     * @type krusovice.TimelineAnimation 
+     */
+    transitionOut : null,
+
+    /**
+     * @type krusovice.TimelineAnimation 
+     */
+    onScreen : null
+}
+
 /**
  * Create show timeline plan based on show input elements
  */
@@ -93,10 +129,10 @@ krusovice.Timeliner.prototype = {
 			console.log("Element #" + i + " current clock:" + clock);
 			
 			// Construct show element 
-			var out = {};
+			var out = new krusovice.TimelineElement();
 			
 			// Populate it with default values from input
-			krusovice.utils.copyAttrs(out, elem, ["id", "type", "text", "label"]);
+			krusovice.utils.copyAttrs(out, elem, ["id", "type", "text", "label", "imageURL"]);
 			
 			if(!elem.duration) {
 				throw "Element duration missing";

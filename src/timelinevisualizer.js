@@ -371,23 +371,28 @@ krusovice.TimelinePlayer.prototype = {
 /**
  * Display a simple pop-up during the loading of a show.
  */
-krusovice.SimpleLoadingNote = function(show) {
+krusovice.attachSimpleLoadingNote = function(show) {
     
     var note = $("<div class=loading-note>");
+    
+    note.css({
+        position : "relative",
+        bottom : "0"                        
+    });
     
     var container = $(show.canvas).parent();
     
     $(show).bind("loadstart", function() {
         container.append(note);
-    }   
+    });
 
     $(show).bind("loadprogress", function(progress) {
         var number = Math.round(progress, 2);
         note.text("Loading " + number + "%");
-    }   
+    }); 
 
     $(show).bind("loadend", function() {
         note.remove();
-    }   
+    }); 
 
 }

@@ -48,7 +48,7 @@ krusovice.Loader.prototype = {
         // Let's imagine this is an atomic operation  
         value = this.loadElements[name] || 0;
         value += count;               
-        thistory.totalElementsToLoad += count;
+        this.totalElementsToLoad += count;
         this.loadElements[name] = value;
     },
 
@@ -57,17 +57,21 @@ krusovice.Loader.prototype = {
     },
     
     mark : function(name, count) {
+
         value = this.loadElements[name] || 0;
         value -= count;               
         
         if(value < 0) {
             throw "Loading book keeping failure for:" + name;
         }
+
                                 
         this.loadElements[name] = value;
         
         this.nowLoaded += count;
-        
+
+        console.log("Loaded name:" + name + " left:" + value + " total loaded:" + this.nowLoaded + " total count:" + this.totalElementsToLoad);
+       
         if(this.callback) {
             this.callback(this.getProgress());
         }

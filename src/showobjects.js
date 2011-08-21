@@ -2,7 +2,7 @@
 
 var krusovice = krusovice || {};
 
-krusovice.showobjects = krusovice.showobjects || null;
+krusovice.showobjects = krusovice.showobjects || {};
 
 /**
  * Base class for animated show elements.
@@ -13,7 +13,17 @@ krusovice.showobjects.Base = function(cfg) {
 krusovice.showobjects.Base.prototype = {    
     
     /**
-     * Function which is called when this object is loaded.
+     * @cfg {krusovice.Show} show Parent Show object  
+     */
+    show : null,
+
+    /**
+     * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters  
+     */    
+    data : null,
+    
+    /**
+     * @cfg {Function} Function which is called when async prepare() is ready
      */
     preparedCallback : null,
 
@@ -45,19 +55,36 @@ krusovice.showobjects.Base.prototype = {
  * @extends krusovice.showobjects.Base 
  */
 krusovice.showobjects.FramedAndLabeledPhoto = function(cfg) {    
+    $.extend(this, cfg);
 } 
 
 $.extend(krusovice.showobjects.Image, krusovice.showobjects.Base);
 
 krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
-
+    
+    /**
+     * HTML image object of the source image 
+     */
+    image : null,
+    
+    /**
+     * HTML <canvas> buffer containing resized and framed image with label text 
+     */
+    framed : null,
+    
     prepare : function() {
-
-        this.image = image;
+        this.image = new Image();
+        
+        var self = this;
                 
-        // This should have been prepared beforehand
-        this.framedImage = this.image.framedImage;
-                
+        function imageLoaded() {
+            self.framed = createFramedImage(self.image);
+            self.prepareCallback();
+        }   
+        
+        this.image.onload = imageLoaded;
+        
+        this.image.src = this.data.imageURL;                    
     },
  
     /**
@@ -66,7 +93,7 @@ krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
      * @param {Image} img Image object (loaded)
      */
     createFramedImage : function(img) {
-            
+                       
        // Drop shadow blur size in pixels
        // Shadow is same length to both X and Y dirs
        var shadowSize = 5;
@@ -168,3 +195,39 @@ krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
     }    
       
 };
+
+/**
+ * Text with a monocolor background frame
+ *
+ * @extends krusovice.showobjects.Base
+ */
+krusovice.showobjects.TextFrame = function(cfg) {
+    $.extend(this, cfg);
+}
+
+$.extend(krusovice.showobjects.TextFrame, krusovice.showobjects.Base);
+
+
+krusovice.showobjects.TextFrame.prototype = {
+        
+    /**
+     * HTML <canvas> buffer containing resized and framed image with label text 
+     */
+    framed : null,
+    
+    prepare : function() {                
+    },
+ 
+    /**
+     * Convert raw photo to a framed image with drop shadow
+     * 
+     * @param {Image} img Image object (loaded)
+     */
+    createFramedImage : function(img) {
+    },
+    
+    render : function() {        
+    }    
+      
+};
+

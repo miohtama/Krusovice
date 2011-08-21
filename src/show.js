@@ -11,6 +11,10 @@ krusovice.Show = function(cfg) {
     if(!this.loader) {
         this.loader = new krusovice.Loader();        
     }
+    
+    if(!this.elem) {
+        throw "Did not give container element for slideshow";
+    }
 }
 
 krusovice.Show.prototype = {
@@ -79,7 +83,16 @@ krusovice.Show.prototype = {
     /**
      * Is play currently in progress
      */
-    play : false,
+    playing : false,
+    
+
+    /**
+     * @type Number
+     *
+     * How many frames we have rendered
+     */
+    currentFrame : 0,
+    
     
     /**
      * List of animated objects in this show
@@ -91,6 +104,9 @@ krusovice.Show.prototype = {
      */
     canvas : null,
     
+    /**
+     * 2D context of the <canvas>
+     */
     ctx : null,
     
     events :[
@@ -123,6 +139,30 @@ krusovice.Show.prototype = {
      * krusovice.Loader used to book keeping of async media loading progress 
      */
     loader : null,
+    
+    /**
+     * @type Number
+     *
+     * Time in seconds since the starting of the animation.
+     *
+     * Set by onClock() callback as we usually sync the animation to external audio or video source.
+     */
+    clock : 0,
+    
+    /**
+     * When the clock was last time updated - as <audio> time update events post too slowly,
+     * we need to estimate the audio clock during the timeupdate calls.
+     */
+    clockUpdated : 0,
+    
+    /**
+     * @type Boolean
+     *
+     * Is this real-time playback or not
+     *
+     * Whether or not the show player should try to estimate the clock between onClock() calls.
+     */
+    realtime : true,
             
     /**
      * Start async media loading and preparation.
@@ -132,28 +172,36 @@ krusovice.Show.prototype = {
      */    
     prepare : function() {       
          this.prepareCanvas();
+         this.prepareLoop();
     },
 
+    /**
+     * ASync waiting loop until are resources are loaded
+     */
     prepareLoop : function() {
                        
         $this = $(this);
-        
+            
         this.prepareTimeline();
+       
         
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
             
             if(progress >= 1) {
+                this.loade = true;
                 $this.trigger("loadend");
             }
         }   
         
         this.loader.callback = loadcb;
+
+        console.log("Starting loading, total objects " + this.loader.totalElementsToLoad);
                  
         $this.trigger("loadstart");        
         
         var self = this;
-        this.timeline.forEach(function(e) {
+        this.animatedObjects.forEach(function(e) {
             function cb() {
                 self.loader.mark("animatedobject", 1);
             }
@@ -168,46 +216,32 @@ krusovice.Show.prototype = {
      */    
     prepareTimeline : function() {        
         
+        var self = this;
         this.timeline.forEach(function(e) {            
-            this.animatedObjects.push(this.createAnimatedObject(e));                 
-            this.loaded.add("animatedobject", 1);
+            self.animatedObjects.push(self.createAnimatedObject(e));                 
+            self.loader.add("animatedobject", 1);
         });
     },
     
+    /**
+     * Factory of matching input data to actual animated objects.
+     */
     createAnimatedObject : function(timelineInput) {
         
+        var cfg = {
+            show : this,
+            data : timelineInput
+        };
+        
+        if(timelineInput.type == "image") {
+            return new krusovice.showobjects.FramedAndLabeledPhoto(cfg);        
+        } else if(timelineInput.type == "text") {
+            return new krusovice.showobjects.TextFrame(cfg);            
+        } else {
+            throw "Unknown timeline input type:" + timelineInput.type;
+        }
     },
         
-    /**
-     * Enter the main rendering loop
-     */
-    loop : function(muted) {
-       console.log("-----------------------")       
-       console.log("loop start")    
-       console.log("-----------------------")       
-    
-       if(this.play) {
-            // Already playing
-            return;
-       }
-       
-       // Reset clock
-       this.clock = 0;
-       
-       // Canvas full reset
-       // http://diveintohtml5.org/canvas.html#divingin
-       this.canvas.width = this.canvas.width;
-       this.ctx = this.canvas.getContext("2d");
-               
-       this.renderer.start();
-        
-       this.play = true;
-       
-       console.log("Entering animation loop");
-       this.prepareTick();  
-    },
-
-
     /**
      * Start animation frame requesting loop.
      *
@@ -218,9 +252,90 @@ krusovice.Show.prototype = {
      */
     play : function() {        
         
+        console.log("Show playing start");
+        
+        if(this.playing) {
+            return;
+        }
+        
+        this.playing = true;
+        
+        this.loopAnimation();
     },
     
-    stop : function() {        
+    stop : function() {      
+        this.playing = false;  
+    },
+    
+    /**
+     * Main rendering loop.
+     *
+     * Redraws <canvas> using the frame rate given by the browser
+     * until this.playing flag is unset by stop().
+     * 
+     */
+    loopAnimation : function() {
+        if(this.playing) {
+            this.render();                        
+            krusovice.utils.requestAnimationFrame($.proxy(this.loopAnimation, this), this.canvas);
+        }         
+    },
+    
+    render : function() {                       
+        this.currentFrame += 1;
+        
+        renderClock = this.getEstimatedClock();
+        
+        // console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
+        this.renderBackground(renderClock);       
+        this.renderAnimatedObjects(renderClock); 
+        this.renderFrameLabel(renderClock); 
+    },
+    
+    /**
+     * Render the video background buffer
+     */
+    renderBackground : function(renderClock) {
+        var ctx = this.ctx;       
+
+        if(this.backgroundType == "plain") {
+            // Single colour bg
+            // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
+            ctx.save();
+            ctx.fillStyle = this.plainColor; //"rgba(200,200,200,0.3)";
+            ctx.fillRect(0, 0, this.width, this.height);
+            ctx.restore();
+        } else if(this.backgroundType == "clear") {
+            // Transparent bg
+            // http://stackoverflow.com/questions/2142535/how-to-clear-the-canvas-for-redrawing
+            ctx.clearRect (0, 0, this.width, this.height);
+        } else {
+            throw "Unknown background type:" + this.backgroundType;
+        }
+    },
+    
+    /**
+     * Debugging helper printing data of this 
+     *
+     *
+     * @param {Number} renderClock The rendering clock time that should be used for this frame
+     */
+    renderFrameLabel : function(renderClock) {
+        // http://diveintohtml5.org/canvas.html#text
+        var ctx = this.ctx;
+        ctx.save()
+        ctx.font = "bold 12px sans-serif"
+        ctx.fillText("Rendering frame " + this.currentFrame + " at " + Math.round(renderClock*1000)/1000, 20, 20);
+        ctx.restore();
+    },
+    
+    /**
+     * Render the core animation objects.
+     *
+     * @param {Number} renderClock The rendering clock time that should be used for this frame
+     */
+    renderAnimatedObjects : function(renderClock) {
+        
     },
     
     /**
@@ -229,6 +344,25 @@ krusovice.Show.prototype = {
      * @param {Number} 
      */
     onClock : function(clock) {        
+        this.clock = clock;
+        if(this.realtime) {
+            this.clockUpdated = (new Date().getTime()) / 1000;
+        }
+    },
+    
+    /**
+     * Calculate the rendering clock from the last clock timestamp.
+     *
+     * If we are in real-time mode estimate the current clock value between time update calls.
+     */
+    getEstimatedClock : function() {
+        var now = (new Date().getTime()) / 1000;
+        
+        if(this.realtime) {
+            return this.clock + (now - this.clockUpdated);
+        } else {
+            return this.clock;
+        }
     },
 
     /**
@@ -252,25 +386,39 @@ krusovice.Show.prototype = {
      * The show will listen to events from the audio object and 
      * will use its clock to adjust own playback.
      * 
-     * @param audio HTML5 audio element
+     * @param {HTML5Audio} audio HTML5 audio element / player
      */
     bindToAudio : function(audio) {
         
         function onTimeUpdate() {
-            var ctime = this.audio.currentTime;
+            var ctime = audio.currentTime;
             ctime *= 1000;
             ctime -= this.musicStartTime;
             this.onClock(ctime);
-        }
+        } 
         
-        $(audio).bind("timeupdate", $.proxy(this.onTimeUpdate, this));
+        // 
+        $(audio).bind("timeupdate", $.proxy(onTimeUpdate, this));
         $(audio).bind("play", $.proxy(this.play, this));
-        $(audio).bind("stop", $.proxy(this.stop, this));
+        $(audio).bind("pause", $.proxy(this.stop, this));
+        
+        /*
+         * HAVE_NOTHING (0) No data available
+
+            HAVE_METADATA (1) Duration and dimensions are available
+            
+            HAVE_CURRENT_DATA (2) Data for the current position is available
+            
+            HAVE_FUTURE_DATA (3) Data for the current and future position is available, so playback could start
+            
+            HAVE_ENOUGH_DATA (4) Enough data to play the whole video is available
+         */
         
         var self = this;
-        if(!audio.loaded) {
-            
-            $(audio).bind(load, function() {
+        // http://www.chipwreck.de/blog/2010/03/01/html-5-video-dom-attributes-and-events/
+        if(audio.readyState < 4) {
+            // 
+            $(audio).bind("canplaythrough", function() {
                 self.loader.mark("audio", 1);
             });
             
