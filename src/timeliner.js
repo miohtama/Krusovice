@@ -4,10 +4,65 @@ var krusovice = krusovice || {};
 
 
 /**
- * Describe one of transition in, transition out or on screen animation for TimelineElement
+ * Describe one of transition in, transition out or on screen or gone animation for TimelineElement.
+ * 
+ * We actually need four animations where the gone animation is fake, as for each animation
+ * the animation defines its source values which serve target values of the previous animation.
+ * We also need target values for the gone animation and thus this fourth animation acts only
+ * as a final target parameters for transitionOut.
+ * 
+ * 
  */
 krusovice.TimelineAnimation = function() {
 }
+
+krusovice.TimelineAnimation.prototype = {
+
+	/**
+	 * What state of the element this animation presents.
+	 *  
+	 * One of transitionin, onscreen, transitionout, gone.
+	 */
+	type : null,
+		
+	/**
+	 * What effect is applied on this animation (besides interpolated movement)
+	 */
+	effectType : null,
+	
+	/**
+	 * How many seconds this animation lasts
+	 */
+	duration : 0,
+
+	/**
+	 * How we will interpolate values from this animation type to the next.
+	 */
+	easing : "linear",
+	
+	/** 
+	 * Where is this object at the beginning of the animation.
+	 * 
+	 * The default position is at the front of the camera.
+	 * 
+	 */
+	position : [0, 0, 1],
+
+	/** 
+	 * How this object is rorated the beginning of the animation.
+	 * 
+	 * The default position facing the camera so that up is up.
+	 * 
+	 */
+	rotation : [0, 0, 0],
+
+	/**
+	 * By default, the object is 100% visible
+	 */
+	opacity : 1	          
+				
+}
+
 
 /**
  * TimelineElement describes element inserted on the timeline
@@ -20,22 +75,34 @@ krusovice.TimelineElement.prototype = {
     type : null,
     text : null,
     label : null,
-    imageURL : null,
+    imageURL : null,   
+
+    /**
+     * @type Number
+     * 
+     * Time in seconds when this element is animated for the first time
+     */
+    wakeUpTime : 0,
+
+    /**
+     * Sequence of TimelineAnimations.
+     * 
+     * By default this is
+     * 
+     * 0 : transitionIn,
+     * 1 : onScreen,
+     * 2 : transitionOut,
+     * 3 : gone
+     * 
+     * ... but any number of state transformations is supported.
+     * 
+     * Currently the end of each animation is the start of the next animation.
+     * 
+     * The last animation is not animated, but it just contains the stopper values of the second last animation.
+     */
+    animations : [],
     
-    /**
-     * @type krusovice.TimelineAnimation 
-     */
-    transitionIn : null,
-
-    /**
-     * @type krusovice.TimelineAnimation 
-     */
-    transitionOut : null,
-
-    /**
-     * @type krusovice.TimelineAnimation 
-     */
-    onScreen : null
+           
 }
 
 /**
@@ -138,23 +205,22 @@ krusovice.Timeliner.prototype = {
 				throw "Element duration missing";
 			}
 			
+			
 			// Place element on the timeine based on our current clock
-			this.timeElement(out, elem, clock, elem.duration);		
-								
-			// Setup element effects
-			this.createAnimationSettings(out.transitionIn, "transitionin", this.settings.transitionIn.type);					
-			this.createAnimationSettings(out.transitionOut, "transitionout", this.settings.transitionOut.type);								
-			this.createAnimationSettings(out.onScreen, "onscreen", this.settings.onScreen.type);			
-								
-			// Adjance clock to the start of the next show item based
+			this.timeAnimations(out, elem, clock, elem.duration);		
+
+			this.prepareAnimations(out, elem);
+
 			
 			console.log("Got out");
 			console.log(out);
+
+			// Advance clock to the start of the next show item based on how
+			// long it took to show this item
 			
-			// on the duration of this show item
-			clock += out.transitionIn.duration + 
-			         out.transitionOut.duration + 
-			         out.onScreen.duration + transitionOut.clockSkip;
+			clock += out.animations[0].duration + 
+			         out.animations[1].duration + 
+			         out.animations[2].duration;
 			
 			if(!clock) {
 				console.error("Latest input element");
@@ -169,9 +235,16 @@ krusovice.Timeliner.prototype = {
 	},
 	
 	/**
+	 * Put element to the timeline and match its on screen time with beats.
+	 * 
+	 * Create four states: transition, onscreen, transitionout, gone.
+	 * 
+	 * Element on screen animation starts on a beat.
+	 * Element on screen animation stops on a beat.
+	 * 
 	 * @param out Show element
 	 */
-	timeElement : function(out, source, clock, onScreenDuration) {
+	timeAnimations : function(out, source, clock, onScreenDuration) {
 				
 		var transitionIn = this.settings.transitionIn; 
 		var transitionOut = this.settings.transitionOut;
@@ -195,54 +268,115 @@ krusovice.Timeliner.prototype = {
 			throw "Failed to calculate leaves the screen time";
 		}
 		
+		
 		out.wakeUpTime = hitsScreen - transitionIn.duration;
-		
-		out.transitionIn = {
-				duration : hitsScreen - clock					
-		};
-		
-		out.onScreen = {
-				duration : hitsOut - hitsScreen
-		};		
-		
-		out.transitionOut = {
-				duration : transitionOut.duration					
-		};		
+	
+		out.animations = [
+		     // transition in
+		     {
+		    	 	type : "transitionin",
+					duration : hitsScreen - clock					
+			 },
+			 
+			 // on screen
+			 {
+				 	type : "onscreen",
+					duration : hitsOut - hitsScreen
+			 }, 
+
+			 // transition out
+			 {
+				 	type : "transitionout",
+					duration : transitionOut.duration	
+			 }, 			 
+
+
+			 // gone
+			 {
+				 	type : "gone",
+					duration : 0
+			 }, 			 
+
+			 
+		]
+		                  
+	},
+	
+	/**
+	 * Choose animation effects and set initial parameters for a timeline element.
+	 * 
+	 * @param {TimelineElement} out
+	 */
+	prepareAnimations : function(out, source) {
+
+		var current, next;
+		for(var i=0; i<out.animations.length-1; i++) {
+			// Setup animation effect data
+			current = out.animations[i];
+			next = out.animations[i+1];
+			
+			// Choose effect from the settings 
+			var effect = this.getEffectForAnimation(this.settings, current, source);
+			
+			this.prepareAnimationParameters(effect, current.type, current, next);			
+		}					
 	},
 	
 	/**
 	 * Create one of animation blocks in the outgoing presentation data.
+	 * 
+	 * @param {TimelineAnimation} currentAnimation
+	 *
+	 * @param {TimelineAnimation} nextAnimation
+	 *
 	 */
-	createAnimationSettings : function(effect, animation, type, duration) {
-		
-		effect.type = type;
-		
-		if(type == "random") {
-			if(animation == "screen") {
-				effect.type = krusovice.utils.pickRandomElement(this.onScreenEffects);
-			} else if(animation == "transitionout") {
-				effect.type = krusovice.utils.pickRandomElement(this.transitionOutEffects);
-			} else {
-				effect.type = krusovice.utils.pickRandomElement(this.transitionInEffects);
-			}
+	prepareAnimationParameters : function(effectType, animationType, currentAnimation, nextAnimation) {
+
+		if(!effectType) {
+			throw "Effect type pick failed:" + animationType;		
 		}
 		
-		if(!effect.type) {
-			throw "Effect type pick failed";		
+		currentAnimation.effectType = effectType;
+				
+		// Set gone animation targets
+		if(animationType == "transitionout") {
+			nextAnimation.animationType = "gone";
 		}
 		
-		if(animation == "transitionin") {
-			effect.easing = "easeInSine";
-		} else if(animation == "transitionout") {
-			effect.easing = "-linear";
+		// Prepare easing
+		if(animationType == "transitionin") {
+			currentAnimation.easing = "easeInSine";
+		} else if(animationType == "transitionout") {
+			currentAnimation.easing = "-linear";
 		} else {
-			effect.easing = "linear";
+			currentAnimation.easing = "linear";
 		}		
 		
-		effect.positions = null;
-		effect.rotations = null;
+		this.prepareEffectParameters(animationType, currentAnimation, nextAnimation);
+				
+	},
+	
+	
+	/**
+	 * Set effect start and stop coordinates
+	 */
+	prepareEffectParameters : function(animationType, currentAnimation, nextAnimation) {
 		
-		return effect;
+		if(animationType == "transitionin") {
+			// Set final parameters
+			currentAnimation.position = [0, 0, krusovice.utils.farAwayZ];
+		}	
+		
+		// On screen animation may decide it's start and stop places on the screen
+		if(animationType == "onscreen") {
+			currentAnimation.rotation = [-1, -1, 0];
+			nextAnimation.rotation = [1, -1, 0];
+		}
+		
+		if(animationType == "transitionout") {
+			// Set final parameters
+			nextAnimation.position = [0, 0, krusovice.utils.farAwayZ];
+		}
 	},
 		
 	/**
@@ -271,6 +405,40 @@ krusovice.Timeliner.prototype = {
 		return beat;
 	},	
 	
+	
+	/**
+	 * Assume we have the same animation effects for the whole show and just repeat the same animation effect for each element.
+	 * 
+	 * Unless we are using random effect and then just pick from the list in the configuration.
+	 */
+	getEffectForAnimation : function(settings, animation, input) {
+		
+		var effectType;
+		
+		var animationType = animation.type;
+		
+		if(animationType == "transitionin") {
+			effectType = settings.transitionIn.type;
+		} else if(animationType == "onscreen") {
+			effectType = settings.onScreen.type
+		} else if(animationType == "transitionout") {
+			effectType = settings.transitionOut.type
+		} else {
+			throw "Unknown animation type:" + animationType;
+		}
+		
+		if(effectType == "random") {
+			if(animationType == "onscreen") {
+				effectType = krusovice.utils.pickRandomElement(this.onScreenEffects);
+			} else if(animationType == "transitionout") {
+				effectType = krusovice.utils.pickRandomElement(this.transitionOutEffects);
+			} else {
+				effectType = krusovice.utils.pickRandomElement(this.transitionInEffects);
+			}
+		}		
+		
+		return effectType;
+	}	
 	
 }
 

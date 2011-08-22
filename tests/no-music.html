@@ -23,8 +23,7 @@
 			        
 			        // Use linear easing for better debugger
 			        plan.forEach(function(e) {
-			             e.transitionIn.easing = e.onScreen.easing = "linear";    
-			             e.transitionOut.easing = "-linear"; 
+			             e.animations[0].easing = e.animations[1].easing = e.animations[2].easing = "linear";   
 			        });
 			        
 			        var visualizer = new krusovice.TimelineVisualizer({plan:plan});			        

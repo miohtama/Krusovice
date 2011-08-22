@@ -120,6 +120,11 @@ krusovice.Show.prototype = {
      */
     ctx : null,
     
+    /**
+     * Pseudo 3d backend to render animated show objects
+     */
+    renderer : null,    
+    
     events :[
         /**
          * @event 
@@ -181,9 +186,10 @@ krusovice.Show.prototype = {
      * Will set loaded flag and fire loaded event when ready.
      * 
      */    
-    prepare : function() {       
-         this.prepareCanvas();
-         this.prepareLoop();
+    prepare : function() {      
+        this.prepareCanvas();
+		this.prepareRenderer();        
+        this.prepareLoop();
     },
 
     /**
@@ -235,7 +241,26 @@ krusovice.Show.prototype = {
     },
     
     /**
+     * Create 3d renderer backend
+     */
+    prepareRenderer : function() {
+
+    	if(!window.THREE) {
+    		throw "THREE 3d lib is not loaded";
+    	}
+    	
+    	// XXX: hardcoded for THREE.js now
+    	this.renderer = new krusovice.Renderer3({
+    		width : this.width,
+    		height : this.height,
+    		elem : this.elem
+    	});
+    },
+    
+    /**
      * Factory of matching input data to actual animated objects.
+     * 
+     * Renderer must be set up in this point
      */
     createAnimatedObject : function(timelineInput) {
         
@@ -323,6 +348,10 @@ krusovice.Show.prototype = {
         } else {
             throw "Unknown background type:" + this.backgroundType;
         }
+    },
+    
+    renderScene : function() {
+    	this.renderer.render();
     },
     
     /**

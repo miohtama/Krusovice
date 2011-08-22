@@ -22,11 +22,22 @@ krusovice.showobjects.Base.prototype = {
      */    
     data : null,
     
+    
+    /**
+     * Reference to 3d rendering backend object
+     */
+    object : null,
+    
     /**
      * @cfg {Function} Function which is called when async prepare() is ready
      */
     preparedCallback : null,
 
+    /**
+     * Internal flag telling whether this object has been already woken up 
+     */
+    active : false,
+    
     init : function() {
         this.show = show;
         
@@ -45,7 +56,61 @@ krusovice.showobjects.Base.prototype = {
     
     
     play : function() {        
-    }    
+    },
+    
+    render : function() {
+    	// this.renderer.renderObject(this.object);
+    },
+    
+    /**
+     * Set the object to the animation state matched by the clock.
+     * 
+     * We cache the state whether we have been drawing in prior frames, 
+     * as this way we can limit the number of 3D objects on the scene.
+     */
+    animate : function(clock) {
+    	var state, easing;
+    	
+    	var relativeClock = this.data.wakeUpTime - clock;
+    	
+    	statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
+    	
+    	var animation == statedata.animation;
+    	
+    	// Don't animate yet - we are waiting for our turn
+    	if(animation == "notyet") {
+    		return;
+    	}
+    	    	
+    	if(animation != "notyet" && animation != "gone") {
+    		if(!this.alive) {
+    			// Bring object to the 3d scene
+    			this.show.renderer.surrect(this.object);
+    			this.alive = true;
+    		}
+    	}
+    	
+    	// Time to die
+    	if(this.alive) {
+    		if(animation == "gone") {
+    			this.show.renderer.kill(this.object);
+    			this.alive = false;
+    			return;
+    		}
+    	}
+    	
+    	if(state == "transitionin") {
+    		source = this.data.transitionIn;
+    		target = this.data.onScreen;
+    	} else if(state == "onscreen") {
+    		source = this.data.onScreen;
+    		target = this.data.onScreen;    		
+    	}
+
+    	
+    },
+    
+       
 } 
 
 /**
@@ -79,9 +144,11 @@ krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
                 
         function imageLoaded() {
             self.framed = createFramedImage(self.image);
+            self.object = createRendererObject();
             self.prepareCallback();
         }   
         
+        // Load image asynchroniously
         this.image.onload = imageLoaded;
         
         this.image.src = this.data.imageURL;                    
@@ -147,7 +214,11 @@ krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
                 
     },
     
-    render : function() {
+    createRendererObject : function() {
+    	return this.show.renderer.createQuad(this.framed);
+    },
+    
+    xrender : function() {
                        
         console.log("Rendering " + this.state + " " + this.x + " " + this.y +  " " + this.w + " " + this.h + " " + this.rotation);
         

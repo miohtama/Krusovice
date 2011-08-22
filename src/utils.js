@@ -9,6 +9,9 @@ var krusovice = krusovice || {};
  * Misc. utility methods used by various modules.
  */
 krusovice.utils = {
+				
+	/* Z parameter to used to fake the object at infinite distance */
+	farAwayZ : 999999999,
 
     /**
      * Return random value between -max ... max
@@ -33,9 +36,10 @@ krusovice.utils = {
     
     
     /**
-     * Calculate ease value of a slideshow element for slide in, slide out
+     * Calculate the current ease value of a slideshow element.
      * 
-     *
+     * Get the current animation and ease value of transition to the next animation.
+     * 
      * element: Output element
      * 
      * timepoint: relative to the element start time 
@@ -47,47 +51,35 @@ krusovice.utils = {
     				
     	var method, percents;
     
-            if(timepoint < 0) {
-                    return {
-                            animation : "notyet",
-                            value : 0
-                    }
+        if(timepoint < 0) {
+            return {
+                    animation : "notyet",
+                    value : 0
             }
-    	
-    	// in 
-    	if(timepoint < elem.transitionIn.duration) {
-    		method=elem.transitionIn.easing;	
-    		percents=timepoint/elem.transitionIn.duration;	
-    		return {animation:"transitionin",
-    		         value : krusovice.utils.ease(method, percents, 0, 1)
-    	        };
-    	}	
-    	
-    	
-    	// on screen
-    	timepoint -= elem.transitionIn.duration;
-    	
-    	if(timepoint < elem.onScreen.duration) {
-                    percents = timepoint / elem.onScreen.duration;
-    		method = elem.onScreen.easing;
-    		return {
-    		        animation : "onscreen",
-    		        value : krusovice.utils.ease(method, percents, 0, 1)
-    		};
-    	}
-    	
-    	// out
-    	timepoint -= elem.onScreen.duration;
-    	if(timepoint < elem.transitionOut.duration) {
-    		method = elem.transitionOut.easing;
-    		percents = timepoint / elem.transitionOut.duration;
-    		return {
-    		        animation :"transitionout",
-    		        value : krusovice.utils.ease(method, percents, 0, 1)
-    		};
-    	}	
-    		
-    	// gone already
+        }
+        
+        var i;
+        
+        // Loop through all the animations of this element
+        // and see if clock is on any of their timelines 
+        // If so calculate easing relative to the beginning of the animation
+        
+        for(i=0; i<elem.animations.length; i++) {
+        	var anim = elem.animations[i];
+        	if(timepoint < anim.duration) {
+        		method = anim.easing;
+        		percents=timepoint/anim.duration;	
+
+        		return {
+        			animation:anim.type,
+   		         	value : krusovice.utils.ease(method, percents, 0, 1)
+        		};        		
+        	}
+        	
+        	timepoint -= anim.duration;
+        }
+	
+    	// the element is past of its lifetime 
     	return {
     	        animation : "gone",
     	        value : 0	        
@@ -151,6 +143,24 @@ krusovice.utils = {
             }
     },
     
+    /**
+     * Calculate scalar
+     * 
+     * @param {Array} target The beginning of the animation state. Array of floats
+	 *
+     * @param {Array} source The end of the animation state. Array of floats
+     * 
+     * @param {Number} scale multiplier
+     */
+    calculateAnimation : function(target, source, scale) {
+    	var result = new Array(vector.length);
+    	for(var i=0; i<vector.length; i++) {
+    		result[i] = source[i] + (target[i] - source[i]) * scale;
+    	}
+    	
+    	return result;
+    },
+    
     
     /**
      * Return arbitary HTML color in #ffeeaa format which is brighter than #888
@@ -200,6 +210,8 @@ krusovice.utils = {
               function(/* function */ callback, /* DOMElement */ element){
                 window.setTimeout(callback, 1000 / 60);
               };
-    })()
+    })(),
+    
+    
     
 }

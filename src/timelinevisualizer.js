@@ -215,7 +215,12 @@ krusovice.TimelineVisualizer.prototype = {
 			
 			var startX = elem.wakeUpTime / this.secondsPerPixel;
 							
-			var totalDuration = elem.transitionIn.duration + elem.onScreen.duration + elem.transitionOut.duration;
+
+			if(elem.animations.length != 4) {
+				throw "This visualization code can handle animations only with three states: in, screen and out + gone state";
+			}
+			
+			var totalDuration = elem.animations[0].duration + elem.animations[1].duration + elem.animations[2].duration;
 						
 			// span length in pixels
 			var length = totalDuration / this.secondsPerPixel;
@@ -231,6 +236,8 @@ krusovice.TimelineVisualizer.prototype = {
 				
 				if(animation.animation == "onscreen") {
 				   value = 1;
+				} else if(animation.animation == "transitionout") {
+				   value = 1 - animation.value;
 				}  else {
 				   value = animation.value;
 				}
