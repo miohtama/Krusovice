@@ -36,7 +36,7 @@ krusovice.Show.prototype = {
     elem : null,
 
     /**
-     * @cfg {Array} timeline Timeline of show elements
+     * @cfg {Array} timeline Timeline of {krusovice.TimelineElement} elements 
      */
     timeline : [],
 
@@ -241,20 +241,32 @@ krusovice.Show.prototype = {
     },
     
     /**
+     * Create a <canvas> and place it in the parent container
+     */
+    prepareCanvas : function() {
+                
+        var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
+        
+        this.elem.append($canvas);
+        
+        this.canvas = $canvas.get(0);
+        this.ctx = this.canvas.getContext("2d");
+        
+    },    
+    
+    /**
      * Create 3d renderer backend
      */
     prepareRenderer : function() {
 
-    	if(!window.THREE) {
-    		throw "THREE 3d lib is not loaded";
-    	}
-    	
     	// XXX: hardcoded for THREE.js now
-    	this.renderer = new krusovice.Renderer3({
+    	this.renderer = new krusovice.renderers.Three({
     		width : this.width,
     		height : this.height,
     		elem : this.elem
     	});
+    	
+    	this.renderer.setup();
     },
     
     /**
@@ -312,7 +324,7 @@ krusovice.Show.prototype = {
      */
     loopAnimation : function() {
         if(this.playing) {
-            this.render();                        
+            this.render();                   
             krusovice.utils.requestAnimationFrame($.proxy(this.loopAnimation, this), this.canvas);
         }         
     },
@@ -322,9 +334,11 @@ krusovice.Show.prototype = {
         
         renderClock = this.getEstimatedClock();
         
+        this.animateObjects(renderClock);
+        
         // console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);       
-        this.renderAnimatedObjects(renderClock); 
+        this.renderScene(renderClock);
         this.renderFrameLabel(renderClock); 
     },
     
@@ -370,12 +384,16 @@ krusovice.Show.prototype = {
     },
     
     /**
-     * Render the core animation objects.
+     * Render the show animated objects.
      *
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
-    renderAnimatedObjects : function(renderClock) {
-        
+    animateObjects : function(renderClock) {
+        this.animatedObjects.forEach(function(e) {
+        	console.log("Got obj");
+        	console.log(e);
+        	e.animate(renderClock);
+        });
     },
     
     /**
@@ -405,19 +423,7 @@ krusovice.Show.prototype = {
         }
     },
 
-    /**
-     * Create a <canvas> and place it in the parent container
-     */
-    prepareCanvas : function() {
-                
-        var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
-        
-        this.elem.append($canvas);
-        
-        this.canvas = $canvas.get(0);
-        this.ctx = this.canvas.getContext("2d");
-        
-    },
+
     
     
     /**

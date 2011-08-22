@@ -5,7 +5,26 @@ var krusovice = krusovice || {};
 krusovice.showobjects = krusovice.showobjects || {};
 
 /**
- * Base class for animated show elements.
+ * Base class for animated show object.
+ * 
+ * Show object is an visualization of timeline element.
+ * It prepares an 2D image used as a texture. Then
+ * it asks the renderer object of the show to give a
+ * 3D handle for this image.
+ * For example, image can be prepared by inserting a
+ * frame around and it some text on it.
+ *
+ * There are different kind of show objects (images,
+ * texts, videos, etc.) and they all share this common
+ * base class containing the core animation logic.
+ * 
+ * 
+ * Show object animates movement and rotation values
+ * based on the animation start and end and easing method.
+ * Then it passes these values to the renderer's 3D object.
+ * 
+ * 
+ * 
  */
 krusovice.showobjects.Base = function(cfg) {    
 }
@@ -73,9 +92,11 @@ krusovice.showobjects.Base.prototype = {
     	
     	var relativeClock = this.data.wakeUpTime - clock;
     	
+    	
+    	// Determine the state of this animation
     	statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
     	
-    	var animation == statedata.animation;
+    	var animation = statedata.animation;
     	
     	// Don't animate yet - we are waiting for our turn
     	if(animation == "notyet") {
@@ -84,18 +105,14 @@ krusovice.showobjects.Base.prototype = {
     	    	
     	if(animation != "notyet" && animation != "gone") {
     		if(!this.alive) {
-    			// Bring object to the 3d scene
-    			this.show.renderer.surrect(this.object);
-    			this.alive = true;
+    			this.wakeUp();
     		}
     	}
     	
     	// Time to die
     	if(this.alive) {
     		if(animation == "gone") {
-    			this.show.renderer.kill(this.object);
-    			this.alive = false;
-    			return;
+    			this.farewell();
     		}
     	}
     	
@@ -110,7 +127,20 @@ krusovice.showobjects.Base.prototype = {
     	
     },
     
-       
+    wakeUp : function() {
+		// Bring object to the 3d scene
+    	console.log("Waking up:" + this.data.id);
+    	this.show.renderer.wakeUp(this.object);
+		this.alive = true;    	
+    },
+    
+    farewell : function() {
+    	console.log("Object is gone:" + this.data.id);
+		this.show.renderer.farewell(this.object);
+		this.alive = false;
+		return;
+    }
+    
 } 
 
 /**
@@ -123,9 +153,9 @@ krusovice.showobjects.FramedAndLabeledPhoto = function(cfg) {
     $.extend(this, cfg);
 } 
 
-$.extend(krusovice.showobjects.Image, krusovice.showobjects.Base);
+$.extend(krusovice.showobjects.FramedAndLabeledPhoto, krusovice.showobjects.Base);
 
-krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
+$.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     
     /**
      * HTML image object of the source image 
@@ -265,7 +295,7 @@ krusovice.showobjects.FramedAndLabeledPhoto.prototype = {
         
     }    
       
-};
+});
 
 /**
  * Text with a monocolor background frame
@@ -279,7 +309,7 @@ krusovice.showobjects.TextFrame = function(cfg) {
 $.extend(krusovice.showobjects.TextFrame, krusovice.showobjects.Base);
 
 
-krusovice.showobjects.TextFrame.prototype = {
+$.extend(krusovice.showobjects.TextFrame.prototype, {
         
     /**
      * HTML <canvas> buffer containing resized and framed image with label text 
@@ -300,5 +330,5 @@ krusovice.showobjects.TextFrame.prototype = {
     render : function() {        
     }    
       
-};
+});
 

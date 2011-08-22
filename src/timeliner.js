@@ -71,7 +71,7 @@ krusovice.TimelineElement = function() {
 }
 
 krusovice.TimelineElement.prototype = {
-    id :  null,
+    id :  null,    
     type : null,
     text : null,
     label : null,
@@ -347,7 +347,7 @@ krusovice.Timeliner.prototype = {
 		if(animationType == "transitionin") {
 			currentAnimation.easing = "easeInSine";
 		} else if(animationType == "transitionout") {
-			currentAnimation.easing = "-linear";
+			currentAnimation.easing = "linear";
 		} else {
 			currentAnimation.easing = "linear";
 		}		

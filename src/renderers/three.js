@@ -2,23 +2,37 @@
 
 var krusovice = krusovice || {};
 
+krusovice.renderers = krusovice.renderers || {};
+
 /**
- * Show object rendering backend utilizing THREE.js for 3D operations abstraction
+ * Show object rendering backend utilizing THREE.js for 3D operations abstraction.
  * 
- * Depends on THREE.js
+ * Pushes the heavy 3D math for a lib which is designed for this purpose.
+ * Also, allow rendering using both 2D accelerated canvas and 3D webGL canvas.
+ * 
+ * Depends on Three.js
  * 
  * https://github.com/mrdoob/three.js/tree/master/build
+ * 
+ * API reference
+ * 
+ * https://github.com/mrdoob/three.js/wiki/API-Reference
  * 
  * Tutorial
  * 
  * http://www.aerotwist.com/lab/getting-started-with-three-js/
  * 
  */
-krusovice.Renderer3 = function(cfg) {	
+krusovice.renderers.Three = function(cfg) {	
         $.extend(this, cfg);
+        
+
+    	if(!window.THREE) {
+    		throw "THREE 3d lib is not loaded";
+    	}    	        
 }
 
-krusovice.Renderer3.prototype = {
+krusovice.renderers.Three.prototype = {
 		
     /**
      * @cfg {Object} elem jQuery wrapped DOM element which will contain the show 
@@ -28,12 +42,12 @@ krusovice.Renderer3.prototype = {
     /**
      * @cfg {Number} width Show width in pixels
      */
-    width : 512,
+    width : 0,
 
     /**
      * @cfg {Number} height Show height in pixels
      */
-    height : 288,		
+    height : 0,		
     
     camera : null,
     
@@ -52,7 +66,7 @@ krusovice.Renderer3.prototype = {
 
 		// get the DOM element to attach to
 		// - assume we've got jQuery to hand
-		var $container = this.elem;
+		// var $container = this.elem;
 	
 		// create a WebGL renderer, camera
 		// and a scene
@@ -78,11 +92,7 @@ krusovice.Renderer3.prototype = {
 		this.camera = camera;
 		
 	},
-	
-	clear() {
 		
-	},
-	
 	
 	/**
 	 * Creates a 3D textured rectangle
@@ -102,18 +112,18 @@ krusovice.Renderer3.prototype = {
 		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
 		mesh.overdraw = true;
 		
-		return mesh:
+		return mesh;
 	},
 	
 	/**
 	 * Make object alive
 	 */
-	surrect : function(mesh) {
-		scene.addObject(mesh);
+	wakeUp : function(mesh) {
+		this.scene.addObject(mesh);
 	},
 	
-	kill : function(mesh) {
-		
+	farewell : function(mesh) {
+		this.scene.removeObject(mesh);
 	},
 	
 	render : function(frontBuffer) {
