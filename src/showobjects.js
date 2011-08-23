@@ -193,12 +193,25 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      */
     framed : null,
     
+    /**
+     * Load image asynchronously if image source is URL.
+     * 
+     * Draw borders around the image.
+     */
     prepare : function() {
+
+		var self = this;
+		var load;
+
+		if(this.data.image) {
+			this.image = this.data.image;
+			load = false;
+		} else {
+			this.image = new Image();			
+			load = true;
+		}
         
-		this.image = new Image();
-	    
-        var self = this;
-                
+	                    
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image);
             self.object = self.createRendererObject();
@@ -208,10 +221,16 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         }   
         
         // Load image asynchroniously
-                
-        this.image.onload = imageLoaded;
-        
-        this.image.src = this.data.imageURL;                    
+        if(load) {
+        	if(!this.prepareCallback) {
+        		throw "Cannot do asyncrhonous loading unless callback is set";
+        	}
+        	this.image.onload = imageLoaded;
+            this.image.src = this.data.imageURL;                            	
+        } else {
+        	imageLoaded();
+        }
+       
     },
  
     /**
