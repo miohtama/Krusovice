@@ -54,6 +54,8 @@ krusovice.utils = {
         if(timepoint < 0) {
             return {
                     animation : "notyet",
+                    current : null,
+                    next : null,                    
                     value : 0
             }
         }
@@ -73,8 +75,10 @@ krusovice.utils = {
         		percents=timepoint/anim.duration;	
 
         		return {
-        			animation:anim.type,
-   		         	value : krusovice.utils.ease(method, percents, 0, 1)
+        			animation:anim.type,        			
+   		         	value : krusovice.utils.ease(method, percents, 0, 1),
+   		         	current : elem.animations[i],
+   		         	next : elem.animations[i+1]
         		};        		
         	}
         	
@@ -84,7 +88,9 @@ krusovice.utils = {
     	// the element is past of its lifetime 
     	return {
     	        animation : "gone",
-    	        value : 0	        
+    	        value : 0,
+    	        current  : elem[elem.length-1],
+    	        next : null
     	}
     	
     },
@@ -155,8 +161,19 @@ krusovice.utils = {
      * @param {Number} scale multiplier
      */
     calculateAnimation : function(target, source, scale) {
-    	var result = new Array(vector.length);
-    	for(var i=0; i<vector.length; i++) {
+    	
+    	if(!$.isArray(target)) {
+    		throw  "Bad target";
+    	}
+
+    	if(!$.isArray(source)) {
+    		throw  "Bad source";
+    	}
+
+    	
+    	var result = new Array(source.length);
+    	
+    	for(var i=0; i<source.length; i++) {
     		result[i] = source[i] + (target[i] - source[i]) * scale;
     	}
     	

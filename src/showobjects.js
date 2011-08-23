@@ -118,37 +118,62 @@ krusovice.showobjects.Base.prototype = {
     			this.wakeUp();
     		}
     	}
-    	
-    	// Time to die
-    	if(this.alive) {
-    		if(animation == "gone") {
-    			this.farewell();
-    		}
-    	}
-    	
-    	if(state == "transitionin") {
-    		source = this.data.transitionIn;
-    		target = this.data.onScreen;
-    	} else if(state == "onscreen") {
-    		source = this.data.onScreen;
-    		target = this.data.onScreen;    		
-    	}
-    	
 
+		if(animation == "gone") {
+	    	// Time to die
+	    	if(this.alive) {
+				this.farewell();
+	    	}
+
+			return animation;
+		}
+
+    	
     	if(!this.object) {
     		// XXX: should not happen - raise exception here
     		// when code is more complete
     		return animation;
     	}
     	
-    	var mesh = this.object;
+    	// Calculate animation parameters
+    	var source = statedata.current;
+    	var target = statedata.next;
     	
-		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
-		
-		mesh.rotation.x += 0.1;
-		
+    	if(!source) {
+    		throw "Source animation state missing:" + animation;
+    	}
+
+    	if(!target) {
+    		throw "Target animation state missing:" + animation;;
+    	}    	
+    	
+    	this.calculateAnimationFrame(target, source, animation.value);
+    	
+    	var mesh = this.object;
 		return animation;
     	
+    },
+    
+    /**
+     * Calculate animation parameters for current frame and apply them on the 3D object.
+     * 
+     *  @param {krusovice.TimelineAnimation} target
+     *  
+     *  @param {krusovice.TimelineAnimation} source
+     *  
+     *  @param {Number} 0...1 how far the animation has progressed
+     */
+    calculateAnimationFrame : function(target, source, value) {
+    	var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+    	var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
+    	var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
+    	var opacity = source + (target-source)*value;
+    	    	
+    	mesh = this.object;
+    	mesh.setPosition(position[0], position[1], position[2]);
+    	mesh.setScale(scale[0], scale[1], scale[2]);
+    	
+    	console.log(mesh);
     },
     
     wakeUp : function() {

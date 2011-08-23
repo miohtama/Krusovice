@@ -55,6 +55,12 @@ krusovice.TimelineAnimation.prototype = {
 	 * 
 	 */
 	rotation : [0, 0, 0],
+	
+	
+	/**
+	 * How this object is scaled at the beginning of the animation.
+	 */
+	scale : [1, 1, 1],
 
 	/**
 	 * By default, the object is 100% visible

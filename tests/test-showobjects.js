@@ -48,9 +48,9 @@ ShowObjectTest.prototype.testRenderTransitionIn = function() {
 	// Transition in start
 	object.render(0)
 
+	// Render few frames and assert no exceptions fly
 	var i=0;
 	for(i=0; i<1; i+=0.3) {
-		// Transition in frame 2
 		object.render(0.1)
 	}
 }
