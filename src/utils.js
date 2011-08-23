@@ -202,6 +202,15 @@ krusovice.utils = {
      *
      */
     requestAnimationFrame : (function(){
+    	
+    	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+    	
+    	if(is_chrome) {
+    		 return function(callback, element) {
+               window.setTimeout(callback, 1000 / 60);
+             };
+    	}
+    	
       return  window.requestAnimationFrame       || 
               window.webkitRequestAnimationFrame || 
               window.mozRequestAnimationFrame    || 

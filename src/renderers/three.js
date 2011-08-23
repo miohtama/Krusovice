@@ -63,13 +63,6 @@ krusovice.renderers.Three.prototype = {
 		    NEAR = 0.1,
 		    FAR = 10000;
 
-
-		// get the DOM element to attach to
-		// - assume we've got jQuery to hand
-		// var $container = this.elem;
-	
-		// create a WebGL renderer, camera
-		// and a scene
 		var renderer = new THREE.CanvasRenderer();
 		var camera = new THREE.Camera(  VIEW_ANGLE,
 		                                ASPECT,
@@ -77,16 +70,11 @@ krusovice.renderers.Three.prototype = {
 		                                FAR  );
 		var scene = new THREE.Scene();
 	
-		// the camera starts at 0,0,0 so pull it back
-		camera.position.z = 300;
+		camera.position.z = 1000;
 	
 		// start the renderer
 		renderer.setSize(this.width, this.height);
 	
-		// attach the render-supplied DOM element
-		//$container.append(renderer.domElement); 
-		
-		
 		this.renderer = renderer;
 		this.scene = scene;
 		this.camera = camera;
@@ -102,13 +90,15 @@ krusovice.renderers.Three.prototype = {
 	createQuad : function(src) {
 		
 		// http://mrdoob.github.com/three.js/examples/canvas_materials_video.html
-		texture = new THREE.Texture(src);
+		var texture = new THREE.Texture(src);
 		texture.minFilter = THREE.LinearFilter;
 		texture.magFilter = THREE.LinearFilter;
 
-		var plane = new THREE.PlaneGeometry( 480, 204, 4, 4 );
+		var plane = new THREE.PlaneGeometry(this.width, this.height, 4, 4 );
 
-		mesh = new THREE.Mesh( plane, material );
+		var material = new THREE.MeshBasicMaterial( { map: texture } );		
+		
+		var mesh = new THREE.Mesh( plane, material );
 		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
 		mesh.overdraw = true;
 		
@@ -119,6 +109,13 @@ krusovice.renderers.Three.prototype = {
 	 * Make object alive
 	 */
 	wakeUp : function(mesh) {
+		
+		if(!mesh) {
+			throw "Oh mama, can we call this a null pointer exception?";
+		}
+		
+		console.log("Including new mesh on the scene");
+		console.log(mesh);
 		this.scene.addObject(mesh);
 	},
 	
@@ -129,7 +126,14 @@ krusovice.renderers.Three.prototype = {
 	render : function(frontBuffer) {
 		this.renderer.render(this.scene, this.camera);
 		
+		/*
+		console.log("Got three");
+		console.log(this.renderer);
+		
+		console.log("Got buffer");
+		console.log(frontBuffer);*/
+		
 		// blit to actual image output from THREE <canvas> renderer internal buffer
-		frontBuffer.drawImage(this.renderer._canvas);
+		frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
 	}
 };

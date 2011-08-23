@@ -188,25 +188,25 @@ krusovice.Show.prototype = {
      */    
     prepare : function() {      
         this.prepareCanvas();
-		this.prepareRenderer();        
-        this.prepareLoop();
+		this.prepareRenderer();      
+		this.prepareTimeline();
+        this.loadResources();
     },
 
     /**
      * ASync waiting loop until are resources are loaded
      */
-    prepareLoop : function() {
+    loadResources : function() {
                        
         $this = $(this);
             
         this.prepareTimeline();
-       
-        
+               
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
             
             if(progress >= 1) {
-                this.loade = true;
+                this.loaded = true;
                 $this.trigger("loadend");
             }
         }   
@@ -222,7 +222,7 @@ krusovice.Show.prototype = {
             function cb() {
                 self.loader.mark("animatedobject", 1);
             }
-            e.preparedCallback = cb;
+            e.prepareCallback = cb;
             e.prepare(); 
         });     
         
@@ -282,7 +282,8 @@ krusovice.Show.prototype = {
         };
         
         if(timelineInput.type == "image") {
-            return new krusovice.showobjects.FramedAndLabeledPhoto(cfg);        
+        	var obj = new krusovice.showobjects.FramedAndLabeledPhoto(cfg);
+        	return obj;     
         } else if(timelineInput.type == "text") {
             return new krusovice.showobjects.TextFrame(cfg);            
         } else {
@@ -365,7 +366,7 @@ krusovice.Show.prototype = {
     },
     
     renderScene : function() {
-    	this.renderer.render();
+    	this.renderer.render(this.ctx);
     },
     
     /**
@@ -390,9 +391,8 @@ krusovice.Show.prototype = {
      */
     animateObjects : function(renderClock) {
         this.animatedObjects.forEach(function(e) {
-        	console.log("Got obj");
-        	console.log(e);
-        	e.animate(renderClock);
+        	var state = e.animate(renderClock);
+        	// console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);
         });
     },
     
@@ -438,7 +438,7 @@ krusovice.Show.prototype = {
         
         function onTimeUpdate() {
             var ctime = audio.currentTime;
-            ctime *= 1000;
+            ctime /= 1000;
             ctime -= this.musicStartTime;
             this.onClock(ctime);
         } 

@@ -86,21 +86,25 @@ krusovice.showobjects.Base.prototype = {
      * 
      * We cache the state whether we have been drawing in prior frames, 
      * as this way we can limit the number of 3D objects on the scene.
+     * 
+     * @return Current animation state name
      */
     animate : function(clock) {
-    	var state, easing;
     	
+    	var state, easing;
+    	    	
     	var relativeClock = this.data.wakeUpTime - clock;
     	
-    	
+    	// console.log("Relative clock:" + relativeClock);
+    		
     	// Determine the state of this animation
-    	statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
+    	var statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
     	
     	var animation = statedata.animation;
     	
     	// Don't animate yet - we are waiting for our turn
     	if(animation == "notyet") {
-    		return;
+    		return animation;
     	}
     	    	
     	if(animation != "notyet" && animation != "gone") {
@@ -123,22 +127,38 @@ krusovice.showobjects.Base.prototype = {
     		source = this.data.onScreen;
     		target = this.data.onScreen;    		
     	}
+    	
 
+    	if(!this.object) {
+    		// XXX: should not happen - raise exception here
+    		// when code is more complete
+    		return;
+    	}
+    	
+    	var mesh = this.object;
+    	
+		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
+		
+		return animation;
     	
     },
     
     wakeUp : function() {
 		// Bring object to the 3d scene
     	console.log("Waking up:" + this.data.id);
-    	this.show.renderer.wakeUp(this.object);
+    	if(this.object) {
+	    	this.show.renderer.wakeUp(this.object);
+    	}
 		this.alive = true;    	
     },
     
     farewell : function() {
     	console.log("Object is gone:" + this.data.id);
-		this.show.renderer.farewell(this.object);
+    	if(this.object) {
+	    	this.show.renderer.farewell(this.object);
+    	}
 		this.alive = false;
-		return;
+
     }
     
 } 
@@ -153,7 +173,7 @@ krusovice.showobjects.FramedAndLabeledPhoto = function(cfg) {
     $.extend(this, cfg);
 } 
 
-$.extend(krusovice.showobjects.FramedAndLabeledPhoto, krusovice.showobjects.Base);
+$.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, krusovice.showobjects.Base.prototype);
 
 $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     
@@ -168,17 +188,21 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     framed : null,
     
     prepare : function() {
-        this.image = new Image();
         
+		this.image = new Image();
+	    
         var self = this;
                 
         function imageLoaded() {
-            self.framed = createFramedImage(self.image);
-            self.object = createRendererObject();
+            self.framed = self.createFramedImage(self.image);
+            self.object = self.createRendererObject();
+            console.log("Got obj");
+            console.log(self.object);
             self.prepareCallback();
         }   
         
         // Load image asynchroniously
+                
         this.image.onload = imageLoaded;
         
         this.image.src = this.data.imageURL;                    
@@ -248,52 +272,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     	return this.show.renderer.createQuad(this.framed);
     },
     
-    xrender : function() {
-                       
-        console.log("Rendering " + this.state + " " + this.x + " " + this.y +  " " + this.w + " " + this.h + " " + this.rotation);
-        
-        if(this.state == "dead") {
-            return;
-        }
-        
-        // Image sizes are always relative to the canvas size
-        
-        // This is actually canvas object contained a frame buffer
-        var img = this.image.framed;
-        
-        // Calculate aspect ration from the source material     
-        var sw = img.width;
-        var sh = img.height;        
-        var aspect = sw/sh;
-        
-        // Create image dimensions relative to canvas size
-        // so that height == 1 equals canvas height
-        var nh = height;
-        var nw = nh*aspect;
-        
-        var x = width/2 + width/2*this.x;
-        var y = height/2 + height/2*this.y;
-        
-        var w=  nw*this.w;
-        var h = nh*this.h;
-        ctx.save();
-        
-        // Put bottom center at origin
-        ctx.translate(x, y);
-        // Rotate
-        // Beware the next translations/positions are done along the rotated axis
-        
-        ctx.rotate(this.rotation);
-        
-        ctx.globalAlpha = this.opacity;
-        
-        // console.log("w:" + w + " h:" + h);
-        
-        ctx.drawImage(img, -nw/2, -nh/2, w, h);
-        
-        ctx.restore();
-        
-    }    
       
 });
 
@@ -306,7 +284,7 @@ krusovice.showobjects.TextFrame = function(cfg) {
     $.extend(this, cfg);
 }
 
-$.extend(krusovice.showobjects.TextFrame, krusovice.showobjects.Base);
+$.extend(krusovice.showobjects.TextFrame.prototype, krusovice.showobjects.Base.prototype);
 
 
 $.extend(krusovice.showobjects.TextFrame.prototype, {
