@@ -63,8 +63,12 @@ krusovice.utils = {
         // Loop through all the animations of this element
         // and see if clock is on any of their timelines 
         // If so calculate easing relative to the beginning of the animation
-        
-        for(i=0; i<elem.animations.length; i++) {
+
+    	// The last element is always a stopper element and should be ignored in the calculations
+        for(i=0; i<elem.animations.length-1; i++) {
+
+
+        	
         	var anim = elem.animations[i];
         	if(timepoint < anim.duration) {
         		method = anim.easing;
@@ -205,6 +209,7 @@ krusovice.utils = {
     	
     	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
     	
+    	// XXX: bug with Chrome 14 or so
     	if(is_chrome) {
     		 return function(callback, element) {
                window.setTimeout(callback, 1000 / 60);
