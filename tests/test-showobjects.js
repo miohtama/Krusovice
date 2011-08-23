@@ -32,6 +32,7 @@ ShowObjectTest.prototype.testSaneAnimationStates= function() {
  * Render transition in frame for an test image element
  */
 ShowObjectTest.prototype.testRenderTransitionIn = function() {
+
 	var init = this.basicSetup();	
 
 	var object = new krusovice.showobjects.FramedAndLabeledPhoto({
@@ -44,8 +45,14 @@ ShowObjectTest.prototype.testRenderTransitionIn = function() {
 	// Check that we didn't trigger async image loading in tests
 	assertObject(object.image);
 	
-	
-	
+	// Transition in start
+	object.render(0)
+
+	var i=0;
+	for(i=0; i<1; i+=0.3) {
+		// Transition in frame 2
+		object.render(0.1)
+	}
 }
 
 /**
@@ -59,7 +66,12 @@ ShowObjectTest.prototype.createTimelineElement = function() {
 	// image asynchronously during unit tests
 	var elem = plan[0];
 	
-	elem.image = new Image();
+	//elem.image = new Image();
+	var canvas = document.createElement("canvas");
+	canvas.width = 100;
+	canvas.height = 100;
+	
+	elem.image = canvas;
 	
 	return plan[0];
 }

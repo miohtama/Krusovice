@@ -145,6 +145,8 @@ krusovice.showobjects.Base.prototype = {
     	
 		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
 		
+		mesh.rotation.x += 0.1;
+		
 		return animation;
     	
     },
@@ -204,6 +206,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 		var load;
 
 		if(this.data.image) {
+			// We have a prepared image
 			this.image = this.data.image;
 			load = false;
 		} else {
@@ -217,7 +220,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             self.object = self.createRendererObject();
             console.log("Got obj");
             console.log(self.object);
-            self.prepareCallback();
+            if(self.prepareCallback) {
+            	self.prepareCallback();
+            }
         }   
         
         // Load image asynchroniously
@@ -248,8 +253,12 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        var frameColor = "#FFFFFF";
                
        // Actual pixel data dimensions, not ones presented in DOM tree
-       var nw = img.naturalWidth;
-       var nh = img.naturalHeight;
+       var nw = img.naturalWidth || img.width;
+       var nh = img.naturalHeight || img.height;
+       
+       if(!nw || !nh) {
+    	   throw "Unknown image source for framing";
+       }
     
        // horizontal and vertical frame border sizes
        var borderX = nw * 0.05;
@@ -294,7 +303,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     },
     
     createRendererObject : function() {
-    	return this.show.renderer.createQuad(this.framed);
+    	return this.renderer.createQuad(this.framed);
     },
     
       

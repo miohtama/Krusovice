@@ -277,7 +277,7 @@ krusovice.Show.prototype = {
     createAnimatedObject : function(timelineInput) {
         
         var cfg = {
-            show : this,
+            renderer : this.renderer,
             data : timelineInput
         };
         
