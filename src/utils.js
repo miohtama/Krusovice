@@ -66,8 +66,6 @@ krusovice.utils = {
 
     	// The last element is always a stopper element and should be ignored in the calculations
         for(i=0; i<elem.animations.length-1; i++) {
-
-
         	
         	var anim = elem.animations[i];
         	if(timepoint < anim.duration) {

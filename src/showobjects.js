@@ -27,14 +27,15 @@ krusovice.showobjects = krusovice.showobjects || {};
  * 
  */
 krusovice.showobjects.Base = function(cfg) {    
+    $.extend(this, cfg);
 }
 
 krusovice.showobjects.Base.prototype = {    
     
     /**
-     * @cfg {krusovice.Show} show Parent Show object  
+     * @cfg {krusovice.Show} Rendering backend used to create artsy
      */
-    show : null,
+    renderer : null,
 
     /**
      * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters  
@@ -58,7 +59,6 @@ krusovice.showobjects.Base.prototype = {
     active : false,
     
     init : function() {
-        this.show = show;
         
         // Initialize animation variables
         this.x = this.y = this.w = this.h = 0;
@@ -69,6 +69,12 @@ krusovice.showobjects.Base.prototype = {
         this.opacity = 1;        
     },
 
+    /**
+     * Load all related media resources.
+     * 
+     * Note: animate() can be called before prepare in dummy unit tests runs. 
+     * Please set-up all state variables in init().
+     */
     prepare : function() {        
 
     },
@@ -93,7 +99,7 @@ krusovice.showobjects.Base.prototype = {
     	
     	var state, easing;
     	    	
-    	var relativeClock = this.data.wakeUpTime - clock;
+    	var relativeClock = clock - this.data.wakeUpTime;
     	
     	// console.log("Relative clock:" + relativeClock);
     		
@@ -132,7 +138,7 @@ krusovice.showobjects.Base.prototype = {
     	if(!this.object) {
     		// XXX: should not happen - raise exception here
     		// when code is more complete
-    		return;
+    		return animation;
     	}
     	
     	var mesh = this.object;
@@ -147,7 +153,7 @@ krusovice.showobjects.Base.prototype = {
 		// Bring object to the 3d scene
     	console.log("Waking up:" + this.data.id);
     	if(this.object) {
-	    	this.show.renderer.wakeUp(this.object);
+	    	this.renderer.wakeUp(this.object);
     	}
 		this.alive = true;    	
     },
@@ -155,7 +161,7 @@ krusovice.showobjects.Base.prototype = {
     farewell : function() {
     	console.log("Object is gone:" + this.data.id);
     	if(this.object) {
-	    	this.show.renderer.farewell(this.object);
+	    	this.renderer.farewell(this.object);
     	}
 		this.alive = false;
 
