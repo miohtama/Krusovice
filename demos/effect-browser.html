@@ -1,0 +1,62 @@
+<html>
+	<!-- Manual inspection of visualizer renderer output -->
+	<head>
+		<script src=../thirdparty/jquery.js></script>		
+                <script src=../thirdparty/jquery.easing.1.3.js></script>                
+                <script src=../thirdparty/Three.js></script>                
+
+                <script src=../src/utils.js></script>
+                <script src=../src/rhytmanalysis.js></script>
+                <script src=../src/timeliner.js></script>
+                <script src=../src/timelinevisualizer.js></script>
+                <script src=../src/showobjects.js></script>
+                <script src=../src/show.js></script>
+                <script src=../src/loader.js></script>
+                <script src=../src/renderers/three.js></script>
+                 
+                <script src=../testdata/simple-plan.js></script>
+                <script src=../testdata/sample-song-data.js></script>
+
+                <link href=../media/visualizer.css rel=stylesheet></link>
+		
+                <script type="text/javascript">
+	
+                
+                <style>
+                        .column {
+                                float: left;
+                                width: 200px;                                
+                        }                          
+                </style>
+       	</head>
+	
+	<body>
+		<h1>Mixnap effect browser</h1>
+
+                <div id=show></div>
+                                
+                <div class="column">                
+                        <h2>Transition in</h2>
+                        <select id="transition-id">
+                        </select>                        
+                </div>
+
+                <div class="column">                
+                        <h2>On screen</h2>
+                        <select id="on-screen">
+                        </select>                        
+                </div>
+                
+                <div class="column">                
+                        <h2>Transition out</h2>
+                        <select id="on-screen">
+                        </select>                        
+                </div>              
+                
+                <button name="reanimate">Again!</button>
+                
+                <div style="clear: both"><!-- --></div>  
+
+		
+	</body>
+</html>
