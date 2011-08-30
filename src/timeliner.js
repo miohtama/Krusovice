@@ -34,6 +34,9 @@ krusovice.TimelineAnimation.prototype = {
 	 * How many seconds this animation lasts
 	 */
 	duration : 0,
+	
+	
+	// XXX: Below are overridden from effects
 
 	/**
 	 * How we will interpolate values from this animation type to the next.
@@ -147,6 +150,12 @@ krusovice.Timeliner.prototype = {
      * 
      */        
     rhytmData : null,
+    
+    
+    /**
+     * @cfg {Object} Effect parameter overrides for this show.
+     */
+    effectConfig : null,
 		
     /**
      * @cfg {Array} transitionInEffects List of allowed transition in animation ids for random pick
@@ -203,6 +212,8 @@ krusovice.Timeliner.prototype = {
 			
 			// Construct show element 
 			var out = new krusovice.TimelineElement();
+						
+			out.source = elem;
 			
 			// Populate it with default values from input
 			krusovice.utils.copyAttrs(out, elem, ["id", "type", "text", "label", "imageURL"]);
@@ -349,15 +360,6 @@ krusovice.Timeliner.prototype = {
 			nextAnimation.animationType = "gone";
 		}
 		
-		// Prepare easing
-		if(animationType == "transitionin") {
-			currentAnimation.easing = "easeInSine";
-		} else if(animationType == "transitionout") {
-			currentAnimation.easing = "linear";
-		} else {
-			currentAnimation.easing = "linear";
-		}		
-		
 		this.prepareEffectParameters(animationType, currentAnimation, nextAnimation);
 				
 	},
@@ -368,20 +370,24 @@ krusovice.Timeliner.prototype = {
 	 */
 	prepareEffectParameters : function(animationType, currentAnimation, nextAnimation) {
 		
+		// Get effect
+		var effect = krusovice.effects.Manager.get(currentAnimation.effectType);
+						
 		if(animationType == "transitionin") {
-			// Set final parameters
-			currentAnimation.position = [0, 0, krusovice.utils.farAwayZ];
+			// Set initial parameters
+			effect.prepareParameters("source", currentAnimation, this.effectConfig, currentAnimation.source.parameters);
 		}	
 		
 		// On screen animation may decide it's start and stop places on the screen
 		if(animationType == "onscreen") {
-			currentAnimation.rotation = [-1, -1, 0];
-			nextAnimation.rotation = [1, -1, 0];
+            // Set initial parameters
+            effect.prepareParameters("source", currentAnimation, this.effectConfig, currentAnimation.source.parameters);
+            effect.prepareParameters("target", nextAnimation, this.effectConfig, currentAnimation.source.parameters);
+
 		}
 		
 		if(animationType == "transitionout") {
-			// Set final parameters
-			nextAnimation.position = [0, 0, krusovice.utils.farAwayZ];
+            effect.prepareParameters("target", nextAnimation, this.effectConfig, currentAnimation.source.parameters);
 		}
 	},
 		

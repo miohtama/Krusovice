@@ -50,6 +50,15 @@ krusovice.effects.Manager = {
       
       this.data[effect.id] = effect;
       
+      effect.init();
+      
+    },
+    
+    /**
+     * Get registered effect by its id
+     */
+    get : function(id) {
+        return this.data[id];
     },
     
     /**
@@ -115,34 +124,73 @@ krusovice.effects.Base = {
     categories : ["transitionid", "transitionout", "onscreen"],
     
     /**
-     * @type Object
+     * How we will interpolate values from this animation type to the next.
      *
-     * Default values for various source values.
-     *
-     * May be computed in prepareAnimationParameters
+     * One of options given by {@link krusovice.utils#ease} 
      */
-    source : {
-        
-    },
-
-
-    /**
-     * Random ranges for each parameter
-     */
-    variation : {
-        
-    },
-
+    easing : "linear",
+            
     /**
      * @type Object
      *
-     * Default values for various target values,
+     * Declare effect interpolation.
+     *
+     * **source** and *target** contains endpoints of the interpoliated effect values.
+     *
+     * They are randomized with corresponding data in **sourceVariation** and **targetVariation**.
+     *
+     * Usually effects declare only source parameters, as the target is the source of the next animation.
+     * However the exception is *onscreen* animation, as it will be usually matched to beat at the
+     * beginning and the end of animation.
+     *
+     */
+    parameters : {
+     
+        /**
+         * @type Object
+         *
+         * Default values for various source values.
+         *
+         * May be computed in prepareAnimationParameters
+         */
+        source : {
+            
+        },
+    
+    
+        /**
+         * Random ranges for each parameter
+         */
+        sourceVariation : {
+            
+        },
+    
+        /**
+         * @type Object
+         *
+         * Default values for various target values,
+         * 
+         * May be computed in prepareAnimationParameters
+         */    
+        target : {
+            
+        },
+        
+        targetVariation : {
+                    
+        }, 
+        
+    },
+    
+    
+    /**
+     * Called when the animation is registered.
+     *
+     * Useful to tune parameters for the effect.
      * 
-     * May be computed in prepareAnimationParameters
-     */    
-    target : {
-        
-    },    
+     */
+    init : function() {        
+    },
     
     animate : function() {        
     },
@@ -150,6 +198,17 @@ krusovice.effects.Base = {
     render : function() {        
     },
     
+    /**
+     * Get list of parameter ids used for this effect.
+     */
+    getParameterNames : function(parametersSlot) {
+        var names = [];
+        $.each(this.parameters[parametersSlot], function(key, val) {
+            names.append(val);
+        });
+        
+        return names;       
+    },
     
     /**
      * Read effect parameters. 
@@ -176,27 +235,62 @@ krusovice.effects.Base = {
                 return value;
             }
         }
-
-        value = this[value];            
-        if(value !== undefined) {
-            return value;
+        
+        if(this.parameters[slot]) {
+            value = this.parameters[slot][value];            
+            if(value !== undefined) {
+                return value;
+            }
         }
+
 
         throw "Unknown effect parameter:" + name;        
     },
     
-    initParameter : function(name, config, source) {
-        this[name] = this.getParameter(name, source, config, source);
-    
+    initParameter : function(obj, slot, name, config, source) {                              
+        obj[name] = this.randomizeParameter(name, source, config, source);    
     },
+    
+    /**
+     * Initialize animation source and target parameters and store then on an obeject.
+     *
+     * Generate animation parameters based on object config, show config and global config 
+     * (in this order). The animation parameter data is in format 
+     * as described in {@link krusovice.effects.Base#parameters}. The
+     * actual parameter names and values vary effect by effect.
+     *
+     * @param {String} parametersSlot "source" or "target"
+     *
+     * @param {Object} obj Object receiving calculated values 
+     *
+     * @param {Object} config Global effects overrides
+     *
+     * @param {Object} source Input element effects overrides
+     *
+     */
+    initParameters : function(parametersSlot, obj, config, source) {
+        
+        var names = this.getParameterNames(parametersSlot);
+        
+        names.forEach(function(name) {
+            obj[name] = this.randomizeParameter(name, parametersSlot, config, source);    
+        });        
+    },
+    
     /**
      * 
      */
-    randomizeParameter : function(name, config, source) {
-         this[name] = this.getParameter(name, config, source);
-         
-         variation 
+    randomizeParameter : function(name, slot, config, source) {
+        
+        var valSlot = slot;
+        var variationSlot = slot + "Variation";
+                
+         var val = this.getParameter(name, valSlot, config, source);         
+         var variation = this.getParameter(name, varSlot, config, source);         
+        
+         return val + krusovice.utils.spitrnd(variation);
     },
+    
     
     
     /**
@@ -207,11 +301,12 @@ krusovice.effects.Base = {
      * 
      * @param {Object} config Global effect configuration
      */
-    prepareAnimationParameters : function(config, source, target, next) {        
+    prepareParameters : function(parametersSlot, obj, config, source) {        
+        this.initParameters(parametersSlot, config, source)
     },
     
-    time : function() {
-        
+    
+    time : function(startTime, endTime, rhytmAnalysis) {        
     },    
    
 }

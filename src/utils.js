@@ -242,5 +242,13 @@ krusovice.utils = {
     })(),
     
     
+    /**
+     * 
+     * @param {THREE.Quaternion} q
+     */
+    grabQuaternionData : function(q) {
+        return [q.x, q.y, q.z, q.w];
+    }    
+    
     
 }
