@@ -204,48 +204,64 @@ krusovice.effects.Base = {
     getParameterNames : function(parametersSlot) {
         var names = [];
         $.each(this.parameters[parametersSlot], function(key, val) {
-            names.append(val);
+            names.push(key);
         });
         
         return names;       
     },
     
     /**
-     * Read effect parameters. 
+     * Read effect parameters.
      *
+     * 
+     * @param {String} slot one of source, sourceVariation, target, targetVariation
+     * 
      * First try animation level parameter, then  
      * show level parameter and finally fall back 
      * to the value defined in the effect class itself.
      *
      */
-    getParameter : function(name, slot, showConfig, animationConfig) {
+    getParameter : function(name, slot, showConfig, animationConfig, allowNull) {
         
         var value;
         
-        if(animationConfig[slot]) {
-            value = animationConfig[value];
-            if(value !== undefined) {
-                return value;
+        if(animationConfig) {
+            if(animationConfig[slot]) {
+                value = animationConfig[name];
+                if(value !== undefined) {
+                    return value;
+                }
             }
         }
         
-        if(showConfig[slot]) {
-            value = showConfig[slot][value];            
-            if(value !== undefined) {
-                return value;
+        if(showConfig) {
+            if(showConfig[slot]) {
+                value = showConfig[slot][name];            
+                if(value !== undefined) {
+                    return value;
+                }
             }
         }
         
-        if(this.parameters[slot]) {
-            value = this.parameters[slot][value];            
+        if(this.parameters[slot] !== undefined) {
+            value = this.parameters[slot][name];            
             if(value !== undefined) {
                 return value;
+            } else {
+                //console.error("Default missing for " + name);
             }
         }
+        
+        // Don't bother to declare every variable in variation section
+        if(allowNull) {
+            return null;
+        }
 
-
-        throw "Unknown effect parameter:" + name;        
+        console.error("Got effect");
+        console.error(this);
+        throw "Unknown effect parameter:" + name + " in parameter slot " + slot + " for effect " + this.id;        
     },
+    
     
     initParameter : function(obj, slot, name, config, source) {                              
         obj[name] = this.randomizeParameter(name, source, config, source);    
@@ -263,35 +279,26 @@ krusovice.effects.Base = {
      *
      * @param {Object} obj Object receiving calculated values 
      *
-     * @param {Object} config Global effects overrides
+     * @param {Object} config Show per-effect overrides
      *
      * @param {Object} source Input element effects overrides
      *
      */
     initParameters : function(parametersSlot, obj, config, source) {
         
+        if(obj === undefined ||obj === null) {
+            throw "Target object missing";
+        }
+                
         var names = this.getParameterNames(parametersSlot);
         
+        var self = this;
+        
         names.forEach(function(name) {
-            obj[name] = this.randomizeParameter(name, parametersSlot, config, source);    
+            obj[name] = self.randomizeParameter(name, parametersSlot, config, source);    
         });        
-    },
-    
-    /**
-     * 
-     */
-    randomizeParameter : function(name, slot, config, source) {
         
-        var valSlot = slot;
-        var variationSlot = slot + "Variation";
-                
-         var val = this.getParameter(name, valSlot, config, source);         
-         var variation = this.getParameter(name, varSlot, config, source);         
-        
-         return val + krusovice.utils.spitrnd(variation);
     },
-    
-    
     
     /**
      * Set animation source and target parameters for this effects.
@@ -302,9 +309,39 @@ krusovice.effects.Base = {
      * @param {Object} config Global effect configuration
      */
     prepareParameters : function(parametersSlot, obj, config, source) {        
-        this.initParameters(parametersSlot, config, source)
+        this.initParameters(parametersSlot, obj, config, source)
+    },
+        
+    
+    /**
+     * 
+     */
+    randomizeParameter : function(name, slot, config, source) {
+                
+                       
+        var valSlot = slot;
+        var variationSlot = slot + "Variation";
+                
+        var val = this.getParameter(name, valSlot, config, source);         
+       
+        if(!(krusovice.utils.isNumber(val) || $.isArray(val))) {
+            // String or object
+            // Don't try to randomize
+            return val;
+        }
+       
+        var variation = this.getParameter(name, variationSlot, config, source, true);         
+                
+        if(variation !== null)  {                        
+            // We have randomization defined for this parameter
+            return krusovice.utils.randomize(val, variation);
+        } else {
+            return val;
+        }
     },
     
+     
+
     
     time : function(startTime, endTime, rhytmAnalysis) {        
     },    

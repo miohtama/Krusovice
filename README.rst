@@ -119,6 +119,99 @@ After run you see the test output in *JsTestDriver* view per browser.
 
         For some reason I could not get output/stacktrace from failed tests on Chrome
         on one of two test Macs. Safari was ok.
+        
+Command-line
+========================================
+
+This setup gives you local, instant, continuous integration of Javascript
+unit tests using `JsTestDriver <http://code.google.com/p/js-test-driver/wiki/GettingStarted>`_.
+JSTestDriver is javascript unit test, remote browser controlling and continuous integration framework.
+
+We use Python `Watchdog <https://github.com/gorakhargosh/watchdog>`_ 
+to monitor Javascript file save events.
+
+Because Javascript lacks static compile time checks, rigirous unit testing
+is the only way to tame this bastard of Scheme. Especially considering
+that you have to Microsoft legacy devouring you also.
+        
+What we will accomplish        
+
+* Save Javascript file in your favorite editor
+
+* Tests run automatically, triggered by file system monitoring
+
+* Alt-tab to browser to see results in the console output
+
+These instructions are for OSX and Linux. Windows users can adapt
+with necessary skillz0r.
+
+.. note ::
+        
+        JsTestDriver supports other Javascript unit test frameworks too.
+
+Install JsTestDriver::
+
+        wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar
+        
+Install Watchdog (in `virtualenv isolated Python <http://pypi.python.org/pypi/virtualenv>`_)::
+
+        git clone git://github.com/gorakhargosh/watchdog.git
+        cd watchdog
+        python setup.py install        
+
+Start JsTestDriver as a background process::
+
+::
+        
+        java -jar JsTestDriver-1.3.2.jar --port 9876 &
+
+Capture browser(s) by visiting in the URL in a browser opened on the 
+computer running tests (usually your own computer...). 
+These browsers will keep executing unit test
+until the page is closed::
+
+        http://localhost:9876/capture
+                
+.. warning ::
+
+        The success with new browser versions vary. JsTestDriver uses console exception stack trace
+        text analysis to capture the errors. However, the browser vendors do not have standardized,
+        or even stable, stack trace format. If you get just report "test failed" without further
+        information how it failed try to switch the test browser. I had best luck with Google Chrome
+        version 13 (the exact version number is very important!).
+        Please report further browser problems to JsTestDriver discussion group.        
+                
+.. note ::
+
+        Google doesn't provide old Chrome downloads. Niiice. 
+
+This magic spell will make Watchdog to rerun tests on file-system changes::
+
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all' 
+
+Save any *.js* file, watchmedo notices and runs the tests.
+
+Use ``--captureConsole`` to control whether you want to see console output in the terminal
+(only text) or browser (object explorer enabled).
+
+.. note ::
+
+        You can normally insert debug breakpoints in the web browser Javascript debugger.
+        The test execution will pause.
+        
+Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the following terminal commands::
+
+        # hit CTRL+C to stop Watchdog        
+        fg # Bring JsTestDriver process to foreground
+        # hit CTRL+C                
+        
+More info
+
+* http://groups.google.com/group/js-test-driver
+
+* http://code.google.com/p/js-test-driver/wiki/Assertions
+
+* http://code.google.com/p/js-test-driver/issues/detail?id=263&start=100        
 
 Breakpoints and Eclipse JsTestDriver
 ========================================

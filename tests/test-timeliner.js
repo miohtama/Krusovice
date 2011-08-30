@@ -67,12 +67,17 @@ TimelinerTest.prototype.testHasAnimationTypes = function() {
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 	var plan = timeliner.createPlan();
 
+
 	plan.forEach(function(e) {		
-		e.animations.forEach(function(a) {
+
+        var realAnimations = e.animations.slice(0, e.length-1);
+
+		realAnimations.forEach(function(a) {
 			
 			/* Goner element has a type of null */
 			if(a.type != "gone") {			
 				assertString(a.effectType);
+				assertString(a.type);
 				assertString(a.easing);
 			}
 		});		

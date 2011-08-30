@@ -19,6 +19,8 @@ krusovice.TimelineAnimation = function() {
 krusovice.TimelineAnimation.prototype = {
 
 	/**
+     * @type String
+     *
 	 * What state of the element this animation presents.
 	 *  
 	 * One of transitionin, onscreen, transitionout, gone.
@@ -26,6 +28,8 @@ krusovice.TimelineAnimation.prototype = {
 	type : null,
 		
 	/**
+	 * @type String
+	 *
 	 * What effect is applied on this animation (besides interpolated movement)
 	 */
 	effectType : null,
@@ -34,42 +38,56 @@ krusovice.TimelineAnimation.prototype = {
 	 * How many seconds this animation lasts
 	 */
 	duration : 0,
-	
+
+    /**
+     * How we will interpolate values from this animation type to the next.
+     */
+    easing : "linear",	
 	
 	// XXX: Below are overridden from effects
 
-	/**
-	 * How we will interpolate values from this animation type to the next.
-	 */
-	easing : "linear",
-	
-	/** 
-	 * Where is this object at the beginning of the animation.
-	 * 
-	 * The default position is at the front of the camera.
-	 * 
-	 */
-	position : [0, 0, 1],
+    /**
+     * Effect hint parameters for this animation.
+     *
+     * Use this for setting per-item animation parameters.
+     */
+    parameters : {
 
-	/** 
-	 * How this object is rorated the beginning of the animation.
-	 * 
-	 * The default position facing the camera so that up is up.
-	 * 
-	 */
-	rotation : [0, 0, 0],
+    
+        /** 
+         * Where is this object at the beginning of the animation.
+         * 
+         * The default position is at the front of the camera.
+         * 
+         */
+        //position : [0, 0, 1],
+    
+        /** 
+         * How this object is rorated the beginning of the animation.
+         * 
+         * The default position facing the camera so that up is up.
+         * 
+         */
+        //rotation : [0, 0, 0],
+        
+        
+        /**
+         * How this object is scaled at the beginning of the animation.
+         */
+        //scale : [1, 1, 1],
+    
+        /**
+         * By default, the object is 100% visible
+         */
+        //opacity : 1,
+            
+    },
 	
-	
-	/**
-	 * How this object is scaled at the beginning of the animation.
-	 */
-	scale : [1, 1, 1],
 
-	/**
-	 * By default, the object is 100% visible
-	 */
-	opacity : 1	          
-				
+    /**
+     * The orignal user input which was used to create this animation
+     */
+	input : null           				
 }
 
 
@@ -213,7 +231,7 @@ krusovice.Timeliner.prototype = {
 			// Construct show element 
 			var out = new krusovice.TimelineElement();
 						
-			out.source = elem;
+			out.input = elem;
 			
 			// Populate it with default values from input
 			krusovice.utils.copyAttrs(out, elem, ["id", "type", "text", "label", "imageURL"]);
@@ -366,28 +384,46 @@ krusovice.Timeliner.prototype = {
 	
 	
 	/**
-	 * Set effect start and stop coordinates
+	 * Set effect start and stop coordinates.
+	 *
+	 *
+	 * Animation filling chain:
+	 *
+	 *       transitionin current[0]
+	 *       onscreen current[1] next[2]
+	 *       transitionout next[3]
+	 *
 	 */
 	prepareEffectParameters : function(animationType, currentAnimation, nextAnimation) {
 		
 		// Get effect
 		var effect = krusovice.effects.Manager.get(currentAnimation.effectType);
+		
+		if(!effect) {
+		    throw "Unknown effect type:" + currentAnimation.effectType;
+		}
+		
+		var source = null;
+		var target = null;
+		
+		currentAnimation.type = animationType;
+		currentAnimation.effectType = effect.id;
 						
 		if(animationType == "transitionin") {
 			// Set initial parameters
-			effect.prepareParameters("source", currentAnimation, this.effectConfig, currentAnimation.source.parameters);
+			effect.prepareParameters("source", currentAnimation, this.effectConfig, source);
 		}	
 		
 		// On screen animation may decide it's start and stop places on the screen
 		if(animationType == "onscreen") {
             // Set initial parameters
-            effect.prepareParameters("source", currentAnimation, this.effectConfig, currentAnimation.source.parameters);
-            effect.prepareParameters("target", nextAnimation, this.effectConfig, currentAnimation.source.parameters);
+            effect.prepareParameters("source", currentAnimation, this.effectConfig, source);
+            effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
 
 		}
 		
 		if(animationType == "transitionout") {
-            effect.prepareParameters("target", nextAnimation, this.effectConfig, currentAnimation.source.parameters);
+            effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
 		}
 	},
 		
@@ -462,9 +498,9 @@ krusovice.Timeliner.createSimpleTimeliner = function(elements, rhytmData) {
             showElements : elements,
             rhytmData : rhytmData,
             settings : krusovice.Timeliner.defaultSettings,
-            transitionInEffects : ["fadein"],
-            transitionOutEffects : ["fadeout"],
-            onScreenEffects: ["slightMove"]
+            transitionInEffects : ["zoomin"],
+            transitionOutEffects : ["zoomout"],
+            onScreenEffects: ["slightmove"]
     };
     
     return new krusovice.Timeliner(input);
@@ -493,7 +529,7 @@ krusovice.Timeliner.defaultSettings = {
     },   
     
     onScreen : {
-        type : "slightMove",
+        type : "slightmove",
         duration : 2.0,
     }                          
 }

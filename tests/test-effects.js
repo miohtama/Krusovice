@@ -4,6 +4,25 @@ var EffectsTest = TestCase("Effects");
 
 // Some test data
 
+/**
+ * Test construction of very simple timeline
+ */
+EffectsTest.prototype.testRandomize = function() {
+
+    var src = [1,2,3];
+    var r;
+    
+    r = krusovice.utils.randomize(src, [0,0,0]);
+    assertEquals([1,2,3], r);
+    
+    r = krusovice.utils.randomize(1, 0);
+    assertEquals(1, r);
+
+    r = krusovice.utils.randomize(1, 99999);
+    assertNotEquals(1, r); 
+};
+
+
 
 /**
  * Test construction of very simple timeline
@@ -11,19 +30,27 @@ var EffectsTest = TestCase("Effects");
 EffectsTest.prototype.testTransitionInParameters = function() {
 
     // Try to create a simple animation parameters
-    var effect = krusovice.effects.Manager.get("ZoomIn");
+    var effect = krusovice.effects.Manager.get("zoomin");
     var params = {};
+       
+    assertObject(effect);
     
-    effects.initParameters("source", params, {}, {});
+    effect.prepareParameters("source", params, {}, {});
+    
+    console.log("Params");
+    console.log(params);
     
     // x
-    self.assertEqual(0, params.position[0]);
+    assertEquals(0, params.position[0]);
     
     // y
-    self.assertEqual(0, params.position[1]);   			
+    assertEquals(0, params.position[1]);   			
 
     // far z
-    self.assertTrue(params.position[2] > 10);            
+    assertTrue(params.position[2] > 10);            
+
+    assertEquals("linear", params.easing);            
+
 
 };
 
@@ -33,19 +60,19 @@ EffectsTest.prototype.testTransitionInParameters = function() {
 EffectsTest.prototype.testTransitionOutParameters = function() {
 
     // Try to create a simple animation parameters
-    var effect = krusovice.effects.Manager.get("ZoomOut");
+    var effect = krusovice.effects.Manager.get("zoomout");
     var params = {};
     
-    effects.initParameters("target", params, {}, {});
+    effect.prepareParameters("target", params, {}, {});
     
     // x
-    self.assertEqual(0, params.position[0]);
+    assertEquals(0, params.position[0]);
     
     // y
-    self.assertEqual(0, params.position[1]);            
+    assertEquals(0, params.position[1]);            
 
     // far z
-    self.assertTrue(params.position[2] > 10);            
+    assertTrue(params.position[2] > 10);            
 
 };
           

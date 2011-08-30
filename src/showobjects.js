@@ -164,6 +164,7 @@ krusovice.showobjects.Base.prototype = {
      *  @param {Number} 0...1 how far the animation has progressed
      */
     calculateAnimationFrame : function(target, source, value) {
+
     	var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
     	var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
     	var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);

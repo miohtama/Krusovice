@@ -6,7 +6,7 @@
  *
  * Weighting of the interpolation is based on ease value.
  */
-krusovice.effects.krusovice.effects.Interpolate = $.extend(krusovice.effects.Base, {
+krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     
     name : "Interpolate",
     
@@ -18,7 +18,8 @@ krusovice.effects.krusovice.effects.Interpolate = $.extend(krusovice.effects.Bas
             position : [0, 0, krusovice.effects.CAMERA_Z],
             rotation : [0,0,0, 1],
             opacity : 1,
-            scale : [1,1,1]    
+            scale : [1,1,1],    
+            easing : "linear"
         },
         
         sourceVariation : {            
@@ -36,11 +37,7 @@ krusovice.effects.krusovice.effects.Interpolate = $.extend(krusovice.effects.Bas
         
     },
   
-    prepareAnimationParameters : function(config, source, target, next) {        
-        this.initParameter("position");
-        this.initParameter("rotation");
-        this.initParameter("scale");
-        this.initParameter("opacity");
+    prepareAnimationParameters : function(config, source, target, next) {
     },
           
 });
@@ -50,7 +47,7 @@ krusovice.effects.krusovice.effects.Interpolate = $.extend(krusovice.effects.Bas
  *
  * Weighting of the interpolation is based on ease value.
  */
-krusovice.effects.ZoomIn = $.extend(krusovice.effects.Interpolate, {
+krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     id : "zoomin",
     
@@ -67,10 +64,10 @@ krusovice.effects.ZoomIn = $.extend(krusovice.effects.Interpolate, {
         
 });
 
-krusovice.effects.registerEffect(krusovice.effects.ZoomIn);
+krusovice.effects.Manager.register(krusovice.effects.ZoomIn);
 
 
-krusovice.effects.RotoZoomIn = $.extend(krusovice.effects.ZoomIn, {
+krusovice.effects.RotoZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     id : "rotozoomin",
     
@@ -83,9 +80,9 @@ krusovice.effects.RotoZoomIn = $.extend(krusovice.effects.ZoomIn, {
     
 });
 
-krusovice.effects.registerEffect(krusovice.effects.RotoZoomIn);
+krusovice.effects.Manager.register(krusovice.effects.RotoZoomIn);
 
-krusovice.effects.ZoomOut = $.extend(krusovice.effects.ZoomOut, {
+krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     id : "zoomout",
     
@@ -102,13 +99,13 @@ krusovice.effects.ZoomOut = $.extend(krusovice.effects.ZoomOut, {
     
 });
 
-krusovice.effects.registerEffect(krusovice.effects.ZoomOut);
+krusovice.effects.Manager.register(krusovice.effects.ZoomOut);
 
 
 /**
  * 
  */
-krusovice.effects.SlightMove = $.extend(krusovice.effects.SlightMove, {
+krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     id : "slightmove",
     
@@ -127,14 +124,12 @@ krusovice.effects.SlightMove = $.extend(krusovice.effects.SlightMove, {
     
 });
 
-krusovice.effects.registerEffect(krusovice.effects.SlightMove);
-
-
+krusovice.effects.Manager.register(krusovice.effects.SlightMove);
 
 /**
  * Randomically rotate object around its Z axis 
  */
-krusovice.effects.SlightRotateZ = $.extend(krusovice.effects.SlightRotate, {
+krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     id : "slightrotatez",
     
@@ -143,34 +138,34 @@ krusovice.effects.SlightRotateZ = $.extend(krusovice.effects.SlightRotate, {
     available : true,
     
     categories : ["onscreen"],
-    
-    parameters : {
-        source : {
-                  
-        }
-    },
-    
+         
     init : function() {
-        this.parameters.sourceVariations.angle = 0.3;
-        this.parameters.targetVariations.angle = 0.3;
+        this.parameters.source.angle = 0;
+        this.parameters.target.angle = 0;
+        this.parameters.sourceVariation.angle = 0.3;
+        this.parameters.targetVariation.angle = 0.3;
     },
     
     prepareParameters : function(parametersSlot, obj, config, source) {        
+
+        this.initParameters(parametersSlot, obj, config, source)
+
         var r, q;
         
-        var z = THREE.Vector3(0, 0, 1);
-        
-        this.initParameters(parametersSlot, config, source)
-    
+        var z = new THREE.Vector3(0, 0, 1);
+            
         r = this.randomizeParameter("angle", "source", config, source);
-        q = THREE.Quaternion.setFromAxisAngle(z, r);
+        q = (new THREE.Quaternion()).setFromAxisAngle(z, r);
         
         obj.rotation = krusovice.utils.grabQuaternionData(q);                 
     }   
     
+    
+       
 });
 
 
+krusovice.effects.Manager.register(krusovice.effects.SlightRotateZ);
 
 
 

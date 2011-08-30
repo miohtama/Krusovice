@@ -12,6 +12,12 @@ krusovice.utils = {
 				
 	/* Z parameter to used to fake the object at infinite distance */
 	farAwayZ : 999999999,
+	
+	
+	isNumber : function (n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    },
+
 
     /**
      * Return random value between -max ... max
@@ -20,6 +26,47 @@ krusovice.utils = {
     	max = max*2;
         return Math.random()*max - max/2;
     },
+    
+    
+    /**
+     * @param {Object} item array of numbers or number. 
+     */
+    randomize : function(value, variation) {
+        var x, y;
+
+        if(!$.isArray(value)) {
+            x = [value];
+        } else {
+            x = value;
+        }
+
+        // Don't modify in place
+        x = x.slice(0);
+        
+
+        if(!$.isArray(variation)) {
+            y = [variation];
+        } else {
+            y = variation;
+        }
+
+        
+        for(var i=0; i<x.length; i++) {
+            
+            if(!krusovice.utils.isNumber(y[i])) {
+                throw "Bad variation data " + y + " for parameters " + x;
+            }
+            
+            x[i] += krusovice.utils.splitrnd(y[i]);
+        }
+        
+        if(x.length == 1) {
+            return x[0];
+        } else {
+            return x;
+        }        
+    },
+            
         
     /**
      * Pick a random element in an array
@@ -70,6 +117,10 @@ krusovice.utils = {
         for(i=0; i<elem.animations.length-1; i++) {
         	
         	var anim = elem.animations[i];
+        	
+        	console.log("Got anim");
+        	console.log(anim);
+        	
         	if(timepoint < anim.duration) {
         		method = anim.easing;
         		percents=timepoint/anim.duration;	
@@ -248,7 +299,27 @@ krusovice.utils = {
      */
     grabQuaternionData : function(q) {
         return [q.x, q.y, q.z, q.w];
-    }    
+    },  
+    
+    
+    
+    /**
+     * 
+     */
+    sumScalarOrVector : function(a, b) {
+        var c;
+        
+        if($.isArray(a)) {
+            c = new Array(a.length);
+            for(var i=0; i<c.length; i++) {
+                c[i] = a[i] + b[i];
+            }
+        } else {
+            c = a+b;
+        }
+        
+        return c;
+    }
     
     
 }
