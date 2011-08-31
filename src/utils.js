@@ -9,15 +9,10 @@ var krusovice = krusovice || {};
  * Misc. utility methods used by various modules.
  */
 krusovice.utils = {
-				
-	/* Z parameter to used to fake the object at infinite distance */
-	farAwayZ : 999999999,
-	
-	
+					
 	isNumber : function (n) {
       return !isNaN(parseFloat(n)) && isFinite(n);
     },
-
 
     /**
      * Return random value between -max ... max
@@ -298,7 +293,8 @@ krusovice.utils = {
     
     
     /**
-     * 
+     * Serialize quarternion
+     *
      * @param {THREE.Quaternion} q
      */
     grabQuaternionData : function(q) {

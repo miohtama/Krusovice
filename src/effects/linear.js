@@ -39,6 +39,35 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
   
     prepareAnimationParameters : function(config, source, target, next) {
     },
+    
+
+    /**
+     * Calculate state variables for an animation frame
+     *
+     * @param {Object} Show object being animated
+     *
+     * @param {Object} target Target animation state  
+     *
+     * @param {Object} source Source animation state 
+     *
+     * @param {Number} value current intermediate state 0...1, easing applied 
+     */
+    animate : function(object, target, source, value) {    
+        
+        var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+        
+        // XXX: slerp
+        //var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
+        
+        var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
+        var opacity = source.opacity + (target.opacity-source.opacity)*value;
+                
+        var mesh = object;
+        mesh.setPosition(position[0], position[1], position[2]);
+        mesh.setScale(scale[0], scale[1], scale[2]);
+        
+    }    
+    
           
 });
 

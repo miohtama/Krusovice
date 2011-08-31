@@ -36,6 +36,24 @@ krusovice.Loader.prototype = {
      */
     callback : null,
     
+   
+    /** 
+     * @type Function
+     *
+     * errorCallback(msg) 
+     *
+     * Called when we fail
+     */
+    errorCallback : null,
+    
+    /**
+     * @type String
+     *
+     *
+     * Contains error message if loading has failed somehow
+     */
+    errorMessage : null,
+    
     /**
      * Add elements to load queue counter 
      *
@@ -50,6 +68,9 @@ krusovice.Loader.prototype = {
         value += count;               
         this.totalElementsToLoad += count;
         this.loadElements[name] = value;
+  
+        console.log("Queued resource for loading " + name + " * " + count + " total:" + this.totalElementsToLoad);
+  
     },
 
     getLeftCount : function() {        
@@ -82,6 +103,18 @@ krusovice.Loader.prototype = {
      */
     getProgress : function() {
         return this.nowLoaded / this.totalElementsToLoad;
-    } 
+    },
+    
+    /**
+     * Set a flag all resources could not be loaded.
+     *
+     * @param {String} msg Error message which tells how we failed
+     */
+    setError : function(msg) {
+        this.errorMessage = msg;
+        if(this.errorCallback) {
+            this.errorCallback(msg);
+        }
+    }
     
 }

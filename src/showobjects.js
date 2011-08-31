@@ -49,7 +49,9 @@ krusovice.showobjects.Base.prototype = {
     object : null,
     
     /**
-     * @cfg {Function} Function which is called when async prepare() is ready
+     * @cfg {Function} Function which is called when async prepare() is ready.
+     *
+     * prepareCallback(success, msg). If success is false delegate the error message.
      */
     preparedCallback : null,
 
@@ -163,20 +165,17 @@ krusovice.showobjects.Base.prototype = {
      *  
      *  @param {Number} 0...1 how far the animation has progressed
      */
-    calculateAnimationFrame : function(target, source, value) {
-
-        /*
-    	var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
-    	var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
-    	var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
-    	var opacity = source + (target-source)*value;
-    	    	
-    	mesh = this.object;
-    	mesh.setPosition(position[0], position[1], position[2]);
-    	mesh.setScale(scale[0], scale[1], scale[2]);
-    	
-    	console.log(mesh);
-    	*/
+    calculateAnimationFrame : function(target, source, value) {                
+        var effectId = source.effectType;
+        var effect = krusovice.effects.Manager.get(effectId);
+        
+        if(!effect) {
+            console.error("Animation");
+            console.error(source);
+            throw "Animation had unknown effect:" + effectId;
+        }
+        
+        effect.animate(target, source, value);
     },
     
     wakeUp : function() {
@@ -241,7 +240,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 			this.image = new Image();			
 			load = true;
 		}
-        
+        console.log("Loading image image obj:" + this.data.image + " URL:" + this.data.imageURL);
 	                    
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image);
@@ -249,9 +248,20 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             console.log("Got obj");
             console.log(self.object);
             if(self.prepareCallback) {
-            	self.prepareCallback();
+            	self.prepareCallback(true);
             }
         }   
+        
+        function error() {            
+            
+            var msg = "Failed to load image:" + self.data.imageURL;
+            console.error(msg);
+
+            if(self.prepareCallback) {
+                console.log("Calling error callback");
+                self.prepareCallback(false, msg);
+            }
+        }
         
         // Load image asynchroniously
         if(load) {
@@ -259,8 +269,10 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         		throw "Cannot do asyncrhonous loading unless callback is set";
         	}
         	this.image.onload = imageLoaded;
+        	this.image.onerror = error;
             this.image.src = this.data.imageURL;                            	
         } else {
+            console.log("Was already loaded");
         	imageLoaded();
         }
        

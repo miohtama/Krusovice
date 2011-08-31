@@ -192,12 +192,7 @@ krusovice.effects.Base = {
     init : function() {        
     },
     
-    animate : function() {        
-    },
-    
-    render : function() {        
-    },
-    
+
     /**
      * Get list of parameter ids used for this effect.
      */
@@ -354,6 +349,24 @@ krusovice.effects.Base = {
          
     time : function(startTime, endTime, rhytmAnalysis) {        
     },    
-   
+    
+    /**
+     * Calculate state variables for an animation frame
+     *
+     * @param {Object} Show object being animated
+     *
+     * @param {Object} target Target animation state  
+     *
+     * @param {Object} source Source animation state 
+     *
+     * @param {Number} value current intermediate state 0...1, easing applied 
+     */
+    animate : function(object, target, source, value) {        
+    },
+    
+    render : function() {        
+    }        
+    
+    
 }
 

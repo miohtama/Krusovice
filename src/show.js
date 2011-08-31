@@ -1,3 +1,5 @@
+"use strict";
+
 var krusovice = krusovice || {};
 
 /**
@@ -23,15 +25,14 @@ krusovice.Show = function(cfg) {
         this.loader = new krusovice.Loader();        
     }
     
-    if(!this.elem) {
-        throw "Did not give container element for slideshow";
-    }
 }
 
 krusovice.Show.prototype = {
 
     /**
-     * @cfg {Object} elem jQuery wrapped DOM element which will contain the show 
+     * @cfg {Object} elem jQuery wrapped DOM element which will contain the show. 
+     * 
+     * Can be null for testing (rendering is 100% hidden) 
      */
     elem : null,
 
@@ -149,6 +150,15 @@ krusovice.Show.prototype = {
          *
          */
         "loadend",
+        
+        /**
+         * @event 
+         *
+         * Fired when all resources could not be loaded
+         *
+         */
+        "loaderror",
+        
     ],
     
     /**
@@ -198,30 +208,44 @@ krusovice.Show.prototype = {
      */
     loadResources : function() {
                        
-        $this = $(this);
-            
-        this.prepareTimeline();
-               
+        var $this = $(this);
+                           
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
             
             if(progress >= 1) {
                 this.loaded = true;
+                console.log("Show resources loaded");
                 $this.trigger("loadend");
             }
         }   
         
+        
+        function loaderror(msg) {
+            console.log("Triggering loaderror");
+            $this.trigger("loaderror", [msg]);
+        }
+        
         this.loader.callback = loadcb;
+        this.loader.errorCallback = loaderror;
 
         console.log("Starting loading, total objects " + this.loader.totalElementsToLoad);
                  
         $this.trigger("loadstart");        
-        
-        var self = this;
-        this.animatedObjects.forEach(function(e) {
-            function cb() {
+
+        function cb(success, errorMessage) {
+            if(success) {
                 self.loader.mark("animatedobject", 1);
+            } else {
+                console.log("Got error:" + errorMessage);
+                self.loader.setError(errorMessage);
             }
+        }
+        
+                
+        var self = this;
+                
+        this.animatedObjects.forEach(function(e) {
             e.prepareCallback = cb;
             e.prepare(); 
         });     
@@ -234,8 +258,11 @@ krusovice.Show.prototype = {
     prepareTimeline : function() {        
         
         var self = this;
+        
         this.timeline.forEach(function(e) {            
-            self.animatedObjects.push(self.createAnimatedObject(e));                 
+            var obj = self.createAnimatedObject(e);
+            console.log("Created animated object " + obj);
+            self.animatedObjects.push(obj);                 
             self.loader.add("animatedobject", 1);
         });
     },
@@ -247,8 +274,9 @@ krusovice.Show.prototype = {
                 
         var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
         
-        this.elem.append($canvas);
-        
+        if(this.elem !== null) {
+            this.elem.append($canvas);
+        }        
         this.canvas = $canvas.get(0);
         this.ctx = this.canvas.getContext("2d");
         
@@ -333,11 +361,11 @@ krusovice.Show.prototype = {
     render : function() {                       
         this.currentFrame += 1;
         
-        renderClock = this.getEstimatedClock();
+        var renderClock = this.getEstimatedClock();
         
         this.animateObjects(renderClock);
         
-        // console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
+        //console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);       
         this.renderScene(renderClock);
         this.renderFrameLabel(renderClock); 
@@ -389,7 +417,7 @@ krusovice.Show.prototype = {
      *
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
-    animateObjects : function(renderClock) {
+    renderAnimateObjects : function(renderClock) {
         this.animatedObjects.forEach(function(e) {
         	var state = e.animate(renderClock);
         	// console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);

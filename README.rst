@@ -125,14 +125,15 @@ Command-line
 
 This setup gives you local, instant, continuous integration of Javascript
 unit tests using `JsTestDriver <http://code.google.com/p/js-test-driver/wiki/GettingStarted>`_.
-JSTestDriver is javascript unit test, remote browser controlling and continuous integration framework.
+JSTestDriver is remote browser controlling and continuous integration framework
+for JSUnit unit tests.
 
 We use Python `Watchdog <https://github.com/gorakhargosh/watchdog>`_ 
 to monitor Javascript file save events.
 
 Because Javascript lacks static compile time checks, rigirous unit testing
 is the only way to tame this bastard of Scheme. Especially considering
-that you have to Microsoft legacy devouring you also.
+that you have to Microsoft legacy devouring your code and mind.
         
 What we will accomplish        
 
@@ -147,7 +148,8 @@ with necessary skillz0r.
 
 .. note ::
         
-        JsTestDriver supports other Javascript unit test frameworks too.
+        JsTestDriver supports other Javascript unit test frameworks besides JsUnit.
+        For example, QUnit bindings are available.
 
 Install JsTestDriver::
 
@@ -158,6 +160,9 @@ Install Watchdog (in `virtualenv isolated Python <http://pypi.python.org/pypi/vi
         git clone git://github.com/gorakhargosh/watchdog.git
         cd watchdog
         python setup.py install        
+        
+Create `JsTestDriver.conf file <http://code.google.com/p/js-test-driver/wiki/ConfigurationFile>`_
+telling where to load tests and where to load data.        
 
 Start JsTestDriver as a background process::
 
@@ -204,12 +209,28 @@ Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the f
         # hit CTRL+C to stop Watchdog        
         fg # Bring JsTestDriver process to foreground
         # hit CTRL+C                
+
+Static data
+++++++++++++++
+
+Image files etc. which are exposed to unit tests do not follow the same relative paths
+as they would on the file system, because the test runner URL is clunky.
+
+You use ``serve`` directive in *JsTestDriver.conf* to specify the location
+of static media files::
+
+        serve:
+          - testdata/*
+
+
         
 More info
 
 * http://groups.google.com/group/js-test-driver
 
 * http://code.google.com/p/js-test-driver/wiki/Assertions
+
+* http://startingonsoftware.blogspot.com/2011/02/javascript-headless-unit-testing_15.html
 
 * http://code.google.com/p/js-test-driver/issues/detail?id=263&start=100        
 
@@ -233,6 +254,17 @@ Instructions for Safari, but should apply to other browsers as well.
 * Hit *Rerun last configuration* in *JsTestDriver* view
 
 * Now your browser should stop in the breakpoint
+
+Available test sets
+=================================
+
+Fast (no images, canvas stressing)::
+
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all' 
+
+Render (loads images, renders several frames, async)::
+
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all' 
 
 Documentation
 ---------------

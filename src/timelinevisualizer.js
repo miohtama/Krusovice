@@ -230,8 +230,8 @@ krusovice.TimelineVisualizer.prototype = {
 			for(var l=0; l<length; l++) {
 				var clock = l*this.secondsPerPixel;
 				
-				console.log("Calculating ease for");
-				console.log(elem);
+				//console.log("Calculating ease for");
+				//console.log(elem);
 				
 				var animation = krusovice.utils.calculateElementEase(elem, clock);
 				var value;
@@ -321,7 +321,7 @@ krusovice.TimelineVisualizer.prototype = {
 			this.positionIndicator.hide();				
 		}
 		
-		console.log("Position update:" + time);
+		//console.log("Position update:" + time);
 		
 		var x = time / this.secondsPerPixel;
 		
