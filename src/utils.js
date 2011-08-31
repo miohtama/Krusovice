@@ -117,12 +117,16 @@ krusovice.utils = {
         for(i=0; i<elem.animations.length-1; i++) {
         	
         	var anim = elem.animations[i];
-        	
-        	console.log("Got anim");
-        	console.log(anim);
-        	
+        	        	
         	if(timepoint < anim.duration) {
+        		
         		method = anim.easing;
+        		
+        		if(!method) {
+        		    console.error(anim);
+                    throw "Animation missing easing info";
+        		}
+        		
         		percents=timepoint/anim.duration;	
 
         		return {

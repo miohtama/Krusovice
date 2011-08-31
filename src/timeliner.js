@@ -408,6 +408,7 @@ krusovice.Timeliner.prototype = {
 		
 		currentAnimation.type = animationType;
 		currentAnimation.effectType = effect.id;
+		currentAnimation.easing = effect.getEasing(this.effectConfig, source);
 						
 		if(animationType == "transitionin") {
 			// Set initial parameters

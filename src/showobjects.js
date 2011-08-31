@@ -165,6 +165,7 @@ krusovice.showobjects.Base.prototype = {
      */
     calculateAnimationFrame : function(target, source, value) {
 
+        /*
     	var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
     	var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
     	var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
@@ -175,6 +176,7 @@ krusovice.showobjects.Base.prototype = {
     	mesh.setScale(scale[0], scale[1], scale[2]);
     	
     	console.log(mesh);
+    	*/
     },
     
     wakeUp : function() {

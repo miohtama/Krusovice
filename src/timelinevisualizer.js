@@ -230,6 +230,8 @@ krusovice.TimelineVisualizer.prototype = {
 			for(var l=0; l<length; l++) {
 				var clock = l*this.secondsPerPixel;
 				
+				console.log("Calculating ease for");
+				console.log(elem);
 				
 				var animation = krusovice.utils.calculateElementEase(elem, clock);
 				var value;
