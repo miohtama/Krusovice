@@ -208,7 +208,12 @@ Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the f
 
         # hit CTRL+C to stop Watchdog        
         fg # Bring JsTestDriver process to foreground
-        # hit CTRL+C                
+        # hit CTRL+C        
+        
+You might need to also increase the default Java heap site if you get out of memory errors::
+
+        java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+                        
 
 Static data
 ++++++++++++++
@@ -222,9 +227,9 @@ of static media files::
         serve:
           - testdata/*
 
-
         
 More info
+++++++++++++
 
 * http://groups.google.com/group/js-test-driver
 

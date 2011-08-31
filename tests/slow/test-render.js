@@ -51,6 +51,7 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
         });
                 
         $(show).bind("loadend", function() {
+            console.log("loadend");
             onloaded()
         });
         
@@ -70,7 +71,7 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
 
         console.log("Step 2");
 
-        assertTrue(show.loaded, "Show loaded");      
+        assertTrue(show.loaded);      
 
         assertEquals(2, show.animatedObjects.length);      
 

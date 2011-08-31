@@ -209,12 +209,13 @@ krusovice.Show.prototype = {
     loadResources : function() {
                        
         var $this = $(this);
+        var self = this;
                            
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
             
             if(progress >= 1) {
-                this.loaded = true;
+                self.loaded = true;
                 console.log("Show resources loaded");
                 $this.trigger("loadend");
             }
@@ -242,9 +243,7 @@ krusovice.Show.prototype = {
             }
         }
         
-                
-        var self = this;
-                
+                               
         this.animatedObjects.forEach(function(e) {
             e.prepareCallback = cb;
             e.prepare(); 
@@ -363,7 +362,7 @@ krusovice.Show.prototype = {
         
         var renderClock = this.getEstimatedClock();
         
-        this.animateObjects(renderClock);
+        this.renderAnimateObjects(renderClock);
         
         //console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);       

@@ -368,7 +368,13 @@ $.extend(krusovice.showobjects.TextFrame.prototype, {
      */
     framed : null,
     
-    prepare : function() {                
+    prepare : function() { 
+        
+        console.log("Prepare TextFrame");
+        // Nothing to load
+        if(this.prepareCallback) {
+            this.prepareCallback(true);
+        }               
     },
  
     /**
