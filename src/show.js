@@ -39,7 +39,7 @@ krusovice.Show.prototype = {
     /**
      * @cfg {Array} timeline Timeline of {krusovice.TimelineElement} elements 
      */
-    timeline : [],
+    timeline : null,
 
     /**
      * @cfg {Number} width Show width in pixels
@@ -109,7 +109,7 @@ krusovice.Show.prototype = {
     /**
      * List of animated objects in this show
      */
-    animatedObjects : [],
+    animatedObjects : null,
         
     /**
      * <canvas> used as the main output element
@@ -210,6 +210,9 @@ krusovice.Show.prototype = {
                        
         var $this = $(this);
         var self = this;
+        
+        console.error("src");
+        console.error(this.animatedObjects);        
                            
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
@@ -243,11 +246,19 @@ krusovice.Show.prototype = {
             }
         }
         
-                               
-        this.animatedObjects.forEach(function(e) {
+        // Some workaround for locating Chrome bug
+        if(this.loader.totalElementsToLoad != this.animatedObjects.length) {
+            console.error("Total mess up");
+            console.error(this.animatedObjects);
+            throw "Now, what the fuck";
+        }
+        
+        for(var i=0; i<this.animatedObjects.length; i++) {
+            console.log("Preparing anim object:" + i);
+            var e = this.animatedObjects[i];
             e.prepareCallback = cb;
-            e.prepare(); 
-        });     
+            e.prepare();             
+        }                               
         
     },
     
@@ -258,12 +269,19 @@ krusovice.Show.prototype = {
         
         var self = this;
         
+        this.animatedObjects = new Array();
+                        
         this.timeline.forEach(function(e) {            
             var obj = self.createAnimatedObject(e);
             console.log("Created animated object " + obj);
             self.animatedObjects.push(obj);                 
             self.loader.add("animatedobject", 1);
         });
+        
+        if(this.timeline.length != this.animatedObjects.length) {
+            console.error("arg");
+            throw "Somehow failed";
+        }
     },
     
     /**

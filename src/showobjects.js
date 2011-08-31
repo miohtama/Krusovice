@@ -175,7 +175,7 @@ krusovice.showobjects.Base.prototype = {
             throw "Animation had unknown effect:" + effectId;
         }
         
-        effect.animate(target, source, value);
+        effect.animate(this.object, target, source, value);
     },
     
     wakeUp : function() {
@@ -228,6 +228,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      * Draw borders around the image.
      */
     prepare : function() {
+
+        console.log("Prepare photo");
 
 		var self = this;
 		var load;

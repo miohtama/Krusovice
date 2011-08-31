@@ -54,6 +54,13 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
      */
     animate : function(object, target, source, value) {    
         
+        /*
+        console.log("Got target");
+        console.log(target);
+        console.log("Got source");
+        console.log(source);
+        */
+       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
         
         // XXX: slerp
@@ -63,8 +70,8 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         var opacity = source.opacity + (target.opacity-source.opacity)*value;
                 
         var mesh = object;
-        mesh.setPosition(position[0], position[1], position[2]);
-        mesh.setScale(scale[0], scale[1], scale[2]);
+        mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
+        mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
         
     }    
     

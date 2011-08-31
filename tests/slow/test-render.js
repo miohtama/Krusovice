@@ -91,7 +91,7 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
 /**
  * Try loading a show which has bad resources and loading should fail
  */
-RenderTest.prototype.ctestRenderBadResource = function(queue) {
+RenderTest.prototype.testRenderBadResource = function(queue) {
 
     var plan = this.createPlan();
     
