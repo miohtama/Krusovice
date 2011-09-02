@@ -339,14 +339,29 @@ krusovice.TimelineVisualizer.prototype = {
 
 /**
  *  Play song over timeline visualization to see if beats match song data 
+ *  
+ *  @param {String|HTMLAudio} src URL to a music or <audio> elem
  */
 krusovice.TimelinePlayer = function(visualization, src) {
-	this.visualization = visualization;
 	
-	// http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video-and-audio/
-	this.audio = document.createElement("audio");
+	this.visualization = visualization;
+		
+	if(typeof(src) == "string") {
+	
+		// http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video-and-audio/
+		this.audio = document.createElement("audio");
+	
+		this.audio.controls = true;
+				
+		this.audio.setAttribute('src', src);
+		
+	} else {
+		this.audio = src;		
+	}
 
-	this.audio.controls = true;
+	if(!this.audio) {
+		throw "Who silenced the stereo?";
+	}
 	
 	$(this.audio).bind("load", function() {
 		console.log("Loaded:" + src);
@@ -355,8 +370,7 @@ krusovice.TimelinePlayer = function(visualization, src) {
 	$(this.audio).bind("Error", function() {
 		console.log("Error:" + src);
 	});
-	
-	this.audio.setAttribute('src', src);
+
 	
 	$(this.audio).bind("timeupdate", $.proxy(this.onTimeUpdate, this));
 	$(this.audio).bind("stop", $.proxy(this.stop, this));
@@ -384,26 +398,46 @@ krusovice.TimelinePlayer.prototype = {
  */
 krusovice.attachSimpleLoadingNote = function(show) {
     
-    var note = $("<div class=loading-note>");
+    var note = $("<div class='loading-note'>");
     
     note.css({
-        position : "relative",
-        bottom : "0"                        
+        position : "absolute",
+        margin : "5px",
+        padding : "5px",
+        background : "white",
+        color : "black",
+        border : "2px solid black",
+        width : "250px",
+        height : "50px"
     });
     
-    var container = $(show.canvas).parent();
     
     $(show).bind("loadstart", function() {
+        var container = $(show.elem).parent();                
         container.append(note);
+        
+        note.offset({
+        	top : container.offset().top + 10,
+        	left : container.offset().left + 10
+        });
+        
     });
 
     $(show).bind("loadprogress", function(progress) {
-        var number = Math.round(progress, 2);
-        note.text("Loading " + number + "%");
+    	if(krusovice.utils.isNumber(progress)) {
+	        var number = Math.round(progress, 2);
+	        note.text("Loading " + number + "%");
+    	}
     }); 
 
+    $(show).bind("loaderror", function(event, msg) {
+        note.text(msg);
+    }); 
+
+    
     $(show).bind("loadend", function() {
         note.remove();
     }); 
+    
 
 }

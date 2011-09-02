@@ -13,13 +13,13 @@ $.extend(krusovice.effects, {
   * it will fill the screen exactly.
   *
   */
- CAMERA_Z : 1,
+ ON_SCREEN_Z : 0,
  
  
  /**
   * Used when zooming out of infinity.
   */
- FAR_Z : -100000,
+ FAR_Z : -10000,
     
 });
 
@@ -64,24 +64,37 @@ krusovice.effects.Manager = {
     /**
      * Get human readable effect list
      *
-     * @param {Boolean} all Set to true to return base classes too 
+     * @param {String} transtion For which registered transition
      *
      * @return [ { id : name}, { id : name} ] 
      */
-    getVocabulary : function(all) {
+    getVocabulary : function(transition) {
         
         var data = [];
-        
-        
-        $.each(this.data, function(id, effect) {
-        
-            if(all || effect.available) {
-                data.push({id:effect.id, name:effect.name});                
+                
+        $.each(this.data, function(id, effect) {        
+            if(effect.available) {        
+            	if($.inArray(effect.transitions, transition)) {            	
+            		data.push({id:effect.id, name:effect.name});        
+            	}
             }       
         });
         
         return data;
-    }    
+    },
+    
+    /**
+     * @return All registered effects for certain transition type
+     */
+    getIds : function(transition) {
+        var data = this.getVocabulary(transition);
+        var d2 = [];        
+        data.forEach(function(e) {d2.push(e.id)});        
+        return d2;
+    	
+    },
+    
+    	
 };
 
 /**
@@ -121,7 +134,7 @@ krusovice.effects.Base = {
      *
      * Animation types for which this effect is available.
      */
-    categories : ["transitionid", "transitionout", "onscreen"],
+    transitions : ["transitionin", "transitionout", "onscreen"],
     
     /**
      * How we will interpolate values from this animation type to the next.

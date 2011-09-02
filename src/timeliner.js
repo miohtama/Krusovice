@@ -396,6 +396,8 @@ krusovice.Timeliner.prototype = {
 	 */
 	prepareEffectParameters : function(animationType, currentAnimation, nextAnimation) {
 		
+		
+		
 		// Get effect
 		var effect = krusovice.effects.Manager.get(currentAnimation.effectType);
 		
@@ -499,15 +501,21 @@ krusovice.Timeliner.prototype = {
 
 /**
  * Shortcut to create a presentation easily.
+ * 
+ * @param settings As described in {@link krusovice#Timeliner} configuration
+ * 
+ * @param elements Array of input blocks
+ * 
+ * @param rhytmData Echo nest API data
  */
-krusovice.Timeliner.createSimpleTimeliner = function(elements, rhytmData) {
+krusovice.Timeliner.createSimpleTimeliner = function(elements, rhytmData, settings) {
     var input = {
             showElements : elements,
             rhytmData : rhytmData,
-            settings : krusovice.Timeliner.defaultSettings,
-            transitionInEffects : ["zoomin"],
-            transitionOutEffects : ["zoomout"],
-            onScreenEffects: ["slightmove"]
+            settings : settings||krusovice.Timeliner.defaultSettings,
+            transitionInEffects : krusovice.effects.Manager.getIds("transitionin"),
+            transitionOutEffects : krusovice.effects.Manager.getIds("transitionout"),
+            onScreenEffects: krusovice.effects.Manager.getIds("onscreen")
     };
     
     return new krusovice.Timeliner(input);

@@ -389,7 +389,8 @@ krusovice.Show.prototype = {
             // Single colour bg
             // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
             ctx.save();
-            ctx.fillStyle = this.plainColor; //"rgba(200,200,200,0.3)";
+            ctx.fillStyle = "#ff00ff";
+            //ctx.fillStyle = this.plainColor; //"rgba(200,200,200,0.3)";
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
         } else if(this.backgroundType == "clear") {
@@ -484,6 +485,10 @@ krusovice.Show.prototype = {
      * @param {HTML5Audio} audio HTML5 audio element / player
      */
     bindToAudio : function(audio) {
+    	
+    	if(!audio) {
+    		throw "You should give that audio element";
+    	}
         
         function onTimeUpdate() {
             var ctime = audio.currentTime;

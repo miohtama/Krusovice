@@ -13,6 +13,8 @@
                 <script src=../src/show.js></script>
                 <script src=../src/loader.js></script>
                 <script src=../src/renderers/three.js></script>
+                <script src=../src/effects/base.js></script>
+                <script src=../src/effects/linear.js></script>
                  
                 <script src=../testdata/simple-plan.js></script>
                 <script src=../testdata/sample-song-data.js></script>
@@ -26,35 +28,61 @@
                         .column {
                                 float: left;
                                 width: 200px;                                
-                        }                          
+                        }                     
+			
+			
+			#show {				
+			     width: 512px;
+			     height: 300px;
+			     float: left;
+			}
+			
+			#visualizer-wrapper {
+				width: 300px;
+				height: 300px;
+				float: left;
+				overflow-x: scroll;
+			}
                 </style>
        	</head>
 	
 	<body>
-		<h1>Mixnap effect browser</h1>
+		<h1>Effect browser</h1>
 
                 <div id=show></div>
-                                
+                <div id=visualizer-wrapper>
+                        <div id=visualizer></div>	
+                </div>
+		
+                <div style="clear:both"><!-- --></div>
+
+                <div id="buttons">
+                        <button type="button" id="reanimate">Go</button>
+                        <audio controls=true id=audio></audio>
+                </div>
+
+					           
                 <div class="column">                
                         <h2>Transition in</h2>
-                        <select id="transition-id">
+                        <select id="transitionin">
                         </select>                        
                 </div>
 
                 <div class="column">                
                         <h2>On screen</h2>
-                        <select id="on-screen">
+                        <select id="onscreen">
                         </select>                        
                 </div>
                 
                 <div class="column">                
                         <h2>Transition out</h2>
-                        <select id="on-screen">
+                        <select id="transitionout">
                         </select>                        
-                </div>              
+                </div>
+		
+		<div style="clear: both"><!-- --></div>              
                 
-                <button name="reanimate">Again!</button>
-                
+		
                 <div style="clear: both"><!-- --></div>  
 
 		

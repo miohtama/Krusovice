@@ -17,7 +17,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     parameters : {
     
         source : {
-            position : [0, 0, krusovice.effects.CAMERA_Z],
+            position : [0, 0, krusovice.effects.ON_SCREEN_Z],
             rotation : [0,0,0, 1],
             opacity : 1,
             scale : [1,1,1],    
@@ -27,7 +27,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         },
         
         target : {
-            position : [0, 0, krusovice.effects.CAMERA_Z],
+            position : [0, 0, krusovice.effects.ON_SCREEN_Z],
             rotation : [0, 0, 0, 1],
             opacity : 1,
             scale : [1,1,1]    
@@ -151,7 +151,7 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     available : true,
     
-    easing : "easeOutCubic",
+    easing : "easeInCubic",
     
     categories : ["transitionout"],
     

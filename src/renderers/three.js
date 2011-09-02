@@ -58,7 +58,7 @@ krusovice.renderers.Three.prototype = {
 	setup : function() {
 	
 		// set some camera attributes
-		var VIEW_ANGLE = 45,
+		var VIEW_ANGLE = 90,
 		    ASPECT = this.width / this.height,
 		    NEAR = 0.1,
 		    FAR = 10000;
@@ -70,7 +70,7 @@ krusovice.renderers.Three.prototype = {
 		                                FAR  );
 		var scene = new THREE.Scene();
 	
-		camera.position.z = 1000;
+		camera.position.z = 150;
 	
 		// start the renderer
 		renderer.setSize(this.width, this.height);
