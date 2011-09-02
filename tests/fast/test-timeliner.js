@@ -13,7 +13,16 @@ TimelinerTest.prototype.testBasicNoMusic = function() {
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 	var plan = timeliner.createPlan();
 	assertEquals(plan.length, 2);
+
+	console.log("Got plan");
+	console.log(plan);
+	assertEquals(krusovice.effects.ZoomIn.easing, plan[0].animations[0].easing);
+	assertEquals("linear", plan[0].animations[1].easing);
+	assertEquals(krusovice.effects.ZoomOut.easing, plan[0].animations[2].easing);
+
 };
+
+
 
 
 /**

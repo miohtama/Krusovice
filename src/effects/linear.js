@@ -12,6 +12,8 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     
     available : false,
     
+    
+    
     parameters : {
     
         source : {
@@ -19,7 +21,6 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
             rotation : [0,0,0, 1],
             opacity : 1,
             scale : [1,1,1],    
-            easing : "linear"
         },
         
         sourceVariation : {            
@@ -111,6 +112,8 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     name : "Zoom In",
     
+    easing : "easeOutCubic",    
+    
     available : true,
     
     categories : ["transitionin"],
@@ -147,6 +150,8 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     name : "Zoom Out",
     
     available : true,
+    
+    easing : "easeOutCubic",
     
     categories : ["transitionout"],
     

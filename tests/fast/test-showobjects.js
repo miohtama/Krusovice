@@ -1,11 +1,11 @@
 'use strict';
 
-var ShowObjectTest = TestCase("ShowObject");
+var ShowObjectsTest = TestCase("ShowObjects");
 
 /**
  * Test that show object animate() goes through states sanely when feed in a clock.
  */
-ShowObjectTest.prototype.testSaneAnimationStates= function() {
+ShowObjectsTest.prototype.testSaneAnimationStates= function() {
 	
 	var init = this.basicSetup();
 	
@@ -21,17 +21,18 @@ ShowObjectTest.prototype.testSaneAnimationStates= function() {
 	
 	assertObject(object.renderer);
 	
-	assertEquals("notyet", object.animate(-1));
-	assertEquals("transitionin", object.animate(0));	
-	assertEquals("onscreen", object.animate(3));
-	assertEquals("transitionout", object.animate(5));	
-	assertEquals("gone", object.animate(10));
+	assertEquals("notyet", object.animate(-1).animation);
+	assertEquals("transitionin", object.animate(0).animation);	
+	assertEquals("onscreen", object.animate(3).animation);
+	assertEquals("transitionout", object.animate(5).animation);	
+	assertEquals("gone", object.animate(10).animation);
 };
+
 
 /**
  * Render transition in frame for an test image element
  */
-ShowObjectTest.prototype.testRenderTransitionIn = function() {
+ShowObjectsTest.prototype.testRenderTransitionIn = function() {
 
 	var init = this.basicSetup();	
 
@@ -44,21 +45,24 @@ ShowObjectTest.prototype.testRenderTransitionIn = function() {
 
 	// Check that we didn't trigger async image loading in tests
 	assertObject(object.image);
-	
+		
 	// Transition in start
-	object.render(0)
+	var state = object.animate(0)
 
+	// Check that we got easing correct
+	assertEquals(krusovice.effects.ZoomIn.easing, state.easing);
+	
 	// Render few frames and assert no exceptions fly
 	var i=0;
 	for(i=0; i<1; i+=0.3) {
-		object.render(0.1)
+		object.animate(0.1)
 	}
 }
 
 /**
  * Create a single timeline element for testing purposes.
  */
-ShowObjectTest.prototype.createTimelineElement = function() {	
+ShowObjectsTest.prototype.createTimelineElement = function() {	
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 	var plan = timeliner.createPlan();
 	
@@ -76,7 +80,8 @@ ShowObjectTest.prototype.createTimelineElement = function() {
 	return plan[0];
 }
 
-ShowObjectTest.prototype.basicSetup = function() {
+
+ShowObjectsTest.prototype.basicSetup = function() {
 	
 	var renderer = new krusovice.renderers.Three({
 		width: 100,

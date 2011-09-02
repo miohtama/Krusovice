@@ -107,6 +107,7 @@ EffectsTest.prototype.testCalculateAnimation = function() {
     position = krusovice.utils.calculateAnimation(target.position, source.position, 1);    
 	assertTrue(krusovice.utils.isNumber(position[0]));
    
-
 }
+
+
           

@@ -19,7 +19,7 @@ $.extend(krusovice.effects, {
  /**
   * Used when zooming out of infinity.
   */
- FAR_Z : 100000,
+ FAR_Z : -100000,
     
 });
 
@@ -339,12 +339,17 @@ krusovice.effects.Base = {
      * @return Easing method name for animating this effect
      */
     getEasing : function(config, source) {
-          var val = this.getParameter("easing", "source", config, source);      
-          if(!val) {
-              console.error(this);
-              throw "Easing not declared";
-          }
-          return val;
+    	
+    	if(source && source.easing) {
+    		return source.easing;
+    	}
+    	
+    	if(config && config.easing) {
+    		return config.easing;
+    	}
+    		
+    	return this.easing;
+    	
     },
          
     time : function(startTime, endTime, rhytmAnalysis) {        

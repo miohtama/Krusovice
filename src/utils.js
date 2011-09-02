@@ -98,7 +98,8 @@ krusovice.utils = {
                     animation : "notyet",
                     current : null,
                     next : null,                    
-                    value : 0
+                    value : 0,
+                    easing : null
             }
         }
         
@@ -128,7 +129,8 @@ krusovice.utils = {
         			animation:anim.type,        			
    		         	value : krusovice.utils.ease(method, percents, 0, 1),
    		         	current : elem.animations[i],
-   		         	next : elem.animations[i+1]
+   		         	next : elem.animations[i+1],
+   		         	easing : method
         		};        		
         	}
         	
@@ -140,7 +142,8 @@ krusovice.utils = {
     	        animation : "gone",
     	        value : 0,
     	        current  : elem[elem.length-1],
-    	        next : null
+    	        next : null,
+    	        easing : null
     	}
     	
     },

@@ -120,7 +120,7 @@ krusovice.showobjects.Base.prototype = {
     	
     	// Don't animate yet - we are waiting for our turn
     	if(animation == "notyet") {
-    		return animation;
+    		return statedata;
     	}
     	    	
     	if(animation != "notyet" && animation != "gone") {
@@ -135,14 +135,14 @@ krusovice.showobjects.Base.prototype = {
 				this.farewell();
 	    	}
 
-			return animation;
+			return statedata;
 		}
 
     	
     	if(!this.object) {
     		// XXX: should not happen - raise exception here
     		// when code is more complete
-    		return animation;
+    		return statedata;
     	}
     	
     	// Calculate animation parameters
@@ -168,7 +168,7 @@ krusovice.showobjects.Base.prototype = {
     	this.animateEffect(target, source, statedata.value);
     	
     	var mesh = this.object;
-		return animation;
+		return statedata;
     	
     },
     

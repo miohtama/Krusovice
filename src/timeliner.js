@@ -408,8 +408,12 @@ krusovice.Timeliner.prototype = {
 		
 		currentAnimation.type = animationType;
 		currentAnimation.effectType = effect.id;
+		
+		console.log("effectConfig");		
 		currentAnimation.easing = effect.getEasing(this.effectConfig, source);
-						
+		console.log("Got easing:"+ currentAnimation.easing);	
+
+		
 		if(animationType == "transitionin") {
 			// Set initial parameters
 			effect.prepareParameters("source", currentAnimation, this.effectConfig, source);
@@ -426,6 +430,8 @@ krusovice.Timeliner.prototype = {
 		if(animationType == "transitionout") {
             effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
 		}
+
+
 	},
 		
 	/**

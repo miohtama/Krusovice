@@ -420,6 +420,7 @@ krusovice.Show.prototype = {
         	return Math.round(x*1000)/1000;
         }
         
+        
         var clock = round(renderClock);
         var external = round(this.clock);
         var sync = round(this.clockUpdated);
