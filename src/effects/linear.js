@@ -54,25 +54,47 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
      */
     animate : function(object, target, source, value) {    
         
+    	
+    	if(!krusovice.utils.isNumber(value)) {
+    		throw "Interpolation step undefined";
+    	}
+    	
         /*
         console.log("Got target");
         console.log(target);
         console.log("Got source");
         console.log(source);
         */
+    	
        
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+
+    	console.log("Animation:" + source.type);    	
+    	console.log("Step:" + value);
+    	//console.log("Source:" + source.position);
+    	//console.log("Target:" + target.position);
+    	//console.log("Position:" + position);
+
         
+        if(!krusovice.utils.isNumber(position[0])) {
+        	throw "Serious fail";
+        }
+          
         // XXX: slerp
         //var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
         
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
         var opacity = source.opacity + (target.opacity-source.opacity)*value;
-                
+        
+        //position = [0,0,1];
+        //scale = [1,1,1];
+        
         var mesh = object;
         mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
         mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
         
+        //console.log("Position:" + position);
+        //console.log("Scale:" + scale);
     }    
     
           

@@ -189,6 +189,10 @@ until the page is closed::
 .. note ::
 
         Google doesn't provide old Chrome downloads. Niiice. 
+        
+Specifically the following browsers failed to produce useable stack traces 
+with JsTestDriver 1.3.2: Firefox 6, Chrome 14, Safari 5.1, Opera 11.50. 
+Pass/fail output still works. 
 
 This magic spell will make Watchdog to rerun tests on file-system changes::
 

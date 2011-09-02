@@ -210,10 +210,7 @@ krusovice.Show.prototype = {
                        
         var $this = $(this);
         var self = this;
-        
-        console.error("src");
-        console.error(this.animatedObjects);        
-                           
+                                   
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);  
             
@@ -246,12 +243,6 @@ krusovice.Show.prototype = {
             }
         }
         
-        // Some workaround for locating Chrome bug
-        if(this.loader.totalElementsToLoad != this.animatedObjects.length) {
-            console.error("Total mess up");
-            console.error(this.animatedObjects);
-            throw "Now, what the fuck";
-        }
         
         for(var i=0; i<this.animatedObjects.length; i++) {
             console.log("Preparing anim object:" + i);
@@ -423,9 +414,19 @@ krusovice.Show.prototype = {
     renderFrameLabel : function(renderClock) {
         // http://diveintohtml5.org/canvas.html#text
         var ctx = this.ctx;
+        // round to 3 decimals
+        
+        function round(x) {
+        	return Math.round(x*1000)/1000;
+        }
+        
+        var clock = round(renderClock);
+        var external = round(this.clock);
+        var sync = round(this.clockUpdated);
+
         ctx.save()
-        ctx.font = "bold 12px sans-serif"
-        ctx.fillText("Rendering frame " + this.currentFrame + " at " + Math.round(renderClock*1000)/1000, 20, 20);
+        ctx.font = "bold 12px sans-serif"       
+        ctx.fillText("Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync, 20, 20);
         ctx.restore();
     },
     
@@ -435,8 +436,10 @@ krusovice.Show.prototype = {
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
     renderAnimateObjects : function(renderClock) {
-        this.animatedObjects.forEach(function(e) {
-        	var state = e.animate(renderClock);
+       
+    	this.animatedObjects.forEach(function(obj) {
+        	var state = obj.animate(renderClock);        	
+        	obj.render();
         	// console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);
         });
     },
@@ -444,7 +447,7 @@ krusovice.Show.prototype = {
     /**
      * Receive clock signal from external source
      *
-     * @param {Number} 
+     * @param {Number} clock Clock signal in seconds
      */
     onClock : function(clock) {        
         this.clock = clock;
@@ -483,7 +486,6 @@ krusovice.Show.prototype = {
         
         function onTimeUpdate() {
             var ctime = audio.currentTime;
-            ctime /= 1000;
             ctime -= this.musicStartTime;
             this.onClock(ctime);
         } 

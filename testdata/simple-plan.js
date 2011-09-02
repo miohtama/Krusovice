@@ -7,7 +7,7 @@ var simpleElements = [
 			id : "mikko-image-0",
 			label : null,
 			duration : 2.0,
-			imageURL : "../testdata/kakku.png"
+			imageURL : "../../testdata/kakku.png"
 		},
 		
 		{

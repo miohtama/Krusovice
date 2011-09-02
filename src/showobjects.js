@@ -85,8 +85,16 @@ krusovice.showobjects.Base.prototype = {
     play : function() {        
     },
     
+    /**
+     * Render the current object.
+     * 
+     * XXX: Three.js maintains scene graph and will render objects automatically
+     */
     render : function() {
-    	// this.renderer.renderObject(this.object);
+    	
+    	// XXX: 
+    	//console.log("render");
+    	//this.renderer.renderObject(this.object);
     },
     
     /**
@@ -103,7 +111,7 @@ krusovice.showobjects.Base.prototype = {
     	    	
     	var relativeClock = clock - this.data.wakeUpTime;
     	
-    	// console.log("Relative clock:" + relativeClock);
+    	console.log("Clock:" + clock + " relative clock:" + relativeClock);
     		
     	// Determine the state of this animation
     	var statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
@@ -149,7 +157,15 @@ krusovice.showobjects.Base.prototype = {
     		throw "Target animation state missing:" + animation;;
     	}    	
     	
-    	this.calculateAnimationFrame(target, source, animation.value);
+    	if(!krusovice.utils.isNumber(statedata.value)) {
+    		console.error(statedata);
+    		console.error(animation);
+    		console.error(source);
+    		console.error(target);
+    		throw "Failed to calculate animation step";
+    	}
+    	
+    	this.animateEffect(target, source, statedata.value);
     	
     	var mesh = this.object;
 		return animation;
@@ -165,7 +181,7 @@ krusovice.showobjects.Base.prototype = {
      *  
      *  @param {Number} 0...1 how far the animation has progressed
      */
-    calculateAnimationFrame : function(target, source, value) {                
+    animateEffect : function(target, source, value) {                
         var effectId = source.effectType;
         var effect = krusovice.effects.Manager.get(effectId);
         
