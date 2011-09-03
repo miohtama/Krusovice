@@ -325,11 +325,22 @@ krusovice.TimelineVisualizer.prototype = {
 		
 		var x = time / this.secondsPerPixel;
 		
+		var parent = this.positionIndicator.parent().parent();
+		var poffset = parent.offset();
+		
+		var clip = "rect(" + poffset.top + "px " +
+			(poffset.left + parent.width()) + "px " +
+			(poffset.top + parent.height()) + "px " +
+			poffset.left + "px)";
+		
+		console.log(clip)
+
+		this.positionIndicator.css("clip", clip);
+		
 		// Draw marker as styled div over the parent elem
 		this.positionIndicator.css({
-			position : "absolute",
-			left : x + "px",
-			top : this.elem.offset().top,
+			left : x + poffset.left,
+			top : poffset.top,
 			width : "1 px",
 			height : this.elem.height() + "px"
 		});

@@ -6,14 +6,15 @@
 }
 
  .timeline {
+ 	position: relative;
  	height: 40px;
 	border-top: 1px solid #aaa;
 	border-bottom: 1px solid #aaa;
  }
  
  .timeline .label {
-        position: absolute;
-	/*z-inde: 2;/
+        position: relative;
+	/*z-inde: 2;*/
 	float: left;
  }
  
@@ -23,7 +24,8 @@
 
 /* Hide until playback starts */
 .timeline-visualization .position-indicator {
+	position: absolute;
         display: none;
 	border: 0;
-	background: black;	
+	background: black;
 }
