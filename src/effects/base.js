@@ -79,8 +79,9 @@ krusovice.effects.Manager = {
         var data = [];
                 
         $.each(this.data, function(id, effect) {        
-            if(effect.available) {        
-            	if($.inArray(effect.transitions, transition)) {            	
+            if(effect.available) {                    	
+            	console.log("Checking:" + transition + " " + effect.transitions);
+            	if($.inArray(transition, effect.transitions) != -1) {            	
             		data.push({id:effect.id, name:effect.name});        
             	}
             }       
@@ -138,9 +139,13 @@ krusovice.effects.Base = {
     /**
      * @type Array
      *
-     * Animation types for which this effect is available.
+     * Animation types for which this effect is available. 
+     * 
+     * Example:
+     * 
+     *      transition : ["transitionin", "transitionout"]
      */
-    transitions : ["transitionin", "transitionout", "onscreen"],
+    transitions : null,
     
     /**
      * @type String

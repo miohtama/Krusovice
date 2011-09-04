@@ -11,9 +11,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     name : "Interpolate",
     
     available : false,
-    
-    
-    
+        
     parameters : {
     
         source : {
@@ -116,7 +114,7 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     available : true,
     
-    categories : ["transitionin", "transitionout"],
+    transitions : ["transitionin", "transitionout"],
         
     init : function() {
         // Override default animation parameters
@@ -136,7 +134,7 @@ krusovice.effects.RotoZoomIn = $.extend(true, {}, krusovice.effects.Interpolate,
     
     available : true,
     
-    categories : ["transitionin"],    
+    transitions : ["transitionin"],    
     
     
 });
@@ -153,7 +151,7 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     easing : "easeInCubic",
     
-    categories : ["transitionin", "transitionout"],
+    transitions : ["transitionin", "transitionout"],
     
     init : function() {
         // Override default animation parameters
@@ -176,7 +174,7 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
     
     available : true,
     
-    categories : ["onscreen"],
+    transitions : ["onscreen"],
     
     init : function() {
         // Override default animation parameters
@@ -200,7 +198,7 @@ krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpola
     
     available : true,
     
-    categories : ["onscreen"],
+    transitions : ["onscreen"],
          
     init : function() {
         this.parameters.source.angle = 0;

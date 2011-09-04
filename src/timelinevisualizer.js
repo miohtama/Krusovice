@@ -278,6 +278,7 @@ krusovice.TimelineVisualizer.prototype = {
 			context.restore();
 
 			// Draw animation labels for this element
+			context.save();
 			context.font = "10px sans-serif"    
 			context.strokeStyle = "#000000";
 			x = startX;
@@ -288,6 +289,7 @@ krusovice.TimelineVisualizer.prototype = {
 				context.fillText(label, x, 10);
 				x += anim.duration / this.secondsPerPixel;
 			}
+			context.restore();
 			
 			this.renderedElements++;
 			
