@@ -64,11 +64,10 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         console.log("Got source");
         console.log(source);
         */
-    	
-       
+    	       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
-    	console.log("Animation:" + source.type);    	
+    	console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse);    	
     	console.log("Step:" + value);
     	//console.log("Source:" + source.position);
     	//console.log("Target:" + target.position);

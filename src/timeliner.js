@@ -13,7 +13,8 @@ var krusovice = krusovice || {};
  * 
  * 
  */
-krusovice.TimelineAnimation = function() {
+krusovice.TimelineAnimation = function(cfg) {
+	$.extend(true, this, cfg);
 }
 
 krusovice.TimelineAnimation.prototype = {
@@ -45,6 +46,15 @@ krusovice.TimelineAnimation.prototype = {
     easing : "linear",	
 	
 	// XXX: Below are overridden from effects
+    
+    
+    /**
+     * Are we running the effect backwards (transition out).
+     * 
+     * This flag should not be used by calculations (they just reverse source and target parameters)
+     * and this flag is just for testing and debugging purposes only.
+     */
+    reverse : false,
 
     /**
      * Effect hint parameters for this animation.
@@ -308,29 +318,29 @@ krusovice.Timeliner.prototype = {
 	
 		out.animations = [
 		     // transition in
-		     {
+		     new krusovice.TimelineAnimation({
 		    	 	type : "transitionin",
 					duration : hitsScreen - clock					
-			 },
+			 }),
 			 
 			 // on screen
-			 {
+			 new krusovice.TimelineAnimation({
 				 	type : "onscreen",
 					duration : hitsOut - hitsScreen
-			 }, 
+			 }), 
 
 			 // transition out
-			 {
+			 new krusovice.TimelineAnimation({
 				 	type : "transitionout",
 					duration : transitionOut.duration	
-			 }, 			 
+			 }), 			 
 
 
 			 // gone
-			 {
+			 new krusovice.TimelineAnimation({
 				 	type : "gone",
 					duration : 0
-			 }, 			 
+			 }), 			 
 
 			 
 		]
@@ -395,9 +405,7 @@ krusovice.Timeliner.prototype = {
 	 *
 	 */
 	prepareEffectParameters : function(animationType, currentAnimation, nextAnimation) {
-		
-		
-		
+				
 		// Get effect
 		var effect = krusovice.effects.Manager.get(currentAnimation.effectType);
 		
@@ -414,7 +422,6 @@ krusovice.Timeliner.prototype = {
 		console.log("effectConfig");		
 		currentAnimation.easing = effect.getEasing(this.effectConfig, source);
 		console.log("Got easing:"+ currentAnimation.easing);	
-
 		
 		if(animationType == "transitionin") {
 			// Set initial parameters
@@ -432,6 +439,7 @@ krusovice.Timeliner.prototype = {
 		if(animationType == "transitionout") {						
 			if(effect.reverseOut) {
 				// Run effect backwards on transition out
+				currentAnimation.reverse = true;
 				effect.prepareParameters("target", nextAnimation, this.effectConfig, target);			
 			} else {
 				// XXX: Should not really happen
