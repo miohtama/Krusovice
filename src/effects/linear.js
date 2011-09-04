@@ -1,4 +1,4 @@
-
+"use strict";
 /**
  * 
  *
@@ -58,12 +58,12 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     		throw "Interpolation step undefined";
     	}
     	
-        /*
+        
         console.log("Got target");
         console.log(target);
         console.log("Got source");
         console.log(source);
-        */
+        
     	       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
@@ -76,19 +76,20 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         if(!krusovice.utils.isNumber(position[0])) {
         	throw "Serious fail";
         }
-          
-        // XXX: slerp
-        //var rotation = krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
+                  
         
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
         var opacity = source.opacity + (target.opacity-source.opacity)*value;
         
-        //position = [0,0,1];
-        //scale = [1,1,1];
-        
         var mesh = object;
         mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
         mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
+
+        // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
+        var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
+        var qb = new THREE.Quaternion(target.rotation[0], target.rotation[1], target.rotation[2], target.rotation[3]);
+
+        THREE.Quaternion.slerp(qa, qb, mesh.quaternion, value);
         
         //console.log("Position:" + position);
         //console.log("Scale:" + scale);
@@ -207,7 +208,7 @@ krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpola
     
     prepareParameters : function(parametersSlot, obj, config, source) {        
 
-        this.initParameters(parametersSlot, obj, config, source)
+        this.initParameters(parametersSlot, obj, config, source);       
 
         var r, q;
         
@@ -226,6 +227,51 @@ krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpola
 
 krusovice.effects.Manager.register(krusovice.effects.SlightRotateZ);
 
+/**
+ * Flip photo 90 degrees around random XY-axis.
+ */
+krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.Interpolate, {
+    
+    id : "flip",
+    
+    name : "Flip",
+    
+    available : true,
+    
+    transitions : ["transitionin", "transitionout"],
+    
+    init : function() {
+		var p = this.parameters;
+		p.source.axis = [0,0,0];
+		p.source.angle = Math.PI/2;
+		p.sourceVariation.axis = [krusovice.utils.splitrnd(1), krusovice.utils.splitrnd(1), 0];
+		p.target.axis = [0,0,0];
+		p.targetVariation.axis = [0,0,0];
+		p.target.angle = 0;
+	},
+    
+    prepareParameters : function(parametersSlot, obj, config, source) {    	
+		
+		// Initialize default positions and such
+		this.initParameters(parametersSlot, obj, config, source);
+		
+		// Choose random axis on X % Y plane	
+		var axis = this.randomizeParameter("axis", parametersSlot, config, source);
+		var angle = this.randomizeParameter("angle", parametersSlot, config, source);
+		
+		console.log("Got axis/angle " + parametersSlot + " axis:" + axis + " angle:" + angle);
+		var v = new THREE.Vector3(axis[0], axis[1], axis[2]);
+		
+		v = v.normalize();
+		
+        var q = (new THREE.Quaternion()).setFromAxisAngle(v, angle);
+        
+        obj.rotation = krusovice.utils.grabQuaternionData(q);   
+		
+	}   
+    
+});
 
+krusovice.effects.Manager.register(krusovice.effects.Flip);
 
 

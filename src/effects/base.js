@@ -80,7 +80,7 @@ krusovice.effects.Manager = {
                 
         $.each(this.data, function(id, effect) {        
             if(effect.available) {                    	
-            	console.log("Checking:" + transition + " " + effect.transitions);
+            	//console.log("Checking:" + transition + " " + effect.transitions);
             	if($.inArray(transition, effect.transitions) != -1) {            	
             		data.push({id:effect.id, name:effect.name});        
             	}
@@ -175,6 +175,10 @@ krusovice.effects.Base = {
      * Usually effects declare only source parameters, as the target is the source of the next animation.
      * However the exception is *onscreen* animation, as it will be usually matched to beat at the
      * beginning and the end of animation.
+     * 
+     * XXX XX (needed anymore?) Parameter name starting with underscore (_) are only used during init() and prepareParameters().
+     * They do not actually take part of the animation calculations itself, but are only source data
+     * to derive actual animation parameters (e.g. _axis and _angle for rotation quarternion).
      *
      */
     parameters : {
@@ -231,8 +235,10 @@ krusovice.effects.Base = {
      */
     getParameterNames : function(parametersSlot) {
         var names = [];
+        
         $.each(this.parameters[parametersSlot], function(key, val) {
-            names.push(key);
+        	
+        	names.push(key);
         });
         
         return names;       

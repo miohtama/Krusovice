@@ -101,6 +101,7 @@ krusovice.renderers.Three.prototype = {
 		var mesh = new THREE.Mesh( plane, material );
 		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.5;
 		mesh.overdraw = true;
+		mesh.useQuaternion = true;
 		
 		return mesh;
 	},

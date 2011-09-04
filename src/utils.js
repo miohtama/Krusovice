@@ -226,11 +226,13 @@ krusovice.utils = {
     calculateAnimation : function(target, source, scale) {
     	
     	if(!$.isArray(target)) {
+    		console.error(target);
     		throw  "Bad target";
     	}
 
     	if(!$.isArray(source)) {
-    		throw  "Bad source";
+    		console.error(source);
+    		throw  "Bad source array";
     	}
 
     	

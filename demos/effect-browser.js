@@ -1,10 +1,44 @@
 "use strict";
-/**
- * Effect browser UI layer
- */
 
+/**
+ * Effect browser UI.
+ * 
+ * For quick testing you can enter effect ids as URL parameters:
+ * 
+ *      file:///Users/moo/git/Krusovice/demos/effect-browser.html?transitionin=flip&transitionout=flip
+ *      
+ */
 var effectbrowser = {
-	
+
+   /**
+	* Read URL parameters to dict.
+	*
+	* See: http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+	*/
+    splitURLParameters : function (aURL) {
+        
+        if(!aURL) {
+            aURL = window.location.href;
+        }
+                
+        var vars = {}, hash;
+
+        if(aURL.indexOf("#") >= 0 ){
+            aURL = aURL.slice(0,aURL.indexOf("#"));
+        }
+        var hashes = aURL.slice(aURL.indexOf('?') + 1).split('&');
+        
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            //vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        
+        return vars;
+    },
+		    		
+		
 	/**
 	 * Regenerate timeline based on the new choices made in the editor.
 	 */
@@ -30,17 +64,17 @@ var effectbrowser = {
 		    musicStartTime : 0,
 		    
 		    transitionIn : {
-		        type : $("#transitionin option:selected").val() ||"zoomin",
-		        duration : 1.0                                             
+		        type : $("#transitionin option:selected").val() || "zoomin",
+		        duration : 3.0                                             
 		    },
 		    
 		    transitionOut : {
-		        type :  $("#transitionout option:selected").val() ||"slightmove",
-		        duration : 1.0          
+		        type :  $("#transitionout option:selected").val() || "slightmove",
+		        duration : 3.0          
 		    },   
 		    
 		    onScreen : {
-		        type : $("#onscreen option:selected").val() ||"zoomout",
+		        type : $("#onscreen option:selected").val() || "zoomout",
 		    }          				
 								
 		};
@@ -107,6 +141,14 @@ var effectbrowser = {
 	 * Fill in effect selectors
 	 */
 	populate : function() {
+				
+		var defaults = this.splitURLParameters();
+		console.log("Got defaults");
+		console.log(defaults);
+				
+		defaults.transitionin = defaults.transitionin||"zoomin";
+		defaults.onscreen = defaults.onscreen||"slightmove";	
+		defaults.transitionout = defaults.transitionout||"zoomin";
 		
 		function fill(id, data) {
 			var sel = $(id);
@@ -114,15 +156,18 @@ var effectbrowser = {
 			var elems = [{id:"random", name:"Random"}] 
 			$.merge(elems, data);   
 			
-			var i = 0;
 			elems.forEach(function(e) {
 				var selected="";
-				i++;
-				if(i == 2) {
+				if(e.id == defaults[id.substring(1)]) {
 					selected="selected"
 				}
 				sel.append("<option " + selected + " value='" + e.id + "'>" + e.name + "</option>");
 			});
+			
+			var def = defaults[id];
+			if(def) {
+				sel.val(def);
+			}
 		}
 		
 		var vocab;
@@ -133,7 +178,6 @@ var effectbrowser = {
 		vocab = krusovice.effects.Manager.getVocabulary("onscreen");
 		fill("#onscreen", vocab);
 		
-
 		vocab = krusovice.effects.Manager.getVocabulary("transitionout");
 		fill("#transitionout", vocab);
 				
