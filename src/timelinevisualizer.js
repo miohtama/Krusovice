@@ -52,6 +52,12 @@ krusovice.TimelineVisualizer.prototype = {
      */
     lineHeight : 80,
     
+    
+    /**
+     * @cfg {Boolean} autoscroll Keep cursor visible all teh time 
+     */
+    autoscroll : true,
+    
     /**
      * @type Number
      * No of rendered  beats (for testing purposes)
@@ -209,13 +215,12 @@ krusovice.TimelineVisualizer.prototype = {
 		for(i=0; i<this.plan.length; i++) {
 			var elem = this.plan[i];
 						
-			// Add 50% alpha
+			// Pick random color with 50% alpha for this element
 			var acolor = krusovice.utils.pickRandomColor(128);
 			context.strokeStyle = acolor;
 			
 			var startX = elem.wakeUpTime / this.secondsPerPixel;
-							
-
+						
 			if(elem.animations.length != 4) {
 				throw "This visualization code can handle animations only with three states: in, screen and out + gone state";
 			}
@@ -227,6 +232,7 @@ krusovice.TimelineVisualizer.prototype = {
 		
 			console.log("Rendering element:" + elem + " x:" + startX + " duration:" + totalDuration + " length:" + length + " color:" + acolor);
 							
+			context.save();
 			for(var l=0; l<length; l++) {
 				var clock = l*this.secondsPerPixel;
 				
@@ -266,6 +272,21 @@ krusovice.TimelineVisualizer.prototype = {
 				context.moveTo(x + 0.5, this.lineHeight - height);
 				context.lineTo(x + 0.5, this.lineHeight);
 				context.stroke();
+
+			
+			}
+			context.restore();
+
+			// Draw animation labels for this element
+			context.font = "10px sans-serif"    
+			context.strokeStyle = "#000000";
+			x = startX;
+			for(l=0; l<elem.animations.length-1; l++) {
+				var anim = elem.animations[l];
+				var label = anim.effectType.toUpperCase();
+				// console.log("rendering anim x:" + x + "  label:" + label);
+				context.fillText(label, x, 10);
+				x += anim.duration / this.secondsPerPixel;
 			}
 			
 			this.renderedElements++;
@@ -326,17 +347,27 @@ krusovice.TimelineVisualizer.prototype = {
 		var x = time / this.secondsPerPixel;
 		
 		var parent = this.positionIndicator.parent().parent();
+				
 		var poffset = parent.offset();
-		
-		var clip = "rect(" + poffset.top + "px " +
-			(poffset.left + parent.width()) + "px " +
-			(poffset.top + parent.height()) + "px " +
-			poffset.left + "px)";
-		
-		console.log(clip)
 
-		this.positionIndicator.css("clip", clip);
+		// Calcualte visible area
+		var cx = parent.scrollLeft();
+		var cx2 = parent.scrollLeft() + parent.width();
+
+		// console.log("cx:" + cx + " cx2:" + cx2);
 		
+		// Do manual clip
+		if(x < cx ||x >= cx2) {
+			this.positionIndicator.hide();
+			if(this.autoscroll) {
+				this.doAutoscroll(x);
+			}
+			return;
+		}
+		
+		x -= cx;
+
+
 		// Draw marker as styled div over the parent elem
 		this.positionIndicator.css({
 			left : x + poffset.left,
@@ -344,6 +375,14 @@ krusovice.TimelineVisualizer.prototype = {
 			width : "1 px",
 			height : this.elem.height() + "px"
 		});
+	},
+	
+	/**
+	 * Put viewport to X position on the timeline
+	 */
+	doAutoscroll : function(x) {
+		var parent = this.positionIndicator.parent().parent();
+		parent.scrollLeft(x);
 	}
 		
 };
