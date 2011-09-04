@@ -53,20 +53,25 @@ var effectbrowser = {
 		this.createShow(baseplan, settings);						
 	},
 	
-	
+	/**
+	 * Reconstruct Show
+	 */
 	createShow : function(input, settings) {
 
         var songURL = "../testdata/sample-song.mp3";
 		
+        // Create timeline
         var timeliner = krusovice.Timeliner.createSimpleTimeliner(input, sampleSongData, settings);
         var plan = timeliner.createPlan();                              
         
+        // Create visualization
         var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:sampleSongData});                                
         var div = document.getElementById("visualizer");                               
         visualizer.secondsPerPixel = 0.02;
         visualizer.lineLength = 2000;				        
         visualizer.render(div);          
         
+        // Set song on <audio>
         var audio = document.getElementById("audio");
         audio.setAttribute("src", songURL);
         
@@ -81,7 +86,10 @@ var effectbrowser = {
                 elem : $("#show")                                                                                
         };
         
+        // Create show
         var show = new krusovice.Show(cfg);
+        
+        // Make show to use clock and events from <audio>
         show.bindToAudio(player.audio);   
         
         krusovice.attachSimpleLoadingNote(show);                                                                                                                                
@@ -90,7 +98,8 @@ var effectbrowser = {
         $(show).bind("loadend", function() {
         	audio.play();
         });
-        
+                
+        // Start loading show resources
         show.prepare();
 		
 	},
@@ -106,8 +115,14 @@ var effectbrowser = {
 			var elems = [{id:"random", name:"Random"}] 
 			$.merge(elems, data);   
 			
+			var i = 0;
 			elems.forEach(function(e) {
-				sel.append("<option value='" + e.id + "'>" + e.name + "</option>");
+				var selected="";
+				i++;
+				if(i == 2) {
+					selected="selected"
+				}
+				sel.append("<option " + selected + " value='" + e.id + "'>" + e.name + "</option>");
 			});
 		}
 		
@@ -118,6 +133,7 @@ var effectbrowser = {
 		
 		vocab = krusovice.effects.Manager.getVocabulary("onscreen");
 		fill("#onscreen", vocab);
+		
 
 		vocab = krusovice.effects.Manager.getVocabulary("transitionout");
 		fill("#transitionout", vocab);

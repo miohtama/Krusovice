@@ -75,8 +75,6 @@ EffectsTest.prototype.testTransitionOutParameters = function() {
 };
 
 
-
-
 /**
  * Stress animation interpolate function
  */

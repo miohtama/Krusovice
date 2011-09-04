@@ -59,6 +59,8 @@ ShowObjectsTest.prototype.testRenderTransitionIn = function() {
 	}
 }
 
+
+
 /**
  * Create a single timeline element for testing purposes.
  */
