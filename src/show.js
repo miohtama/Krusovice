@@ -366,6 +366,15 @@ krusovice.Show.prototype = {
         }         
     },
     
+    /**
+     * Request rendering.
+     * 
+     * Can be manually called after onClock(). Automatically called when playing.
+     */
+    requestAnimationFrame : function() {
+        krusovice.utils.requestAnimationFrame($.proxy(this.render, this), this.canvas);    	
+    },
+    
     render : function() {                       
         this.currentFrame += 1;
         
@@ -453,7 +462,7 @@ krusovice.Show.prototype = {
      */
     onClock : function(clock) {        
         this.clock = clock;
-        if(this.realtime) {
+        if(this.realtime && this.playing) {
             this.clockUpdated = (new Date().getTime()) / 1000;
         }
     },
@@ -466,13 +475,21 @@ krusovice.Show.prototype = {
     getEstimatedClock : function() {
         var now = (new Date().getTime()) / 1000;
         
-        if(this.realtime) {
+        if(this.realtime && this.playing) {
+        	// We can calculate estimation only if we are in continuous playback mode
+        	// and not e.g. on seek
             return this.clock + (now - this.clockUpdated);
         } else {
             return this.clock;
         }
     },
 
+    /**
+     * We are forcing in new clock signal and all real-time clock calculations should be reseted.
+     */
+    resetClock : function() {
+    	this.clockUpdated = null;
+    },
 
     
     
@@ -491,15 +508,43 @@ krusovice.Show.prototype = {
     	}
         
         function onTimeUpdate() {
+        	        	
+        	console.log("timeupdate");
+        	
             var ctime = audio.currentTime;
             ctime -= this.musicStartTime;
             this.onClock(ctime);
+            
+            // Send in render event if we are not in playback mode
+            // to visualize the current position on audio
+            if(!this.playing) {
+            	console.log("forcing rendering");
+            	this.resetClock();
+            	this.requestAnimationFrame();
+            }              
         } 
         
         // 
         $(audio).bind("timeupdate", $.proxy(onTimeUpdate, this));
         $(audio).bind("play", $.proxy(this.play, this));
         $(audio).bind("pause", $.proxy(this.stop, this));
+
+        
+        // User has moved time slider in Audio
+        /*
+        function onSeekEnd() {
+            var ctime = audio.currentTime;
+            ctime -= this.musicStartTime;
+            this.onClock(ctime);
+            
+            console.log("seekend");
+            
+          
+        }                
+        $(audio).bind("seekend", $.proxy(onSeekEnd, this));
+        */
+        
+
         
         /*
          * HAVE_NOTHING (0) No data available
