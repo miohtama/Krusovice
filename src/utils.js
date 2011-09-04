@@ -125,9 +125,19 @@ krusovice.utils = {
         		
         		percents=timepoint/anim.duration;	
 
+        		if(elem.animations[i].reverse) {
+        			percents = 1 - percents;
+        		}
+        		
+        		var value = krusovice.utils.ease(method, percents, 0, 1);
+
+        		if(elem.animations[i].reverse) {
+        			value = 1 - value;
+        		}
+      
         		return {
         			animation:anim.type,        			
-   		         	value : krusovice.utils.ease(method, percents, 0, 1),
+   		         	value : value,
    		         	current : elem.animations[i],
    		         	next : elem.animations[i+1],
    		         	easing : method

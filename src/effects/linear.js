@@ -147,7 +147,7 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     available : true,
     
-    easing : "easeInCubic",
+    easing : "easeOutCubic",
     
     transitions : ["transitionin", "transitionout"],
     
@@ -176,7 +176,7 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
     
     init : function() {
         // Override default animation parameters
-        var r = 0.1;
+        var r = 0.3;
         this.parameters.sourceVariation.position = [r, r, 0];
         this.parameters.targetVariation.position = [r, r, 0];        
     }   

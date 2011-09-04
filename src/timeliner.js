@@ -51,8 +51,8 @@ krusovice.TimelineAnimation.prototype = {
     /**
      * Are we running the effect backwards (transition out).
      * 
-     * This flag should not be used by calculations (they just reverse source and target parameters)
-     * and this flag is just for testing and debugging purposes only.
+     * This flag is used in easing calculations to make sure the 
+     * acceleration for reverse animations is calculated correctly.
      */
     reverse : false,
 
