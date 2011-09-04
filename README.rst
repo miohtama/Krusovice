@@ -198,6 +198,15 @@ This magic spell will make Watchdog to rerun tests on file-system changes::
 
         watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all' 
 
+To run a single test case (e.g. Timeliner)::
+
+        java -jar JsTestDriver-1.3.2.jar --captureConsole --tests Timeliner
+
+To run a single test::
+
+        java -jar JsTestDriver-1.3.2.jar --tests Timeliner.testBasicNoMusic
+
+
 Save any *.js* file, watchmedo notices and runs the tests.
 
 Use ``--captureConsole`` to control whether you want to see console output in the terminal

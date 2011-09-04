@@ -49,8 +49,6 @@ EffectsTest.prototype.testTransitionInParameters = function() {
     // far z
     assertTrue(params.position[2] > 10);            
 
-    assertEquals("linear", params.easing);            
-
 
 };
 
@@ -63,7 +61,7 @@ EffectsTest.prototype.testTransitionOutParameters = function() {
     var effect = krusovice.effects.Manager.get("zoomout");
     var params = {};
     
-    effect.prepareParameters("target", params, {}, {});
+    effect.prepareParameters("source", params, {}, {});
     
     // x
     assertEquals(0, params.position[0]);
@@ -72,7 +70,7 @@ EffectsTest.prototype.testTransitionOutParameters = function() {
     assertEquals(0, params.position[1]);            
 
     // far z
-    assertTrue(params.position[2] > 10);            
+    assertTrue(params.position[2] < 0);            
 
 };
 

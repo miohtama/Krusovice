@@ -116,11 +116,11 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     available : true,
     
-    categories : ["transitionin"],
+    categories : ["transitionin", "transitionout"],
         
     init : function() {
         // Override default animation parameters
-        this.parameters.source.position = [0, 0, krusovice.effects.FAR_Z];
+        this.parameters.source.position = [0, 0, krusovice.effects.BEHIND_CAMERA_Z];
     }
         
 });
@@ -153,11 +153,11 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     easing : "easeInCubic",
     
-    categories : ["transitionout"],
+    categories : ["transitionin", "transitionout"],
     
     init : function() {
         // Override default animation parameters
-        this.parameters.target.position = [0, 0, krusovice.effects.FAR_Z];
+        this.parameters.source.position = [0, 0, krusovice.effects.FAR_Z];
     }    
     
 });

@@ -429,8 +429,14 @@ krusovice.Timeliner.prototype = {
 
 		}
 		
-		if(animationType == "transitionout") {
-            effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
+		if(animationType == "transitionout") {						
+			if(effect.reverseOut) {
+				// Run effect backwards on transition out
+				effect.prepareParameters("target", nextAnimation, this.effectConfig, target);			
+			} else {
+				// XXX: Should not really happen
+				effect.prepareParameters("source", nextAnimation, this.effectConfig, target);							
+			}
 		}
 
 
@@ -533,12 +539,12 @@ krusovice.Timeliner.defaultSettings = {
     musicStartTime : 0,
     
     transitionIn : {
-        type : "random",
+        type : "zoomin",
         duration : 2.0,                                                
     },
     
     transitionOut : {
-        type : "random",
+        type : "zoomout",
         duration : 2.0,          
         clockSkip : 0.0 // How many seconds we adjust the next object coming to the screen
     },   

@@ -20,6 +20,12 @@ $.extend(krusovice.effects, {
   * Used when zooming out of infinity.
   */
  FAR_Z : -10000,
+ 
+ 
+ /**
+  * The object is behind camera (but will zoom in)
+  */
+ BEHIND_CAMERA_Z : 1000,
     
 });
 
@@ -137,11 +143,20 @@ krusovice.effects.Base = {
     transitions : ["transitionin", "transitionout", "onscreen"],
     
     /**
+     * @type String
+     * 
      * How we will interpolate values from this animation type to the next.
      *
      * One of options given by {@link krusovice.utils#ease} 
      */
     easing : "linear",
+    
+    /**
+     * @type Boolean
+     * 
+     * Run animation backwards when transition out effects
+     */
+    reverseOut : true,
             
     /**
      * @type Object
