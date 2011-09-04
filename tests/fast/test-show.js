@@ -42,9 +42,25 @@ ShowTest.prototype.testReverseAnimation = function() {
 
 	// See that state looks sane
 	console.log(state);
+		
+	// We are running effect backwards (transition out)
+	assertTrue(state.current.reverse);
+
+	assertEquals("transitionout", state.animation);
+	assertEquals("zoomout", state.current.effectType);
+	
+	// Check that this orignally was defined as reverse effect
+	var effect = krusovice.effects.Manager.get(state.current.effectType);
+	assertTrue(effect.reverseOut);
 	
 	// Fading away
 	assertTrue(state.value < 0.7);
+	
+	// Assume the source Z is on the viewing plane
+	assertEquals(state.current.position[2], 0);
+
+	// Assume the target Z is not on the viewing plane (should be far z)
+	assertEquals(krusovice.effects.FAR_Z, state.next.position[2]); 
 	
 	// Pick two Z values to compare
 	

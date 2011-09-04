@@ -440,10 +440,10 @@ krusovice.Timeliner.prototype = {
 			if(effect.reverseOut) {
 				// Run effect backwards on transition out
 				currentAnimation.reverse = true;
-				effect.prepareParameters("target", nextAnimation, this.effectConfig, target);			
+				effect.prepareParameters("source", nextAnimation, this.effectConfig, source);			
 			} else {
-				// XXX: Should not really happen
-				effect.prepareParameters("source", nextAnimation, this.effectConfig, target);							
+				// XXX: Should not really happen?
+				effect.prepareParameters("target", nextAnimation, this.effectConfig, target);							
 			}
 		}
 

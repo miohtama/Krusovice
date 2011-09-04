@@ -67,11 +67,10 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     	       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
-    	console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse);    	
-    	console.log("Step:" + value);
-    	//console.log("Source:" + source.position);
-    	//console.log("Target:" + target.position);
-    	//console.log("Position:" + position);
+    	console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);    	
+    	console.log("Source:" + source.position);
+    	console.log("Target:" + target.position);
+    	console.log("Position:" + position);
 
         
         if(!krusovice.utils.isNumber(position[0])) {
@@ -178,8 +177,8 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
     init : function() {
         // Override default animation parameters
         var r = 0.1;
-        this.parameters.sourceVariation.position = [r, r, r];
-        this.parameters.targetVariation.position = [r, r, r];        
+        this.parameters.sourceVariation.position = [r, r, 0];
+        this.parameters.targetVariation.position = [r, r, 0];        
     }   
     
 });

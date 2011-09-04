@@ -14,7 +14,7 @@ var effectbrowser = {
 		var baseelem = {				
 			type : "image",
 			label : null,
-			duration : 4.0,
+			duration : 1.5,
 			imageURL : "../testdata/kakku.png"			
 		};
 		
@@ -31,17 +31,16 @@ var effectbrowser = {
 		    
 		    transitionIn : {
 		        type : $("#transitionin option:selected").val() ||"zoomin",
-		        duration : 2.0                                             
+		        duration : 1.0                                             
 		    },
 		    
 		    transitionOut : {
 		        type :  $("#transitionout option:selected").val() ||"slightmove",
-		        duration : 6.0          
+		        duration : 1.0          
 		    },   
 		    
 		    onScreen : {
 		        type : $("#onscreen option:selected").val() ||"zoomout",
-		        duration : 2.0
 		    }          				
 								
 		};
