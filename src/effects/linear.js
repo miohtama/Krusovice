@@ -242,9 +242,9 @@ krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.Interpolate, {
     
     init : function() {
 		var p = this.parameters;
-		p.source.axis = [0,0,0];
+		p.source.axis = [0,1,0];
 		p.source.angle = Math.PI/2;
-		p.sourceVariation.axis = [krusovice.utils.splitrnd(1), krusovice.utils.splitrnd(1), 0];
+		//p.sourceVariation.axis = [krusovice.utils.splitrnd(1), krusovice.utils.splitrnd(1), 0];
 		p.target.axis = [0,0,0];
 		p.targetVariation.axis = [0,0,0];
 		p.target.angle = 0;

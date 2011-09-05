@@ -307,6 +307,19 @@ More info
 
 * https://github.com/nene/jsduck
 
+Release
+---------
+
+To run the most fucked up release script ever::
+
+        wget http://yui.zenfs.com/releases/yuicompressor/yuicompressor-2.4.6.zip
+        unzip yuicompressor-2.4.6.zip 
+        bin/release.py -d build trunk
+        
+.. note ::
+
+        All JS files must terminate with newline or the compressor will complain.        
+      
 Music
 -------
 

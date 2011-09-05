@@ -336,5 +336,5 @@ krusovice.utils = {
         return c;
     }
     
-    
+   
 }

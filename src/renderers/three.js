@@ -64,6 +64,9 @@ krusovice.renderers.Three.prototype = {
 		    FAR = 10000;
 
 		var renderer = new THREE.CanvasRenderer();
+		
+		// var renderer = new THREE.WebGLRenderer();
+		
 		var camera = new THREE.Camera(  VIEW_ANGLE,
 		                                ASPECT,
 		                                NEAR,
