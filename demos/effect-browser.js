@@ -194,11 +194,12 @@ var effectbrowser = {
 
 }
 
+// jQuery will be bootstrap'd dynamically
 
-$(document).ready(function() {    
+document.addEventListener("DOMContentLoaded", function() {    
 	// Dynamically load debug mode Krusovice
 	krusovice.load(function() {
 		effectbrowser.init();
-	});
+	}, true);
 });
                 

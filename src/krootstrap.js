@@ -8,8 +8,17 @@ krusovice.version = "trunk" // $VERSION_LINE
  * Dynamicaly load Krusovice Javascript code for debug mode. 
  * 
  * @param {Function} doneCallback Called after the loading is complete.
+ * 
+ * @param {Boolean} includeDependencies Include dependency libraries also
+ * 
  */
-krusovice.load = function(doneCallback) {
+krusovice.load = function(doneCallback, includeDependencies) {
+
+	var deps = [
+        "../thirdparty/jquery.js",
+        "../thirdparty/jquery.easing.1.3.js",
+        "../thirdparty/Three.js"
+    ]
 	
 	var files = [
 	     "utils.js",
@@ -25,6 +34,14 @@ krusovice.load = function(doneCallback) {
 	     "effects/base.js",
 	     "effects/linear.js"
 	]
+	
+	
+	if(includeDependencies) {		
+		deps.reverse().forEach(function(f) {
+			files.unshift(f);
+		});
+	}
+	        
 	            
 	// Get krusovise/bootstrap.js URL
 	function getMyURL() {
@@ -80,6 +97,7 @@ krusovice.load = function(doneCallback) {
 	var base = getBaseURL(myURL);
 	var head = document.getElementsByTagName("head")[0];
 	var loadCount = 0;
+	var totalCount  = files.length;
 	
 	// Load single script
 	function loadJS(file) {
@@ -97,11 +115,13 @@ krusovice.load = function(doneCallback) {
             
             loadCount += 1;
             console.log("Loaded:" + loadCount + "/" + files.length);
-            if(loadCount >= files.length) {
+            if(loadCount >= totalCount) {
             	console.log("Krusovice loaded");
             	doneCallback();
-            }                
-        }
+            } else {
+            	loadJS(files.shift());	
+            }
+        }                
 
         function heady(script) {
         	
@@ -129,8 +149,7 @@ krusovice.load = function(doneCallback) {
         heady(script);
 	}
 	
-	files.forEach(function(file) {
-		loadJS(file)
-	});
+	loadJS(files.shift());
+	
 		
 }
