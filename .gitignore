@@ -58,3 +58,5 @@ celine.*
 *.jar
 jsduck
 watchdog
+
+yuicompressor-*
