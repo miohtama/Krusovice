@@ -195,7 +195,10 @@ var effectbrowser = {
 }
 
 
-$(document).ready(function() {                                                                                        
-	effectbrowser.init();
+$(document).ready(function() {    
+	// Dynamically load debug mode Krusovice
+	krusovice.load(function() {
+		effectbrowser.init();
+	});
 });
                 
