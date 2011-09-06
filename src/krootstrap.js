@@ -5,7 +5,9 @@ var krusovice = krusovice || {};
 krusovice.version = "trunk" // $VERSION_LINE
 
 /**
- * Dynamicaly load Krusovice Javascript code for debug mode. 
+ * Dynamicaly load Krusovice Javascript code for debug mode (not merged/compressed)
+ * 
+ * Load library own files and dependencies if needed.
  * 
  * @param {Function} doneCallback Called after the loading is complete.
  * 
@@ -14,12 +16,14 @@ krusovice.version = "trunk" // $VERSION_LINE
  */
 krusovice.load = function(doneCallback, includeDependencies) {
 
+        // Someone elses code 
 	var deps = [
         "../thirdparty/jquery.js",
         "../thirdparty/jquery.easing.1.3.js",
         "../thirdparty/Three.js"
-    ]
+        ]
 	
+	// Our code
 	var files = [
 	     "utils.js",
 	     "design.js",
@@ -71,26 +75,26 @@ krusovice.load = function(doneCallback, includeDependencies) {
 	// Get URL folder part
 	function getBaseURL(aUrl) {
 	        
-        var end;
-        var url;
-        
-        end = aUrl.indexOf('?');
-        
-        if(end <= 0) {
-            end = aUrl.length-1;
-        }
-        
-        url = aUrl.slice(0, end);
-        // Ignore slash at the end of url
-        if(url[url.length-1] == "/" ) {
-            url = url.slice(0,url.length-2);
-        }
-        
-        // But add the slash to result for convenient concat
-        end = url.lastIndexOf("/") + 1;
-        url = url.slice(0,end);
-        
-        return url;
+	        var end;
+	        var url;
+	        
+	        end = aUrl.indexOf('?');
+	        
+	        if(end <= 0) {
+	            end = aUrl.length-1;
+	        }
+	        
+	        url = aUrl.slice(0, end);
+	        // Ignore slash at the end of url
+	        if(url[url.length-1] == "/" ) {
+	            url = url.slice(0,url.length-2);
+	        }
+	        
+	        // But add the slash to result for convenient concat
+	        end = url.lastIndexOf("/") + 1;
+	        url = url.slice(0,end);
+	        
+	        return url;
 	}	   
 	
 	var myURL = getMyURL();
@@ -104,52 +108,54 @@ krusovice.load = function(doneCallback, includeDependencies) {
 
 		var url = base + file;
 		 // Using script tag injection to have JS debugger show the source
-        console.log("Injecting <script> tag to load:" + url);
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.setAttribute("src", url);
-        script.src = url;
-        
-        function bump() {
-            console.log("Script onload handler for " + url);
-            
-            loadCount += 1;
-            console.log("Loaded:" + loadCount + "/" + files.length);
-            if(loadCount >= totalCount) {
-            	console.log("Krusovice loaded");
-            	doneCallback();
-            } else {
-            	loadJS(files.shift());	
-            }
-        }                
-
-        function heady(script) {
-        	
-            script.onerror = function(e, a, b, c) {
-            	console.error("Script contained errors:" + url);
-            	console.exception(e);
-            }        	
+	        console.log("Injecting <script> tag to load:" + url);
+	        var script = document.createElement("script");
+	        script.type = "text/javascript";
+	        script.setAttribute("src", url);
+	        script.src = url;
 	        
-	        script.onload = function() { 
-	            if ( ! script.onloadDone ) {
-	                script.onloadDone = true; 
-	                bump(); 
+	        function bump() {
+	            console.log("Script onload handler for " + url);
+	            
+	            loadCount += 1;
+	            console.log("Loaded:" + loadCount + "/" + files.length);
+	            if(loadCount >= totalCount) {
+	            	console.log("Krusovice loaded");
+	            	doneCallback();
+	            } else {
+	            	loadJS(files.shift());	
 	            }
-	        };
-	        script.onreadystatechange = function() { 
-	            if ( ( "loaded" === script.readyState || "complete" === script.readyState ) && ! script.onloadDone ) {
-	            	script.onloadDone = true; 
-	                bump();
-	            }
+	        }                
+	
+	        // Insert script to <head> with proper callbacks
+	        function heady(script) {
+	        	
+	            script.onerror = function(e, a, b, c) {
+	            	console.error("Script contained errors:" + url);
+	            	console.exception(e);
+	            }        	
+		        
+		        script.onload = function() { 
+		            if ( ! script.onloadDone ) {
+		                script.onloadDone = true; 
+		                bump(); 
+		            }
+		        };
+		        script.onreadystatechange = function() { 
+		            if ( ( "loaded" === script.readyState || "complete" === script.readyState ) && ! script.onloadDone ) {
+		            	script.onloadDone = true; 
+		                bump();
+		            }
+		        }
+		        
+		        head.appendChild(script);
 	        }
 	        
-	        head.appendChild(script);
-        }
-        
-        heady(script);
-	}
-	
-	loadJS(files.shift());
-	
+	         heady(script);
+	         	        
+	   }
+	 	
+	   loadJS(files.shift());
+		
 		
 }
