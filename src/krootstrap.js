@@ -114,15 +114,18 @@ krusovice.load = function(doneCallback, includeDependencies) {
 	        script.setAttribute("src", url);
 	        script.src = url;
 	        
+	        // Load next file and incrrease total load count
 	        function bump() {
 	            console.log("Script onload handler for " + url);
 	            
 	            loadCount += 1;
 	            console.log("Loaded:" + loadCount + "/" + files.length);
 	            if(loadCount >= totalCount) {
+	                // All loaded
 	            	console.log("Krusovice loaded");
 	            	doneCallback();
 	            } else {
+	                // Load next file
 	            	loadJS(files.shift());	
 	            }
 	        }                
