@@ -352,6 +352,39 @@ krusovice.Show.prototype = {
         this.playing = false;  
     },
     
+    
+    /**
+     * @return {Number} How many seconds this show is long
+     */
+    getDuration : function() {
+    	var lastElem = this.animatedObjects[this.animatedObjects.length - 1];
+    	
+    	// TimelineElement of last animated object
+    	var tl = lastElem.data;
+    	
+    	var duration = 0;
+    	
+    	for(var i=0; i<tl.animations.length-1; i++) {
+    		duration += tl.animations[i].duration;
+    	}
+    	
+    	var stopPoint = tl.wakeUpTime + duration;
+
+    	return stopPoint;
+    },
+    
+    /**
+     * Check if we have played all objects.
+     * 
+     * Compare current object against the timeline length.
+     * 
+     * @return {Boolean} true if this show has nothing more to show
+     */
+    isFinished : function() {
+    	var stopPoint = this.getDuration();
+    	return this.clock > stopPoint;
+    },
+    
     /**
      * Main rendering loop.
      *

@@ -78,6 +78,28 @@ ShowTest.prototype.testReverseAnimation = function() {
 }
 
 
+/**
+ * Check that show finish flag is correctly set.
+ */
+ShowTest.prototype.testFinished = function() {
+
+	var init = this.basicSetup();	
+
+	var show = init.show;
+	
+	// Construct all elements
+	show.prepare();
+	
+	show.onClock(999);
+	
+	var duration = show.getDuration();
+	
+	assertEquals(12, duration);
+	
+	assertTrue(show.isFinished());
+
+}
+
 
 /**
  * Create a single timeline element for testing purposes.
