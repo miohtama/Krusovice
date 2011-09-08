@@ -100,6 +100,25 @@ ShowTest.prototype.testFinished = function() {
 
 }
 
+/**
+ * Check we have canvas properly set up.
+ */
+ShowTest.prototype.testCanvas = function() {
+
+    var init = this.basicSetup();   
+
+    var show = init.show;
+    
+    // Construct all elements
+    show.prepare();
+    
+    var canvasContext = show.getCaptureCanvasContext();
+    
+    // Check that we can use this as 2D canvas
+    canvasContext.fillRect(0, 0, 10, 10);
+    
+}
+
 
 /**
  * Create a single timeline element for testing purposes.

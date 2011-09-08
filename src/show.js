@@ -601,6 +601,14 @@ krusovice.Show.prototype = {
             
             this.loader.add("audio", 1);            
         }
+    },
+    
+    
+    /**
+     * 2D canvas context used to record the video.
+     */
+    getCaptureCanvasContext : function() {
+        return this.ctx;
     }
            
 }
