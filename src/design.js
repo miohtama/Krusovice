@@ -15,6 +15,55 @@ krusovice.Design = function() {
  * 
  */
 krusovice.Design.prototype = {
+
+    /**
+     * @type {Array}
+     *
+     * Timeline elements for the show
+     */
+    timeline : null,
     
+    /**
+     * @type {Object}
+     *
+     * Background info 
+     */
+    background : {
+        
+        /**
+         * @type String
+         *
+         * One of "video", "plain", "gradient", "skybox"
+         */
+        type : null,
+        
+        color : null,
+        
+        imageId : null,
+        
+        videoId : null
+    },
+    
+    /**
+     * @type Number
+     *
+     * Show width in pixels
+     */
+    width : 512,
+    
+    /**
+     * @type Number
+     *
+     * Show height in pixels
+     */
+    height : 368,
+    
+    /**
+     * @type String
+     *
+     * Background song id. Song id is associated with the serve side music file and generated rhytm analysis data.
+     */
+    songId : null
+        
 
 };
