@@ -33,5 +33,5 @@ document.addEventListener("DOMContentLoaded", function() {
 	krusovice.load(function() {
 		renderer.init();
 	}, true);
-});
+}, false);
                
