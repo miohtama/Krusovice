@@ -50,36 +50,10 @@ $.extend(krusovice.effects, {
  *
  * @singleton
  */
-krusovice.effects.Manager = {
-    
-    /**
-     * Mapping of effect id -> constructor function  
-     */
-    data : {},
-        
-    register : function(effect) {
+krusovice.effects.Manager = $.extend({}, krusovice.utils.Registry, {
 
-      if(!effect.id) {
-          throw "Need id";
-      }
-
-      if(!effect.name) {
-          throw "Need an effect name";
-      }  
+    initFunction : "init",    
       
-      this.data[effect.id] = effect;
-      
-      effect.init();
-      
-    },
-    
-    /**
-     * Get registered effect by its id
-     */
-    get : function(id) {
-        return this.data[id];
-    },
-    
     /**
      * Get human readable effect list
      *
@@ -110,12 +84,10 @@ krusovice.effects.Manager = {
         var data = this.getVocabulary(transition);
         var d2 = [];        
         data.forEach(function(e) {d2.push(e.id)});        
-        return d2;
+        return d2;    	
+    }  
     	
-    },
-    
-    	
-};
+});
 
 /**
  * Effects base class.
@@ -272,6 +244,10 @@ krusovice.effects.Base = {
         
         var value;
         
+        if(!slot) {
+            throw "Slot parameter missing";
+        }
+        
         if(animationConfig) {
             if(animationConfig[slot]) {
                 value = animationConfig[name];
@@ -306,6 +282,8 @@ krusovice.effects.Base = {
 
         console.error("Got effect");
         console.error(this);
+        console.error(slot);
+        console.error(showConfig);
         throw "Unknown effect parameter:" + name + " in parameter slot " + slot + " for effect " + this.id;        
     },
     

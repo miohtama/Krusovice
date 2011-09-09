@@ -48,13 +48,15 @@ ShowTest.prototype.testReverseAnimation = function() {
 
 	assertEquals("transitionout", state.animation);
 	assertEquals("zoomfar", state.current.effectType);
-	
+	assertEquals("gone", state.next.type);
+    
 	// Check that this orignally was defined as reverse effect
 	var effect = krusovice.effects.Manager.get(state.current.effectType);
 	assertTrue(effect.reverseOut);
 	
 	// Fading away
 	assertTrue(state.value < 0.7);
+	assertNotEquals(state.value, 0);
 	
 	// Assume the source Z is on the viewing plane
 	assertEquals(state.current.position[2], 0);
@@ -152,7 +154,10 @@ ShowTest.prototype.basicSetup = function() {
     var cfg = {
             rhytmData : null, // No music
             songURL : null,
-            timeline : plan,
+            design : {
+                timeline : plan,
+                background : { type : "plain", colour : "#ffffff" }
+            },
             elem : null // Don't animate
     };
     

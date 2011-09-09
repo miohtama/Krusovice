@@ -127,6 +127,7 @@ krusovice.renderers.Three.prototype = {
 		this.scene.removeObject(mesh);
 	},
 	
+	
 	render : function(frontBuffer) {
 		this.renderer.render(this.scene, this.camera);
 		

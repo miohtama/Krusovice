@@ -15,14 +15,20 @@ krusovice.utils = {
     },
 
     /**
-     * Return random value between -max ... max
+     * @return {Number} random value between -max ... max
      */
     splitrnd : function(max) {
     	max = max*2;
         return Math.random()*max - max/2;
     },
     
-    
+    /**
+     * @return {Number} random value between min ... max
+     */    
+    rangernd : function(min, max) {
+        return min + (max-min) * Math.random();
+    },
+        
     /**
      * @param {Object} item array of numbers or number. 
      */
@@ -214,6 +220,10 @@ krusovice.utils = {
             }
     },
     
+    easeRange : function(method, percents, start, end) {
+        return this.ease(method, percents, start, (end-start));  
+    },
+    
     /**
      * Calculate scalar
      * 
@@ -336,5 +346,90 @@ krusovice.utils = {
         return c;
     }
     
-   
 }
+
+
+/**
+ * Story id -> objects pairs with some helper functions. 
+ *
+ * Each object must have **id** and **name** (human readable name) attributes.
+ *
+ * Object initialization method can be called when they are added into the registry.
+ * 
+ * @singleton
+ */
+krusovice.utils.Registry = {
+    
+    /**
+     * Mapping of effect id -> constructor function  
+     */
+    data : {},
+    
+    initFunction : null,
+
+    /**
+     * Register a new object to this registry.
+     */        
+    register : function(obj) {
+      
+      if(!obj.id) {
+          throw "Need id";
+      }
+
+      if(!obj.name) {
+          throw "Need an effect name";
+      }  
+      
+      this.data[obj.id] = obj;
+      
+      
+      if(this.initFunction) {
+        var func = obj[this.initFunction];
+        if(!func) {
+            console.error(obj);
+            throw "Init function missing:" + this.initFunction;
+        }
+        var proxy = $.proxy(func, obj);
+        proxy();          
+      }
+            
+    },
+    
+    /**
+     * Get registered effect by its id
+     */
+    get : function(id) {
+        return this.data[id];
+    },
+    
+    /**
+     * Get human readable effect list
+     *
+     * @param {String} transtion For which registered transition
+     *
+     * @return [ { id : name}, { id : name} ] 
+     */
+    getVocabulary : function() {
+        
+        var data = [];
+                
+        $.each(this.data, function(id, obj) {        
+            data.push({id:obj.id, name:obj.name});        
+        });
+        
+        return data;
+    },
+    
+    /**
+     * @return All registered effects for certain transition type
+     */
+    getIds : function() {
+        var data = this.getVocabulary();
+        var d2 = [];        
+        data.forEach(function(e) {d2.push(e.id)});        
+        return d2;
+        
+    },
+    
+            
+};

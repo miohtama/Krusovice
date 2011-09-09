@@ -18,3 +18,15 @@ var simpleElements = [
 			duration : 2.0
 		}
 ];
+
+
+var simpleDesign = {
+    
+    timeline : simpleElements,
+    
+    background : {
+        type : "plain",
+        color : "#ffFFff"
+    }
+    
+}

@@ -262,8 +262,7 @@ krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpola
         obj.rotation = krusovice.utils.grabQuaternionData(q);                 
     }   
     
-    
-       
+   
 });
 
 

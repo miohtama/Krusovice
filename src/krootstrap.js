@@ -36,7 +36,8 @@ krusovice.load = function(doneCallback, includeDependencies) {
 	     "show.js",
 	     "renderers/three.js",
 	     "effects/base.js",
-	     "effects/linear.js"
+	     "effects/linear.js",
+         "backgrounds/background.js"
 	]
 	
 	
@@ -135,7 +136,8 @@ krusovice.load = function(doneCallback, includeDependencies) {
 	        	
 	            script.onerror = function(e, a, b, c) {
 	            	console.error("Script contained errors:" + url);
-	            	console.exception(e);
+	            	console.error(a);
+	            	console.error(b);
 	            }        	
 		        
 		        script.onload = function() { 

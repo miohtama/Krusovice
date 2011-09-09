@@ -60,6 +60,12 @@ krusovice.Show.prototype = {
      * @cfg {Number} musicStartTime Song position where the playback stars (seconds)
      */
     musicStartTime : 0,
+    
+    
+    /**
+     * Show design object
+     */
+    design : null,
         
     /**
      * @cfg {String} backgroundEffectId Used background (beat reacting) effect id
@@ -110,6 +116,11 @@ krusovice.Show.prototype = {
      * List of animated objects in this show
      */
     animatedObjects : null,
+    
+    /**
+     * @cfg {Object} Background renderer
+     */
+    background : null,
         
     /**
      * <canvas> used as the main output element
@@ -189,6 +200,7 @@ krusovice.Show.prototype = {
      * Whether or not the show player should try to estimate the clock between onClock() calls.
      */
     realtime : true,
+   
             
     /**
      * Start async media loading and preparation.
@@ -272,14 +284,14 @@ krusovice.Show.prototype = {
         
         this.animatedObjects = new Array();
                         
-        this.timeline.forEach(function(e) {            
+        this.design.timeline.forEach(function(e) {            
             var obj = self.createAnimatedObject(e);
             console.log("Created animated object " + obj);
             self.animatedObjects.push(obj);                 
             self.loader.add("animatedobject", 1);
         });
         
-        if(this.timeline.length != this.animatedObjects.length) {
+        if(this.design.timeline.length != this.animatedObjects.length) {
             console.error("arg");
             throw "Somehow failed";
         }
@@ -299,6 +311,11 @@ krusovice.Show.prototype = {
         this.ctx = this.canvas.getContext("2d");
         
     },    
+    
+    prepareBackground : function() {
+        this.background = krusovice.backgrounds.createBackground(this.design.background.type, this.design.background);  
+        this.background.prepare(this.loader, this.width, this.height);
+    },
     
     /**
      * Create 3d renderer backend
@@ -440,22 +457,11 @@ krusovice.Show.prototype = {
      */
     renderBackground : function(renderClock) {
         var ctx = this.ctx;       
-
-        if(this.backgroundType == "plain") {
-            // Single colour bg
-            // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
-            ctx.save();
-            ctx.fillStyle = "#ff00ff";
-            //ctx.fillStyle = this.plainColor; //"rgba(200,200,200,0.3)";
-            ctx.fillRect(0, 0, this.width, this.height);
-            ctx.restore();
-        } else if(this.backgroundType == "clear") {
-            // Transparent bg
-            // http://stackoverflow.com/questions/2142535/how-to-clear-the-canvas-for-redrawing
-            ctx.clearRect (0, 0, this.width, this.height);
-        } else {
-            throw "Unknown background type:" + this.backgroundType;
+        
+        if(this.background) {
+            this.background.render(ctx, clock);            
         }
+
     },
     
     renderScene : function() {

@@ -137,9 +137,13 @@ var effectbrowser = {
         var cfg = {
             rhytmData : sampleSongData,
             songURL : songURL,
-            timeline : plan,
-            backgroundType : "plain",
-            backgroundColor : "#ffffff",
+            design : {
+                timeline : plan,
+                background : {
+                    type : "plain",
+                    color : "#ffffff"                                    
+                },
+            },
             elem : $("#show")                                                                                
         };
         
