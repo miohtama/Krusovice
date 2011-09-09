@@ -58,7 +58,7 @@ EffectsTest.prototype.testTransitionInParameters = function() {
 EffectsTest.prototype.testTransitionOutParameters = function() {
 
     // Try to create a simple animation parameters
-    var effect = krusovice.effects.Manager.get("zoomout");
+    var effect = krusovice.effects.Manager.get("zoomfar");
     var params = {};
     
     effect.prepareParameters("source", params, {}, {});

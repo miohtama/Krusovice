@@ -18,7 +18,7 @@ TimelinerTest.prototype.testBasicNoMusic = function() {
 	console.log(plan);
 	assertEquals(krusovice.effects.ZoomIn.easing, plan[0].animations[0].easing);
 	assertEquals("linear", plan[0].animations[1].easing);
-	assertEquals(krusovice.effects.ZoomOut.easing, plan[0].animations[2].easing);
+	assertEquals(krusovice.effects.zoomfar.easing, plan[0].animations[2].easing);
 
 };
 

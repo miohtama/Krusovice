@@ -47,7 +47,7 @@ ShowTest.prototype.testReverseAnimation = function() {
 	assertTrue(state.current.reverse);
 
 	assertEquals("transitionout", state.animation);
-	assertEquals("zoomout", state.current.effectType);
+	assertEquals("zoomfar", state.current.effectType);
 	
 	// Check that this orignally was defined as reverse effect
 	var effect = krusovice.effects.Manager.get(state.current.effectType);

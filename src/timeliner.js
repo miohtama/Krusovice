@@ -552,7 +552,7 @@ krusovice.Timeliner.defaultSettings = {
     },
     
     transitionOut : {
-        type : "zoomout",
+        type : "zoomfar",
         duration : 2.0,          
         clockSkip : 0.0 // How many seconds we adjust the next object coming to the screen
     },   

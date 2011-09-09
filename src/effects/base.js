@@ -26,7 +26,17 @@ $.extend(krusovice.effects, {
   * The object is behind camera (but will zoom in)
   */
  BEHIND_CAMERA_Z : 1000,
-    
+ 
+ /**
+  * If the object is at FAR_Z what is X value for the edge of screen
+  */
+ FAR_Z_MAX_X : 1000,
+
+ /**
+  * If the object is at FAR_Z what is Y value for the edge of screen
+  */ 
+ FAR_Z_MAX_Y : 1000
+ 
 });
 
 /**

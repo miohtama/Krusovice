@@ -99,6 +99,43 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
 });
 
 /**
+ * An effect which has axis and angle paramters.
+ *
+ * Axis and angle define the source and end rotation.
+ * Both can have random variation. 
+ * When the animation is prepared axis/angle combinations are converted to the quaternions
+ * which perform slerp animation. 
+ *
+ */
+krusovice.effects.QuaternionRotate = $.extend(true, {}, krusovice.effects.Interpolate, {
+   
+   id : "quaternionrotate",
+   
+   available : false,
+         
+   prepareParameters : function(parametersSlot, obj, config, source) {     
+        
+        // Initialize default positions and such
+        this.initParameters(parametersSlot, obj, config, source);
+        
+        // Choose random axis on X % Y plane    
+        var axis = this.randomizeParameter("axis", parametersSlot, config, source);
+        var angle = this.randomizeParameter("angle", parametersSlot, config, source);
+        
+        console.log("Got axis/angle " + parametersSlot + " axis:" + axis + " angle:" + angle);
+        var v = new THREE.Vector3(axis[0], axis[1], axis[2]);
+        
+        v = v.normalize();
+        
+        var q = (new THREE.Quaternion()).setFromAxisAngle(v, angle);
+        
+        obj.rotation = krusovice.utils.grabQuaternionData(q);   
+        
+   }   
+    
+});
+
+/**
  * Interpolate position, rotation, etc. from source to target parameters.
  *
  * Weighting of the interpolation is based on ease value.
@@ -125,26 +162,11 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
 krusovice.effects.Manager.register(krusovice.effects.ZoomIn);
 
 
-krusovice.effects.RotoZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
+krusovice.effects.ZoomFar = $.extend(true, {}, krusovice.effects.Interpolate, {
     
-    id : "rotozoomin",
+    id : "zoomfar",
     
-    name : "Roto Zoom In",
-    
-    available : true,
-    
-    transitions : ["transitionin"],    
-    
-    
-});
-
-krusovice.effects.Manager.register(krusovice.effects.RotoZoomIn);
-
-krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
-    
-    id : "zoomout",
-    
-    name : "Zoom Out",
+    name : "Zoom Far",
     
     available : true,
     
@@ -159,11 +181,27 @@ krusovice.effects.ZoomOut = $.extend(true, {}, krusovice.effects.Interpolate, {
     
 });
 
-krusovice.effects.Manager.register(krusovice.effects.ZoomOut);
-
+krusovice.effects.Manager.register(krusovice.effects.ZoomFar);
 
 /**
- * 
+ * Hold the photo on the screen without moving.
+ */
+krusovice.effects.Hold = $.extend(true, {}, krusovice.effects.Interpolate, {
+    
+    id : "hold",
+    
+    name : "Hold",
+    
+    available : true,
+    
+    transitions : ["onscreen"],
+      
+});
+
+krusovice.effects.Manager.register(krusovice.effects.Hold);
+
+/**
+ * Have the object on screen but move it a little for extra dynamicity.
  */
 krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate, {
     
@@ -230,7 +268,7 @@ krusovice.effects.Manager.register(krusovice.effects.SlightRotateZ);
 /**
  * Flip photo 90 degrees around random XY-axis.
  */
-krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.Interpolate, {
+krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
     
     id : "flip",
     
@@ -249,29 +287,47 @@ krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.Interpolate, {
 		p.targetVariation.axis = [0,0,0];
 		p.target.angle = 0;
 	},
-    
-    prepareParameters : function(parametersSlot, obj, config, source) {    	
-		
-		// Initialize default positions and such
-		this.initParameters(parametersSlot, obj, config, source);
-		
-		// Choose random axis on X % Y plane	
-		var axis = this.randomizeParameter("axis", parametersSlot, config, source);
-		var angle = this.randomizeParameter("angle", parametersSlot, config, source);
-		
-		console.log("Got axis/angle " + parametersSlot + " axis:" + axis + " angle:" + angle);
-		var v = new THREE.Vector3(axis[0], axis[1], axis[2]);
-		
-		v = v.normalize();
-		
-        var q = (new THREE.Quaternion()).setFromAxisAngle(v, angle);
         
-        obj.rotation = krusovice.utils.grabQuaternionData(q);   
-		
-	}   
-    
 });
 
 krusovice.effects.Manager.register(krusovice.effects.Flip);
+
+
+
+/**
+ * Movie "news paper headlines" comes in effect
+ */
+krusovice.effects.RotoZoomFar = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+    
+    id : "rotozoomfar",
+    
+    name : "Roto Zoom Far",
+    
+    available : true,
+    
+    transitions : ["transitionin", "transitionout"],    
+
+    easing : 'easeInQuad',
+
+    init : function() {
+        var p = this.parameters;
+
+        p.source.position = [0,0, krusovice.effects.FAR_Z];
+        p.source.axis = [0,0,1];
+        p.source.angle = Math.PI/2;
+        p.sourceVariation.angle = Math.PI*6;
+
+        p.sourceVariation.position = [krusovice.effects.FAR_Z_MAX_X, krusovice.effects.FAR_Z_MAX_Y, 0];
+
+        p.target.axis = [0,0,0];
+        p.targetVariation.axis = [0,0,0];
+        p.target.angle = 0;
+    },
+          
+      
+    
+});
+
+krusovice.effects.Manager.register(krusovice.effects.RotoZoomFar);
 
 

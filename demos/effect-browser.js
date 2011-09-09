@@ -80,7 +80,7 @@ var effectbrowser = {
 		    },   
 		    
 		    onScreen : {
-		        type : $("#onscreen option:selected").val() || "zoomout",
+		        type : $("#onscreen option:selected").val() || "zoomfar",
 		    }          				
 								
 		};
