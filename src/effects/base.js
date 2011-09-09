@@ -15,6 +15,9 @@ $.extend(krusovice.effects, {
   */
  ON_SCREEN_Z : 0,
  
+ ON_SCREEN_MAX_X : 300,
+ 
+ ON_SCREEN_MAX_Y : 300,
  
  /**
   * Used when zooming out of infinity.

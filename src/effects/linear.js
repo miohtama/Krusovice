@@ -52,26 +52,22 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
      * @param {Number} value current intermediate state 0...1, easing applied 
      */
     animate : function(object, target, source, value) {    
-        
-    	
+            	
     	if(!krusovice.utils.isNumber(value)) {
     		throw "Interpolation step undefined";
     	}
-    	
-        
+    	        
         console.log("Got target");
         console.log(target);
         console.log("Got source");
         console.log(source);
-        
-    	       
+            	       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
     	console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);    	
     	console.log("Source:" + source.position);
     	console.log("Target:" + target.position);
     	console.log("Position:" + position);
-
         
         if(!krusovice.utils.isNumber(position[0])) {
         	throw "Serious fail";
@@ -216,8 +212,16 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
     init : function() {
         // Override default animation parameters
         var r = 0.3;
-        this.parameters.sourceVariation.position = [r, r, 0];
-        this.parameters.targetVariation.position = [r, r, 0];        
+        //this.parameters.source.position = [-krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
+        //this.parameters.target.position = [krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
+               
+        var x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X;
+        var y = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_Y;                
+        this.parameters.sourceVariation.position = [x, y, 0];
+
+        var x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X;
+        var y = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_Y;                
+        this.parameters.targetVariation.position = [x, y, 0];        
     }   
     
 });

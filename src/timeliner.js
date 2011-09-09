@@ -433,7 +433,8 @@ krusovice.Timeliner.prototype = {
             // Set initial parameters
             effect.prepareParameters("source", currentAnimation, this.effectConfig, source);
             effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
-
+            console.log("Got target:")
+            console.log(nextAnimation);
 		}
 		
 		if(animationType == "transitionout") {						
