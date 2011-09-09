@@ -204,6 +204,16 @@ krusovice.Show.prototype = {
     },
 
     /**
+     * Free are resources associated with this show.
+     *
+     * After this call this Show object is no longer useable.
+     */
+    release : function() {
+        //this.canvas = null;
+        //this.animatedObjects = null;        
+    },
+
+    /**
      * ASync waiting loop until are resources are loaded
      */
     loadResources : function() {
@@ -348,6 +358,9 @@ krusovice.Show.prototype = {
         this.loopAnimation();
     },
     
+    /**
+     * Stop playing the show
+     */
     stop : function() {      
         this.playing = false;  
     },
@@ -408,7 +421,8 @@ krusovice.Show.prototype = {
         krusovice.utils.requestAnimationFrame($.proxy(this.render, this), this.canvas);    	
     },
     
-    render : function() {                       
+    render : function() {                
+                       
         this.currentFrame += 1;
         
         var renderClock = this.getEstimatedClock();

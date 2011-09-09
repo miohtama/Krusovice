@@ -44,7 +44,13 @@ var effectbrowser = {
 	 */
 	reanimate : function() {
 						
-	
+	    console.log("reanimate()");
+	    
+        if(this.show) {
+            // One show per demo page allowed
+            this.deleteShow();
+        }
+                	    
 		var baseelem = {				
 			type : "image",
 			label : null,
@@ -87,6 +93,23 @@ var effectbrowser = {
 	},
 	
 	/**
+	 * Stop playing the current show and release the resources.
+	 */
+	deleteShow : function() {
+	    
+        var audio = document.getElementById("audio");
+        audio.pause(); // Will trigger show.stop	    
+
+        this.show.stop();
+	    this.show.release();	
+	    
+	    $("#show").empty();
+        $("#visualizer").empty();
+        
+        this.show  = null;
+	},
+	
+	/**
 	 * Reconstruct Show
 	 */
 	createShow : function(input, settings) {
@@ -99,7 +122,8 @@ var effectbrowser = {
         
         // Create visualization
         var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:sampleSongData});                                
-        var div = document.getElementById("visualizer");                               
+        var div = document.getElementById("visualizer");     
+               
         visualizer.secondsPerPixel = 0.02;
         visualizer.lineLength = 2000;				        
         visualizer.render(div);          
@@ -111,22 +135,24 @@ var effectbrowser = {
         var player = new krusovice.TimelinePlayer(visualizer, audio);
                 
         var cfg = {
-                rhytmData : sampleSongData,
-                songURL : songURL,
-                timeline : plan,
-                backgroundType : "plain",
-                backgroundColor : "#ffffff",
-                elem : $("#show")                                                                                
+            rhytmData : sampleSongData,
+            songURL : songURL,
+            timeline : plan,
+            backgroundType : "plain",
+            backgroundColor : "#ffffff",
+            elem : $("#show")                                                                                
         };
         
         // Create show
         var show = new krusovice.Show(cfg);
         
+        this.show = show;
+        
         // Make show to use clock and events from <audio>
         show.bindToAudio(player.audio);   
         
         krusovice.attachSimpleLoadingNote(show);                                                                                                                                
-        
+                
         // Automatically start playing when we can do it
         $(show).bind("loadend", function() {
         	audio.play();
