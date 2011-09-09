@@ -127,14 +127,12 @@ krusovice.Loader.prototype = {
      * @param {Image|String} Image object or URL to an image 
      */
     loadImage : function(obj, callback) {
-
-        console.log("Preparing image:" + url);
-
+        
         var self = this;
         var img;
         var load;
 
-        if(obj.width && obj.height) {
+        if(obj.width === 0 || obj.width) {
             // We have a prepared image
             img = obj;
             load = false;
@@ -142,6 +140,9 @@ krusovice.Loader.prototype = {
             img = new Image();           
             load = true;
         }
+
+        console.log("Preparing image:" + obj + " needs async load:" + load);
+
                         
         function imageLoaded() {
             self.mark("image", 1)
@@ -149,7 +150,7 @@ krusovice.Loader.prototype = {
         }   
         
         function error() {                        
-            var msg = "Failed to load image:" + self.data.imageURL;
+            var msg = "Failed to load image:" + img;
             console.error(msg)
             self.setError(msg);
         }
@@ -158,15 +159,14 @@ krusovice.Loader.prototype = {
         
         // Load image asynchroniously
         if(load) {
-            if(!callback) {
-                throw "Cannot do asyncrhonous loading unless callback is set";
-            }
             img.onload = imageLoaded;
             img.onerror = error;
             img.src = obj;                                
         } else {
             console.log("Was already loaded");
-            callback();
+            if(callback) {
+                callback();
+            }
         }
         
         return img;

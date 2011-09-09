@@ -86,48 +86,61 @@ $.extend(krusovice.backgrounds.Scroll2D, {
     
     calculateKeyFrame : function(t, oldFrame) {
         var frame = {};
-        
+                
         frame.clock = t;
-        frame.x = (oldFrame.x||0) + krusovice.utils.splitrnd(maxMove);
-        frame.y = (oldFrame.y||0) + krusovice.utils.splitrnd(maxMove);
-        frame.zoom = krusovice.utils.rangernd(this.minZoom, this.maxZoom);        
+        frame.x = (oldFrame.x||0) + krusovice.utils.splitrnd(this.maxMove);
+        frame.y = (oldFrame.y||0) + krusovice.utils.splitrnd(this.maxMove);
+        frame.zoom = krusovice.utils.rangernd(this.minZoom, this.maxZoom);   
+        
+        return frame;     
     },
         
-    createAnimation : function(duration, timeline, analysis) {    
+    createAnimation : function(duration, timeline, analysis, cfg) {    
        
+        var params = $.extend({}, cfg);
         var data = [];
         var frame, oldFrame;
         var t = 0;
         
         frame = this.calculateKeyFrame(0, {});
         data.push(frame);
-        
+        oldFrame = frame;
         while(t < duration) {
             var span = this.spanDuration + krusovice.utils.splitrnd(this.spanVariation);            
             t += span;
-            frame = this.calculateKeyFrame(t);
+            frame = this.calculateKeyFrame(t, oldFrame);
             data.push(frame);
             oldFrame = frame;
         }
+                
+        params.frames = data;
+        return params;
+        
     },
     
 });        
 
 krusovice.backgrounds.Scroll2D.prototype = {
     
+    /**
+     * @cfg {String|Object} image
+     *
+     * @cfg {Array} frames 
+     */   
+    
     prepare : function(loader, width, height) {
         // Create a working copy of the data
-        this.data = this.data.slice(0);
-        this.image = loader.loadImage(e.imageSource);
+        this.frames = this.data.frames.slice(0);
+        this.image = loader.loadImage(this.data.image);
     },
          
-    getFramePair : function(clock, data) {
+    getFramePair : function(clock, frames) {
         var i;
         
-        for(i=0; i<data.length; i++) {
-            if(data[i].clock > clock) {
-                var lastFrame = data[i-1];
-                var currentFrame = data[i];
+        for(i=0; i<frames.length; i++) {
+            if(frames[i].clock > clock) {
+                var lastFrame = frames[i-1];
+                var currentFrame = frames[i];
                 var delta = (clock - lastFrame.clock) / (currentFrame.clock - lastFrame.clock);                
                 
                 return {last : lastFrame, current : currentFrame, delta : delta};
@@ -136,7 +149,9 @@ krusovice.backgrounds.Scroll2D.prototype = {
     },
     
     render : function(renderer, clock, data) {
-        frames = this.getFramePair(clock, data);        
+        
+        console.log(this.data);
+        var frames = this.getFramePair(clock, this.data.frames);        
         
         var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
         
@@ -149,7 +164,7 @@ krusovice.backgrounds.Scroll2D.prototype = {
 }
 
 
-krusovice.backgrounds.Plain = function() {
+krusovice.backgrounds.Plain = function(data) {
     this.data = data;
 }
 
@@ -165,16 +180,25 @@ krusovice.backgrounds.Plain.prototype = {
         // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
         ctx.save();
         ctx.fillStyle = this.data.color; 
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, this.width, this.height);
         ctx.restore();        
     } 
     
 };
 
-krusovice.backgrounds.createBackgroundData = function(type, duration, timeline, rhytmData, cfg) {    
-       if(type == "plain") {
-           return cfg;
+krusovice.backgrounds.createBackground = function(type, duration, timeline, rhytmData, cfg) {    
+       if(type == "plain") {         
+           if(!cfg.color) {
+               throw "Color is missing";
+           }  
+           return new krusovice.backgrounds.Plain(cfg);
        } else if(type == "scroll2d") {
-           return krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhytmData);
+           var data = krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhytmData, cfg);
+           if(!data.frames) {
+               throw "Ooops";
+           }
+           return new krusovice.backgrounds.Scroll2D(data);
+       } else {
+           throw "Unknown background type:" + type;
        }
 }

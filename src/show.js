@@ -68,22 +68,6 @@ krusovice.Show.prototype = {
     design : null,
         
     /**
-     * @cfg {String} backgroundEffectId Used background (beat reacting) effect id
-     */
-    backgroundEffectId : null,
-
-    /**
-     * @cfg {String} backgroundType What kind of background we have (video, pic, gradient)
-     */
-    backgroundType : "plain",
-         
-    videoURL : null,
-    pictureURL : null,
-    plainColor : null,
-    gradientStart : null,
-    gradientEnd : null,              
-
-    /**
      * @cfg {String} songURL URL to the background music 
      */    
     songURL : null,   
@@ -212,6 +196,7 @@ krusovice.Show.prototype = {
         this.prepareCanvas();
 		this.prepareRenderer();      
 		this.prepareTimeline();
+        this.prepareBackground();		
         this.loadResources();
     },
 
@@ -313,7 +298,12 @@ krusovice.Show.prototype = {
     },    
     
     prepareBackground : function() {
-        this.background = krusovice.backgrounds.createBackground(this.design.background.type, this.design.background);  
+        var duration = this.getDuration();
+        this.background = krusovice.backgrounds.createBackground(this.design.background.type,
+                                                                 duration,
+                                                                 this.design.timeline,
+                                                                 this.rhytmData, 
+                                                                 this.design.background);  
         this.background.prepare(this.loader, this.width, this.height);
     },
     
@@ -459,7 +449,7 @@ krusovice.Show.prototype = {
         var ctx = this.ctx;       
         
         if(this.background) {
-            this.background.render(ctx, clock);            
+            this.background.render(ctx, renderClock);            
         }
 
     },

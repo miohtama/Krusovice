@@ -122,6 +122,61 @@ ShowTest.prototype.testCanvas = function() {
 }
 
 
+
+/**
+ * See that plain background initializes properly.
+ */
+ShowTest.prototype.testPlainBackground = function() {
+
+    var init = this.basicSetup();   
+
+    var show = init.show;
+    
+    // Construct all elements
+    show.prepare();
+
+    assertObject(show.background);
+    assertObject(show.background.data);
+    
+    assertEquals("plain", show.background.data.type);    
+
+    assertEquals("#ffffff", show.background.data.color);    
+}
+
+
+/**
+ * See that plain background initializes properly.
+ */
+ShowTest.prototype.testScroll2DBackground = function() {
+
+    var plan = this.createTimeline();
+    
+    var cfg = {
+            rhytmData : null, // No music
+            songURL : null,
+            design : {
+                timeline : plan,
+                background : { type : "scroll2d", image : new Image() }
+            },
+            elem : null // Don't animate
+    };
+    
+    // Create show
+    var show = new krusovice.Show(cfg);     
+        
+    // Construct all elements
+    show.prepare();
+
+    assertObject(show.background);
+    assertObject(show.background.data);
+    
+    assertEquals("scroll2d", show.background.data.type);    
+    
+    // Run through render chain once    
+    show.onClock(0);
+    show.render();
+}
+
 /**
  * Create a single timeline element for testing purposes.
  */
@@ -152,13 +207,13 @@ ShowTest.prototype.basicSetup = function() {
 	var plan = this.createTimeline();
 	
     var cfg = {
-            rhytmData : null, // No music
-            songURL : null,
-            design : {
-                timeline : plan,
-                background : { type : "plain", colour : "#ffffff" }
-            },
-            elem : null // Don't animate
+        rhytmData : null, // No music
+        songURL : null,
+        design : {
+            timeline : plan,
+            background : { type : "plain", color : "#ffffff" }
+        },
+        elem : null // Don't animate
     };
     
     // Create show
