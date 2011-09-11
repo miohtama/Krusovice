@@ -1,0 +1,47 @@
+[	
+	{		
+		"id" : "mountain-city",
+		"name" : "Mountain City",
+		"type" : "panorama-2d",
+		"image" : "bakcgrounds/mountain-city/1344020_32826274.jpg",
+		"license" : "sxc.hu",
+		"author" : null,
+		"authorURL" : null,
+		"categories" : ["panorama"]		
+	},
+
+	{		
+		"id" : "sunset",
+		"name" : "Sunset",
+		"type" : "panorama-2d",
+		"image" : "bakcgrounds/sunset/1344020_32826274.jpg",
+		"license" : "private",
+		"author" : null,
+		"authorURL" : null,		
+		"categories" : ["panorama"]
+	},
+	
+	
+	{
+		"id" : "blue",
+		"name" : "Blue",
+		"type" : "plain",
+		"license" : "internal",
+		"author" : null,
+		"authorURL" : null,		
+		"categories" : ["color"],		
+		"color" : "#111188"
+	},
+
+	{
+		"id" : "green",
+		"name" : "Green",
+		"type" : "plain",
+		"license" : "internal",
+		"author" : null,
+		"authorURL" : null,		
+		"categories" : ["color"],		
+		"color" : "#11aa11"
+	}
+	
+]

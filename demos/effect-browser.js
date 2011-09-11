@@ -167,59 +167,80 @@ var effectbrowser = {
 		
 	},
 	
+	
+	getDefaults : function() {
+		var defaults = this.splitURLParameters();		
+		defaults.transitionin = defaults.transitionin||"zoomin";
+		defaults.onscreen = defaults.onscreen||"slightmove";	
+		defaults.transitionout = defaults.transitionout||"zoomin";
+		defaults.background = defaults.backgroudn||"blue";
+		return defaults;
+	},
+	
+	/**
+	 * Fill in the tester choices.
+	 *
+	 * Read default values from URL if it supplies any.
+	 */
+	fillVocab : function(id, data) {
+		var sel = $(id);
+		var defaults = this.getDefaults();	
+			
+		var elems = [{id:"random", name:"Random"}] 
+		$.merge(elems, data);   
+		
+		elems.forEach(function(e) {
+			var selected="";
+			if(e.id == defaults[id.substring(1)]) {
+				selected="selected"
+			}
+			sel.append("<option " + selected + " value='" + e.id + "'>" + e.name + "</option>");
+		});
+		
+		var def = defaults[id];
+		if(def) {
+			sel.val(def);
+		}
+	},
+		
+	
 	/**
 	 * Fill in effect selectors
 	 */
 	populate : function() {
 				
-		var defaults = this.splitURLParameters();
-		console.log("Got defaults");
-		console.log(defaults);
-				
-		defaults.transitionin = defaults.transitionin||"zoomin";
-		defaults.onscreen = defaults.onscreen||"slightmove";	
-		defaults.transitionout = defaults.transitionout||"zoomin";
-		
-		function fill(id, data) {
-			var sel = $(id);
-			
-			var elems = [{id:"random", name:"Random"}] 
-			$.merge(elems, data);   
-			
-			elems.forEach(function(e) {
-				var selected="";
-				if(e.id == defaults[id.substring(1)]) {
-					selected="selected"
-				}
-				sel.append("<option " + selected + " value='" + e.id + "'>" + e.name + "</option>");
-			});
-			
-			var def = defaults[id];
-			if(def) {
-				sel.val(def);
-			}
-		}
-		
 		var vocab;
 		
 		vocab = krusovice.effects.Manager.getVocabulary("transitionin");
-		fill("#transitionin", vocab);
+		this.fillVocab("#transitionin", vocab);
 		
 		vocab = krusovice.effects.Manager.getVocabulary("onscreen");
-		fill("#onscreen", vocab);
+		this.fillVocab("#onscreen", vocab);
 		
 		vocab = krusovice.effects.Manager.getVocabulary("transitionout");
-		fill("#transitionout", vocab);
-				
+		this.fillVocab("#transitionout", vocab);
+								
+	},
+	
+	createBackgroundSelector : function() {
+		var vocab = krusovice.backgrounds.Registry.getVocabulary();
+		this.fillVocab("#background", vocab);
 	},
 	
 	init : function() {				
 	    this.populate();
 
-	    $("select").change($.proxy(effectbrowser.reanimate, effectbrowser));       
+		
+	    $("select").live("change", $.proxy(effectbrowser.reanimate, effectbrowser));       
+	    
 	    $("#reanimate").click($.proxy(effectbrowser.reanimate, effectbrowser));       
 	    
-	    this.reanimate();	    	    
+	    // XXX: Cannot distribute media files on Github
+	    krusovice.backgrounds.Registry.loadBackgroundData("../media/backgrounds.json", 
+	     												  "../../../olvi/backgrounds", 
+	     												  $.proxy(this.createBackgroundSelector, this));
+	    
+	    //this.reanimate();	    	    
 	}
 
 }

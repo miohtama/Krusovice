@@ -4,7 +4,38 @@ var krusovice = krusovice || {};
 
 krusovice.backgrounds = krusovice.backgrounds || {};
 
-krusovice.backgrounds.Registry = $.extend({}, krusovice.utils.Registry);
+krusovice.backgrounds.Registry = $.extend({}, krusovice.utils.Registry, {
+
+	/**
+	 * Load backgrounds from JSON file
+	 * 
+	 * @param {String} url URL to backgrounds.json
+	 *
+	 * @param {String} mediaURL Base URL to image and video data
+	 */	
+	loadBackgroundData : function(url, mediaURL, callback) {
+		var self = this;
+		console.log("Loading backgrounds");
+		$.getJSON(url, function(data) {
+			console.log("Background data");
+			console.log(data);
+			data.forEach(function(obj) {
+				self.fixMediaURLs(obj);
+				self.register(obj);
+			})
+			callback();
+		});
+	},
+	
+	/**
+	 * Make image URLs loadable
+	 */
+	fixMediaURLs : function(obj, mediaURL) {
+		if(obj.image) {
+			obj.image = mediaURL + obj.image;
+		}
+	} 
+});
 
 /**
  * Background animation.

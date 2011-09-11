@@ -132,7 +132,7 @@ krusovice.Loader.prototype = {
         var img;
         var load;
 
-        if(obj.width === 0 || obj.width) {
+        if(obj.width === 0 || obj.width) {
             // We have a prepared image
             img = obj;
             load = false;

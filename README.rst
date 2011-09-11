@@ -33,6 +33,19 @@ Player
 =======================
 
 Player plays the ready show plan in a <canvas>.
+
+Running demos
+----------------
+
+If you run demos from file:// you need to disable AJAX security checks.
+
+Start Google Chrome with no security from command lin, OSX::
+
+	/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security
+
+Start Google Chrome from command line, Ubuntu/Linux::
+
+	chromium-browser --disable-web-security
         
 Unit tests
 ------------
