@@ -253,6 +253,24 @@ of static media files::
         serve:
           - testdata/*
 
+Async tests
+++++++++++++++
+
+These tests are runned separately because the JsTestDriver server cannot serve images and 
+running the tests are slow.
+
+We use Python SimpleHTTPServer to serve data,.
+
+How to run::
+
+	python -m SimpleHTTPServer &
+	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --port 9876 &
+	# Capture
+	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all	
+
+More info
+
+* http://groups.google.com/group/js-test-driver/browse_thread/thread/a14e2d24ec563d78        
         
 More info
 ++++++++++++

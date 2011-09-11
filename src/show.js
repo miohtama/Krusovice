@@ -306,10 +306,24 @@ krusovice.Show.prototype = {
         
     },    
     
+    /**
+     * Build background data and add all medias to the loader
+     */
     prepareBackground : function() {
         var duration = this.getDuration();
         
-        var background = this.background;
+        var background;
+        
+        if(!this.background) {
+	        // Use default white background
+        	background = {
+        		type : "plain",
+        		color : "#ffffff"
+        	}        	
+        } else {
+        	background = this.background;
+        }
+                
         var timeline = this.timeline;
         
         this.background = krusovice.backgrounds.createBackground(background.type,

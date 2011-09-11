@@ -24,9 +24,10 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
          
     var cfg = {
             timeline : plan,
-            backgroundType : "plain",
-            plainColor : "#ffffff",
-            controls : false,
+            background : {
+	            type : "plain",
+	            color : "#ffffff",
+            },
             elem : null,
             realtime : false // Enforce external test clock signal
     };
