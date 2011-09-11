@@ -176,6 +176,9 @@ var effectbrowser = {
 	},
 	
 	
+	/**
+	 * Get <select> default values
+	 */
 	getDefaults : function() {
 		var defaults = this.splitURLParameters();		
 		defaults.transitionin = defaults.transitionin||"zoomin";

@@ -154,10 +154,8 @@ ShowTest.prototype.testScroll2DBackground = function() {
     var cfg = {
             rhytmData : null, // No music
             songURL : null,
-            design : {
-                timeline : plan,
-                background : { type : "scroll2d", image : new Image() }
-            },
+            timeline : plan,
+            background : { type : "scroll2d", image : new Image() },
             elem : null // Don't animate
     };
     
@@ -209,10 +207,8 @@ ShowTest.prototype.basicSetup = function() {
     var cfg = {
         rhytmData : null, // No music
         songURL : null,
-        design : {
-            timeline : plan,
-            background : { type : "plain", color : "#ffffff" }
-        },
+        timeline : plan,
+        background : { type : "plain", color : "#ffffff" },
         elem : null // Don't animate
     };
     
