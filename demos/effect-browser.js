@@ -93,6 +93,8 @@ var effectbrowser = {
 
 		var background = krusovice.backgrounds.Registry.get(backgroundId);
 						
+		console.log("Created background data:");
+		console.log(background);						
 		var design = new krusovice.Design({
 			plan : baseplan,
 			settings : settings,
@@ -148,11 +150,13 @@ var effectbrowser = {
         var player = new krusovice.TimelinePlayer(visualizer, audio);
                 
         var cfg = {
+        	width : 512,
+        	height : 288,
         	timeline : timeline,
             rhytmData : sampleSongData,
             songURL : songURL,
             background : design.background,
-            elem : $("#show")                                                                                
+            elem : $("#show"),                                                                                
         };
         
         // Create show
@@ -236,6 +240,19 @@ var effectbrowser = {
 	createBackgroundSelector : function() {
 		var vocab = krusovice.backgrounds.Registry.getVocabulary();
 		this.fillVocab("#background", vocab);
+		
+		
+	    this.reanimate();	    		
+	},
+	
+	setupRenderLayers : function() {
+		if(this.show) {
+			// 
+			this.show.renderFlags.background = $("#render-background").is(":checked");
+			this.show.renderFlags.scene = $("input#render-scene").is(":checked");
+			console.log("New render flags");
+			console.log(this.show.renderFlags);
+		}
 	},
 	
 	init : function() {				
@@ -243,6 +260,9 @@ var effectbrowser = {
 
 		
 	    $("select").live("change", $.proxy(effectbrowser.reanimate, effectbrowser));       
+
+	    $("input[type=checkbox]").live("change", $.proxy(effectbrowser.setupRenderLayers, effectbrowser));       
+
 	    
 	    $("#reanimate").click($.proxy(effectbrowser.reanimate, effectbrowser));       
 	    
@@ -250,8 +270,7 @@ var effectbrowser = {
 	    krusovice.backgrounds.Registry.loadBackgroundData("../media/backgrounds.json", 
 	     												  "../../../../../olvi/backgrounds/", 
 	     												  $.proxy(this.createBackgroundSelector, this));
-	    
-	    this.reanimate();	    	    
+	    	    
 	}
 
 }

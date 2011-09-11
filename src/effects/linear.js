@@ -57,17 +57,17 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     		throw "Interpolation step undefined";
     	}
     	        
-        console.log("Got target");
-        console.log(target);
-        console.log("Got source");
-        console.log(source);
+        //console.log("Got target");
+        //console.log(target);
+        //console.log("Got source");
+        //console.log(source);
             	       
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
-    	console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);    	
-    	console.log("Source:" + source.position);
-    	console.log("Target:" + target.position);
-    	console.log("Position:" + position);
+    	//console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);    	
+    	//console.log("Source:" + source.position);
+    	//console.log("Target:" + target.position);
+    	//console.log("Position:" + position);
         
         if(!krusovice.utils.isNumber(position[0])) {
         	throw "Serious fail";

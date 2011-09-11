@@ -220,8 +220,11 @@ krusovice.utils = {
             }
     },
     
-    easeRange : function(method, percents, start, end) {
-        return this.ease(method, percents, start, (end-start));  
+    /**
+     * Calculate easing between two endpoints
+     */
+    easeRange : function(method, start, end, delta) {
+        return this.ease(method, delta, start, (end-start));  
     },
     
     /**
@@ -344,7 +347,21 @@ krusovice.utils = {
         }
         
         return c;
+    },
+    
+  /**
+     * Shrink view rectangle from width or height until it fits to source aspect ration.
+     */
+    shrinkToAspectRatio : function(width, height, aspectWidth, aspectHeight) {
+    	var ratio = aspectWidth / aspectHeight;	
+    	
+    	return {
+    		width : width,
+    		height : width / ratio
+    	}
     }
+    
+              
     
 }
 
@@ -429,7 +446,6 @@ krusovice.utils.Registry = {
         data.forEach(function(e) {d2.push(e.id)});        
         return d2;
         
-    },
+    }
     
-            
 };

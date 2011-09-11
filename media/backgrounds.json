@@ -7,18 +7,34 @@
 		"license" : "sxc.hu",
 		"author" : null,
 		"authorURL" : null,
-		"categories" : ["panorama"]		
+		"categories" : ["panorama"],
+		"orignalSize" : {
+			"width" : 6604,
+			"height" : 2103
+		},
+		
+		"zoomSizes" : {
+			"maxW" : 2544,  "maxH" : 1783, "minW" : 1850, "minH" : 1391		
+		}		
 	},
 
 	{		
 		"id" : "sunset",
 		"name" : "Sunset",
 		"type" : "panorama-2d",
-		"image" : "sunset/1344020_32826274.jpg",
+		"image" : "sunset/FullskiesSunset0025_1_M.jpg",
 		"license" : "private",
 		"author" : null,
 		"authorURL" : null,		
-		"categories" : ["panorama"]
+		"categories" : ["panorama"],
+		
+		"orignalSize" : {
+			"width" : 4096,
+			"height" : 1042
+		},
+		"zoomSizes" : {
+			"maxW" : 1700,  "maxH" : 844, "minW" : 1200, "minH" : 700		
+		}				
 	},
 	
 	

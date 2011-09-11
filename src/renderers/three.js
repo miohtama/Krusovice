@@ -140,5 +140,12 @@ krusovice.renderers.Three.prototype = {
 		
 		// blit to actual image output from THREE <canvas> renderer internal buffer
 		frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
+	},
+	
+	/**
+	 * Get a handle to the background canvas element
+	 */
+	getBackgroundCanvasContext : function() {
+		return this.renderer.domElement.getContext("2d");
 	}
 };

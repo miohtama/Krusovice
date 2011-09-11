@@ -114,12 +114,12 @@ $.extend(krusovice.backgrounds.Scroll2D, {
     /**
      * How many seconds we vary between movements
      */
-    spanVariation : 5,
+    spanVariation : 2,
     
     /**
      * Average duration of camera movement
      */
-    spanDuration : 10,
+    spanDuration : 5,
     
     
     /**
@@ -128,31 +128,68 @@ $.extend(krusovice.backgrounds.Scroll2D, {
     beatSeekWindow : 2,
 
     
-    calculateKeyFrame : function(t, oldFrame) {
+    calculateKeyFrame : function(t, oldFrame, cfg) {
         var frame = {};
-                
-        frame.clock = t;
-        frame.x = (oldFrame.x||0) + krusovice.utils.splitrnd(this.maxMove);
-        frame.y = (oldFrame.y||0) + krusovice.utils.splitrnd(this.maxMove);
-        frame.zoom = krusovice.utils.rangernd(this.minZoom, this.maxZoom);   
+                        		        
+        frame.clock = t;                
         
+        frame.width = krusovice.utils.rangernd(cfg.zoomSizes.minW, cfg.zoomSizes.maxW);
+        frame.height = krusovice.utils.rangernd(cfg.zoomSizes.minH, cfg.zoomSizes.maxH);
+        
+		function goodxy(x, y) {
+			if(x + frame.width > cfg.orignalSize.width) {
+				return false;
+			}
+			
+			if(x < 0) {
+				return false;
+			}
+			
+			if(y + frame.height > cfg.orignalSize.height) {
+				return false;
+			}
+			
+			if(y < 0) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+		// Keep guessing until
+	
+		var attemps = 100;
+	
+		frame.x = -1;
+		frame.y = -1;
+		while(attemps-- && !goodxy(frame.x, frame.y)) {
+	        frame.x = (oldFrame.x||0) + krusovice.utils.splitrnd(cfg.maxMove || this.maxMove);
+	        frame.y = (oldFrame.y||0) + krusovice.utils.splitrnd(cfg.maxMove || this.maxMove);			
+		}
+        
+        if(attemps == 0) {
+        	console.error(oldFrame);
+        	console.error(this.image);        	
+        	throw "Could not create key frame";
+        }
+                       
         return frame;     
     },
-        
+            
     createAnimation : function(duration, timeline, analysis, cfg) {    
        
-        var params = $.extend({}, cfg);
+        var params = $.extend({}, cfg);        
         var data = [];
         var frame, oldFrame;
         var t = 0;
-        
-        frame = this.calculateKeyFrame(0, {});
+                
+        frame = this.calculateKeyFrame(0, {}, cfg);
         data.push(frame);
         oldFrame = frame;
         while(t < duration) {
             var span = this.spanDuration + krusovice.utils.splitrnd(this.spanVariation);            
             t += span;
-            frame = this.calculateKeyFrame(t, oldFrame);
+            frame = this.calculateKeyFrame(t, oldFrame, cfg);
             data.push(frame);
             oldFrame = frame;
         }
@@ -165,6 +202,19 @@ $.extend(krusovice.backgrounds.Scroll2D, {
 });        
 
 krusovice.backgrounds.Scroll2D.prototype = {
+
+    /**
+     * PADI says it is 5 meters.
+     */
+    safetyStop : function(cfg) {
+    	
+    	// Make sure viewport is smaller then the background image
+    	if(this.width > cfg.orignalSize.width || this.height > cfg.orignalSize.height) {
+    		console.error(cfg);
+    		throw "Viewport is bigger than background image";
+    	}
+    },
+
     
     /**
      * @cfg {String|Object} image
@@ -173,9 +223,21 @@ krusovice.backgrounds.Scroll2D.prototype = {
      */   
     
     prepare : function(loader, width, height) {
+    	
+    	this.width = width;
+    	this.height= height;
+    	
+    	this.safetyStop(this.data);
+    	
         // Create a working copy of the data
         this.frames = this.data.frames.slice(0);
-        this.image = loader.loadImage(this.data.image);
+        
+        // Convert URL to real loaded image object 
+        function loadedImage(loadedImage) {
+        	this.image = loadedImage;
+        }
+        
+        loader.loadImage(this.data.image, $.proxy(loadedImage, this));
     },
          
     getFramePair : function(clock, frames) {
@@ -187,28 +249,43 @@ krusovice.backgrounds.Scroll2D.prototype = {
                 var currentFrame = frames[i];
                 var delta = (clock - lastFrame.clock) / (currentFrame.clock - lastFrame.clock);                
                 
-                return {last : lastFrame, current : currentFrame, delta : delta};
+                return {last : lastFrame, current : currentFrame, delta : delta, index : i};
             }
         }
         
         return null;  
     },
         
-    render : function(renderer, clock) {
-                
-        console.log("Scroller");
-        console.log(this.data);
-       
+    render : function(ctx, clock) {
+                       
         var frames = this.getFramePair(clock, this.data.frames);        
        
        	if(!frames) {
-       		console.error("scroll2d background time overflow");
+       		console.error("scroll2d background time overflow:" + clock);
        		return;
        	} 
-        var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
+        //var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
         
-        var x = krusovice.utils.ease("linear", frames.last.x, frames.current.x, frames.delta);
-        var y = krusovice.utils.ease("linear", frames.last.y, frames.current.y, frames.delta);
+        
+        // Fix zoom aspect ratio
+        var lastShrinked = krusovice.utils.shrinkToAspectRatio(frames.last.width, frames.last.height, this.width, this.height);
+        var currentShrinked = krusovice.utils.shrinkToAspectRatio(frames.current.width, frames.current.height, this.width, this.height);
+        
+        var x = krusovice.utils.easeRange("easeInOutSine", frames.last.x, frames.current.x, frames.delta);
+        var y = krusovice.utils.easeRange("easeInOutSine", frames.last.y, frames.current.y, frames.delta);
+        var w = krusovice.utils.easeRange("easeInOutSine", lastShrinked.width, currentShrinked.width, frames.delta);
+        var h = krusovice.utils.easeRange("easeInOutSine", lastShrinked.height, currentShrinked.height, frames.delta);
+        
+        console.log("Got x:" + x + " y:" + y);
+        console.log(this);
+        if(ctx)  {
+			if(!ctx) {
+				throw "oops";
+			}        	     			   	
+			console.log("Scroll 2D bg draw index:" + frames.index + " delta:" + frames.delta + " x:" + x + " y:" + y + " w:" + w +  " h:" + h + " width:" + this.width +  " height:" + this.height);
+			// https://developer.mozilla.org/en/Canvas_tutorial/Using_images#Slicing
+        	ctx.drawImage(this.image, x, y, w, h, 0, 0, this.width, this.height);
+        }
         
     },
       
@@ -232,15 +309,21 @@ krusovice.backgrounds.Plain.prototype = {
     render : function(ctx) {
         // Single colour bg
         // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
-        ctx.save();
-        ctx.fillStyle = this.data.color; 
-        ctx.fillRect(0, 0, this.width, this.height);
-        ctx.restore();        
+        console.log("plain");
+        if(ctx) {
+	        ctx.save();
+	        ctx.fillStyle = this.data.color; 
+	        ctx.fillRect(0, 0, this.width, this.height);
+	        ctx.restore();
+        }        
     } 
     
 };
 
 krusovice.backgrounds.createBackground = function(type, duration, timeline, rhytmData, cfg) {    
+       
+       console.log("Creating background:" + type);
+       
        if(type == "plain") {         
            if(!cfg.color) {
                throw "Color is missing";

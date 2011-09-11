@@ -184,7 +184,17 @@ krusovice.Show.prototype = {
      * Whether or not the show player should try to estimate the clock between onClock() calls.
      */
     realtime : true,
-   
+  
+  
+  	/**
+  	 * Control individual render layers.
+  	 *
+  	 * Most useful for debugging.
+  	 */
+  	renderFlags : {
+  		background : true,
+  		scene : true
+  	},
             
     /**
      * Start async media loading and preparation.
@@ -473,15 +483,23 @@ krusovice.Show.prototype = {
      * Render the video background buffer
      */
     renderBackground : function(renderClock) {
-        var ctx = this.ctx;       
+        
+        if(!this.renderFlags.background) {
+        	return;
+        }
         
         if(this.background) {
-            this.background.render(ctx, renderClock);            
+            this.background.render(this.ctx, renderClock);            
         }
 
     },
     
     renderScene : function() {
+    	
+        if(!this.renderFlags.scene) {
+        	return;
+        }
+    	
     	this.renderer.render(this.ctx);
     },
     
@@ -579,7 +597,7 @@ krusovice.Show.prototype = {
         
         function onTimeUpdate() {
         	        	
-        	console.log("timeupdate");
+        	//console.log("timeupdate");
         	
             var ctime = audio.currentTime;
             ctime -= this.musicStartTime;

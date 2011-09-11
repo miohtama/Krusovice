@@ -111,7 +111,7 @@ krusovice.showobjects.Base.prototype = {
     	    	
     	var relativeClock = clock - this.data.wakeUpTime;
     	
-    	console.log("Clock:" + clock + " relative clock:" + relativeClock);
+    	// console.log("Clock:" + clock + " relative clock:" + relativeClock);
     		
     	// Determine the state of this animation
     	var statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
