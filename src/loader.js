@@ -131,12 +131,15 @@ krusovice.Loader.prototype = {
         var self = this;
         var img;
         var load;
+        var url;
 
         if(obj.width === 0 || obj.width) {
             // We have a prepared image
             img = obj;
+            url = img.getAttribute("src");
             load = false;
         } else {
+        	url = obj;
             img = new Image();           
             load = true;
         }
@@ -150,7 +153,7 @@ krusovice.Loader.prototype = {
         }   
         
         function error() {                        
-            var msg = "Failed to load image:" + img;
+            var msg = "Failed to load image:" + url;
             console.error(msg)
             self.setError(msg);
         }

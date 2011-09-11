@@ -184,7 +184,7 @@ var effectbrowser = {
 		defaults.transitionin = defaults.transitionin||"zoomin";
 		defaults.onscreen = defaults.onscreen||"slightmove";	
 		defaults.transitionout = defaults.transitionout||"zoomin";
-		defaults.background = defaults.backgroudn||"blue";
+		defaults.background = defaults.background||"blue";
 		return defaults;
 	},
 	
@@ -248,10 +248,10 @@ var effectbrowser = {
 	    
 	    // XXX: Cannot distribute media files on Github
 	    krusovice.backgrounds.Registry.loadBackgroundData("../media/backgrounds.json", 
-	     												  "../../../olvi/backgrounds", 
+	     												  "../../../../../olvi/backgrounds/", 
 	     												  $.proxy(this.createBackgroundSelector, this));
 	    
-	    //this.reanimate();	    	    
+	    this.reanimate();	    	    
 	}
 
 }
