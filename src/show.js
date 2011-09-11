@@ -266,17 +266,26 @@ krusovice.Show.prototype = {
     prepareTimeline : function() {        
         
         var self = this;
+        var timeline;
         
         this.animatedObjects = new Array();
+            
+        // XXX: fix all to use show.timeline as input         
+        if(this.design) {
+        	timeline = this.design.timeline;	
+        } else {
+        	timeline = this.timeline;
+        }
+		        
                         
-        this.design.timeline.forEach(function(e) {            
+        timeline.forEach(function(e) {            
             var obj = self.createAnimatedObject(e);
             console.log("Created animated object " + obj);
             self.animatedObjects.push(obj);                 
             self.loader.add("animatedobject", 1);
         });
         
-        if(this.design.timeline.length != this.animatedObjects.length) {
+        if(timeline.length != this.animatedObjects.length) {
             console.error("arg");
             throw "Somehow failed";
         }
@@ -299,11 +308,15 @@ krusovice.Show.prototype = {
     
     prepareBackground : function() {
         var duration = this.getDuration();
-        this.background = krusovice.backgrounds.createBackground(this.design.background.type,
+        
+        var background = this.background;
+        var timeline = this.timeline;
+        
+        this.background = krusovice.backgrounds.createBackground(background.type,
                                                                  duration,
-                                                                 this.design.timeline,
+                                                                 timeline,
                                                                  this.rhytmData, 
-                                                                 this.design.background);  
+                                                                 background);  
         this.background.prepare(this.loader, this.width, this.height);
     },
     

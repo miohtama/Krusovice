@@ -150,7 +150,7 @@ krusovice.Timeliner = function(config) {
     $.extend(this, config)
 	
 	if(!this.showElements) {
-		throw new TypeError("you must give list of elements to show");
+		throw new TypeError("you must give list of elements for the timeline designer");
 	}
 	
 	if(!jQuery.isArray(this.showElements)) {

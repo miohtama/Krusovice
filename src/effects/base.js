@@ -50,7 +50,7 @@ $.extend(krusovice.effects, {
  *
  * @singleton
  */
-krusovice.effects.Manager = $.extend({}, krusovice.utils.Registry, {
+krusovice.effects.Manager = $.extend(true, {}, krusovice.utils.Registry, {
 
     initFunction : "init",    
       

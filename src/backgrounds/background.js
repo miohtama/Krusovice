@@ -4,7 +4,7 @@ var krusovice = krusovice || {};
 
 krusovice.backgrounds = krusovice.backgrounds || {};
 
-krusovice.backgrounds.Registry = $.extend({}, krusovice.utils.Registry, {
+krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 	/**
 	 * Load backgrounds from JSON file

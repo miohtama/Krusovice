@@ -71,7 +71,7 @@ var effectbrowser = {
 		    
 		    transitionIn : {
 		        type : $("#transitionin option:selected").val() || "zoomin",
-		        duration : 3.0                                             
+		        duration : 1.0                                             
 		    },
 		    
 		    transitionOut : {
@@ -88,8 +88,18 @@ var effectbrowser = {
 		for(var i=0; i<baseplan.length; i++) {
 			baseplan[i].id = i;
 		}
+		
+		var backgroundId = $("#background option:selected").val() || "blue";
+
+		var background = krusovice.backgrounds.Registry.get(backgroundId);
+						
+		var design = new krusovice.Design({
+			plan : baseplan,
+			settings : settings,
+			background : background			
+		});
 			
-		this.createShow(baseplan, settings);						
+		this.createShow(design);						
 	},
 	
 	/**
@@ -111,17 +121,20 @@ var effectbrowser = {
 	
 	/**
 	 * Reconstruct Show
+	 *
+	 * @param {krusovice.Design} design
 	 */
-	createShow : function(input, settings) {
+	createShow : function(design) {
 
         var songURL = "../testdata/sample-song.mp3";
 		
         // Create timeline
-        var timeliner = krusovice.Timeliner.createSimpleTimeliner(input, sampleSongData, settings);
-        var plan = timeliner.createPlan();                              
+                
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, sampleSongData, design.settings);
+        var timeline = timeliner.createPlan();                              
         
         // Create visualization
-        var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:sampleSongData});                                
+        var visualizer = new krusovice.TimelineVisualizer({plan:timeline, rhytmData:sampleSongData});                                
         var div = document.getElementById("visualizer");     
                
         visualizer.secondsPerPixel = 0.02;
@@ -135,15 +148,10 @@ var effectbrowser = {
         var player = new krusovice.TimelinePlayer(visualizer, audio);
                 
         var cfg = {
+        	timeline : timeline,
             rhytmData : sampleSongData,
             songURL : songURL,
-            design : {
-                timeline : plan,
-                background : {
-                    type : "plain",
-                    color : "#ffffff"                                    
-                },
-            },
+            background : design.background,
             elem : $("#show")                                                                                
         };
         

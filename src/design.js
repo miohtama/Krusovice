@@ -7,8 +7,8 @@ var krusovice = krusovice || {};
  * Thus, all resource references must be go through id mechanism.
  *
  */
-krusovice.Design = function() {
-    
+krusovice.Design = function(cfg) {
+    $.extend(this, cfg);
 }
 
 /**
@@ -19,9 +19,9 @@ krusovice.Design.prototype = {
     /**
      * @type {Array}
      *
-     * Timeline elements for the show
+     * Show input elements. Will be converted to timeline in {@link krusovice"Timeliner}.
      */
-    timeline : null,
+    plan : null,
     
     /**
      * @type {Object}
