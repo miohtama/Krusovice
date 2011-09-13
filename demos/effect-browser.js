@@ -9,6 +9,13 @@
  *      
  */
 var effectbrowser = {
+	
+	
+	hasMusic : false,
+	
+	hasBackgrounds : false,
+	
+	song : null,
 
    /**
 	* Read URL parameters to dict.
@@ -128,24 +135,33 @@ var effectbrowser = {
 	 */
 	createShow : function(design) {
 
-        var songURL = "../testdata/sample-song.mp3";
-		
+       	var audio = document.getElementById("audio");   
+       	
         // Create timeline
+        
+        var rhytmData = null;
+        if(this.song) {
+        	rhytmData = this.song.rhytmData;
+        } else {
+        	rhytmData = null;
+        }
                 
-        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, sampleSongData, design.settings);
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhytmData, design.settings);
         var timeline = timeliner.createPlan();                              
         
         // Create visualization
-        var visualizer = new krusovice.TimelineVisualizer({plan:timeline, rhytmData:sampleSongData});                                
+        var visualizer = new krusovice.TimelineVisualizer({plan:timeline, rhytmData:rhytmData});                                
         var div = document.getElementById("visualizer");     
                
         visualizer.secondsPerPixel = 0.02;
         visualizer.lineLength = 2000;				        
         visualizer.render(div);          
         
-        // Set song on <audio>
-        var audio = document.getElementById("audio");
-        audio.setAttribute("src", songURL);
+        // Set dummy song on <audio>        
+        if(!rhytmData) {
+        	var songURL = "../testdata/sample-song.mp3";        	     	
+        	audio.setAttribute("src", songURL);
+        }
         
         var player = new krusovice.TimelinePlayer(visualizer, audio);
                 
@@ -153,8 +169,7 @@ var effectbrowser = {
         	width : 512,
         	height : 288,
         	timeline : timeline,
-            rhytmData : sampleSongData,
-            songURL : songURL,
+            rhytmData : rhytmData,
             background : design.background,
             elem : $("#show"),                                                                                
         };
@@ -189,6 +204,7 @@ var effectbrowser = {
 		defaults.onscreen = defaults.onscreen||"slightmove";	
 		defaults.transitionout = defaults.transitionout||"zoomin";
 		defaults.background = defaults.background||"blue";
+		defaults.music = "nomusic";
 		return defaults;
 	},
 	
@@ -197,11 +213,19 @@ var effectbrowser = {
 	 *
 	 * Read default values from URL if it supplies any.
 	 */
-	fillVocab : function(id, data) {
+	fillVocab : function(id, data, defaultId, defaultName) {
 		var sel = $(id);
 		var defaults = this.getDefaults();	
 			
-		var elems = [{id:"random", name:"Random"}] 
+		if(!defaultId) {
+			defaultId = "random";
+		}
+		
+		if(!defaultName) {
+			defaultName = "Random";
+		}
+		
+		var elems = [{id:defaultId, name:defaultName}] 
 		$.merge(elems, data);   
 		
 		elems.forEach(function(e) {
@@ -240,9 +264,24 @@ var effectbrowser = {
 	createBackgroundSelector : function() {
 		var vocab = krusovice.backgrounds.Registry.getVocabulary();
 		this.fillVocab("#background", vocab);
-		
-		
-	    this.reanimate();	    		
+		this.hasBackgrounds = true;
+		this.loadCheck();
+	},
+	
+	
+	createSongSelector : function() {
+		console.log("Creating song selector");
+		var vocab = krusovice.music.Registry.getVocabulary();
+		this.fillVocab("#music", vocab, "nomusic", "No music");
+		this.hasMusic = true;
+		this.loadCheck();
+	},	
+	
+	loadCheck : function() {
+		if(this.hasBackgrounds && this.hasMusic) {
+			// autoplay
+			this.reanimate();
+		}
 	},
 	
 	setupRenderLayers : function() {
@@ -255,11 +294,40 @@ var effectbrowser = {
 		}
 	},
 	
+	onSelect : function(e, elem) {
+
+		var id = e.currentTarget.id;
+		
+		function switchSong(song) {
+		
+			if(!song) {
+				throw "Who turned off the music?";
+			}
+
+			if(!song.id) {
+				throw "Bad song data";
+			}
+
+			console.log("Switching to song:" + song.id);
+			this.song = song;
+			this.reanimate();
+		}
+
+		if(id == "music") {
+			var audio = document.getElementById("audio");       
+			var songId = $(e.currentTarget).find("option:selected").val();
+			krusovice.music.Registry.loadSong(songId, audio, $.proxy(switchSong, this));
+		} else {
+			this.reanimate();
+		}	
+		
+	},
+	
 	init : function() {				
 	    this.populate();
 
 		
-	    $("select").live("change", $.proxy(effectbrowser.reanimate, effectbrowser));       
+	    $("select").live("change", $.proxy(effectbrowser.onSelect, effectbrowser));       
 
 	    $("input[type=checkbox]").live("change", $.proxy(effectbrowser.setupRenderLayers, effectbrowser));       
 
@@ -270,6 +338,12 @@ var effectbrowser = {
 	    krusovice.backgrounds.Registry.loadBackgroundData("../media/backgrounds.json", 
 	     												  "../../../../../olvi/backgrounds/", 
 	     												  $.proxy(this.createBackgroundSelector, this));
+
+
+	    // XXX: Cannot distribute media files on Github
+	    krusovice.music.Registry.loadData("../../../../../olvi/music/songs.json", 
+										  "../../../../../olvi/music/", 
+										  $.proxy(this.createSongSelector, this));
 	    	    
 	}
 

@@ -588,8 +588,10 @@ krusovice.Show.prototype = {
      * will use its clock to adjust own playback.
      * 
      * @param {HTML5Audio} audio HTML5 audio element / player
+     *
+     * @param loadAsResource Add MP3 file to the show resources loading chain
      */
-    bindToAudio : function(audio) {
+    bindToAudio : function(audio, loadAsResource) {        	
     	
     	if(!audio) {
     		throw "You should give that audio element";
@@ -648,14 +650,16 @@ krusovice.Show.prototype = {
         
         var self = this;
         // http://www.chipwreck.de/blog/2010/03/01/html-5-video-dom-attributes-and-events/
-        if(audio.readyState < 4) {
-            // 
-            $(audio).bind("canplaythrough", function() {
-                self.loader.mark("audio", 1);
-            });
-            
-            this.loader.add("audio", 1);            
-        }
+        if(loadAsResource) {
+	        if(audio.readyState < 4) {
+	            // 
+	            $(audio).bind("canplaythrough", function() {
+	                self.loader.mark("audio", 1);
+	            });
+	            
+	            this.loader.add("audio", 1);            
+	        }
+	    }
     },
     
     

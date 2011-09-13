@@ -57,7 +57,15 @@ krusovice.Design.prototype = {
      *
      * Background song id. Song id is associated with the serve side music file and generated rhytm analysis data.
      */
-    songId : null
+    songId : null,
+    
+    /**
+     * @type Number
+     *
+     * Adjust music start. Positive value skips music to this moment. Negative value plays music X seconds before the show begins.
+     *
+     */
+    musicStart : 0,
         
 
 };

@@ -8,14 +8,19 @@
         <script type="text/javascript" src="../testdata/sample-song-data.js"></script>
     
         <script type="text/javascript" src="effect-browser.js"></script>
-	
-               
+	               
         <style>
-                .column {
-                        float: left;
-                        width: 200px;                                
-                }                     
-	
+            .column {
+                    float: left;
+                    width: 200px;                                
+            }                     
+            
+            .column-2 {
+            	
+            	float: left;
+            	width: 400px;
+            }
+
 			
 			#show {				
 			     width: 512px;
@@ -37,7 +42,12 @@
 			}
 			
 			audio {
+				 margin-top: 10px;
 			     width: 800px;
+			}
+			
+			textarea {
+				width: 100%;
 			}
                 </style>
        	</head>
@@ -81,8 +91,33 @@
                         </select>                        
                 </div>
 
+          		<div class="column">                
+                        <h2>Music</h2>
+                        <select id="music">
+                        </select>                        
+                </div>
+
 		
 				<div style="clear: both"><!-- --></div>              
+				
+				
+				<div class="column-2">
+				<p>Images & text</p>				
+					<textarea name="images">
+						kakku1.png
+						kakku1.png
+						kakku1.png
+					</textarea>
+				</div>
+
+				<div class="column-2">
+					<p>Settings</p>				
+					<textarea name="settings">
+					</textarea>
+				</div>
+
+				<div style="clear: both"><!-- --></div>              
+
 
 	            <div class="column">                
 	                    <p>Render scene
@@ -93,10 +128,13 @@
 	                    	<input type="checkbox" id="render-background" checked />	                   
 	            		</p>
 	            </div>
-                
 		
                 <div style="clear: both"><!-- --></div>  
 
-		
+				<button name="create-video">
+					Create video
+				</button>
+				
+				<input type="text" value="http://localhost:6543/create-video" />
 	</body>
 </html>
