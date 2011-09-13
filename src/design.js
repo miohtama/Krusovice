@@ -29,7 +29,14 @@ krusovice.Design.prototype = {
      * Background info 
      */
     background : {
-        
+ 
+        /**
+         * @type String 
+         *
+         * If this is set then use one of stock backgrounds with this id.
+         */
+        backgroundId : null,
+         
         /**
          * @type String
          *
@@ -37,26 +44,13 @@ krusovice.Design.prototype = {
          */
         type : null,
         
+        
         color : null,
         
         imageId : null,
         
         videoId : null
     },
-    
-    /**
-     * @type Number
-     *
-     * Show width in pixels
-     */
-    width : 512,
-    
-    /**
-     * @type Number
-     *
-     * Show height in pixels
-     */
-    height : 368,
     
     /**
      * @type String

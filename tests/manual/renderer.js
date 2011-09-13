@@ -1,22 +1,37 @@
-
+/**
+ * Create dummy test data and send it to the server.
+ *
+ */
 renderer = {
 		
 	init : function() {
+
+		var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+		var plan = timeliner.createPlan();        
+
+		var design = {
+			plan : simpleElements,
+			background : {
+				backgroundId : "white"
+			},
+			songId : "theark1"
+		}
+
+		// JSON payload send to the server
+		var project = {
+				design : design,
+				width : 512,
+				height : 288,
+				email : "mikko@industrialwebandmagic.com"
+		};
+
+		
 		$("button[name=render]").click( function() {
 			// Create sample show
-			
-			var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-			var plan = timeliner.createPlan();        
-			
-			var url = $("input[name=rendering-service-url]").val();
-			
-			// JSON payload send to the server
-			var data = {
-					plan : plan,
-					email : "mikko@industrialwebandmagic.com"
-			}
 						
-			var params = { json_data :JSON.stringify(data) };
+			var url = $("input[name=rendering-service-url]").val();
+									
+			var params = { project :JSON.stringify(project) };
 			
 			$.getJSON(url, params, function(data, textStatus, jqXHR) {
 				var message = data.message;
@@ -24,6 +39,16 @@ renderer = {
 			});
 			
 		});
+		
+		
+		$("button[name=json]").click( function() {
+			// Create sample show
+
+			var p = $("<p>");						
+			p.text(JSON.stringify(project));
+			$("body").append(p);
+		});
+
 	}
 		
 };
