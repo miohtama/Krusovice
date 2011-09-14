@@ -263,8 +263,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);
             self.object = self.createRendererObject();
-            console.log("Got obj");
-            console.log(self.object);
             if(self.prepareCallback) {
             	self.prepareCallback(true);
             }

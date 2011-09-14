@@ -118,8 +118,8 @@ krusovice.renderers.Three.prototype = {
 			throw "Oh mama, can we call this a null pointer exception?";
 		}
 		
-		console.log("Including new mesh on the scene");
-		console.log(mesh);
+		//console.log("Including new mesh on the scene");
+		//console.log(mesh);
 		this.scene.addObject(mesh);
 	},
 	

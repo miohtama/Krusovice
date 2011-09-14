@@ -270,6 +270,12 @@ krusovice.backgrounds.Scroll2D.prototype = {
        		console.error("scroll2d background time overflow:" + clock);
        		return;
        	} 
+       	
+       	if(!this.image) {
+       		//throw "Backgroudn image missing";
+       		return;
+       	}
+       	
         //var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
         
         
