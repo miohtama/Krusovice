@@ -182,8 +182,14 @@ $.extend(krusovice.backgrounds.Scroll2D, {
         var data = [];
         var frame, oldFrame;
         var t = 0;
-                
-        frame = this.calculateKeyFrame(0, {}, cfg);
+
+		var startFrame = {
+			x : krusovice.utils.rangernd(0, cfg.orignalSize.width - cfg.zoomSizes.maxW),
+			y : krusovice.utils.rangernd(0, cfg.orignalSize.height - cfg.zoomSizes.maxH)
+		}                
+		
+        frame = this.calculateKeyFrame(0, startFrame, cfg);
+
         data.push(frame);
         oldFrame = frame;
         while(t < duration) {
@@ -276,8 +282,23 @@ krusovice.backgrounds.Scroll2D.prototype = {
         var w = krusovice.utils.easeRange("easeInOutSine", lastShrinked.width, currentShrinked.width, frames.delta);
         var h = krusovice.utils.easeRange("easeInOutSine", lastShrinked.height, currentShrinked.height, frames.delta);
         
-        console.log("Got x:" + x + " y:" + y);
-        console.log(this);
+        if(h >= this.image.height) {
+        	h = this.image.height;
+        }
+        
+        if(y + h >= this.image.height) {
+        	y = this.image.height - h;
+        }
+        
+        if(w >= this.image.width) {
+        	w = this.image.width;
+        }
+        
+        if(x + w >= this.image.width) {
+        	x = this.image.width - x;
+        }
+        
+                
         if(ctx)  {
 			if(!ctx) {
 				throw "oops";

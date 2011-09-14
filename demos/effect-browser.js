@@ -45,13 +45,10 @@ var effectbrowser = {
         return vars;
     },
 		    		
-		
-	/**
-	 * Regenerate timeline based on the new choices made in the editor.
-	 */
-	reanimate : function() {
-						
-	    console.log("reanimate()");
+
+	createDesign : function() {
+
+   		var baseplan = [];
 	    
         if(this.show) {
             // One show per demo page allowed
@@ -65,11 +62,17 @@ var effectbrowser = {
 			imageURL : "../testdata/kakku.png"			
 		};
 		
-		var baseplan = [
-		     baseelem,
-		     baseelem,
-		     baseelem
-		];
+		var lines = $("#images").val().split("\n");
+		
+		// Add image elements to show
+		lines.forEach(function(l) {			
+			l = l.trim();
+			if(l != "") {
+				var copy = $.extend({}, baseelem);
+				copy.imageURL = l;
+				baseplan.push(copy);				
+			}			
+		});
 		
 		var settings = {
 
@@ -107,7 +110,18 @@ var effectbrowser = {
 			settings : settings,
 			background : background			
 		});
-			
+		
+		return design;
+	},
+	
+	/**
+	 * Regenerate timeline based on the new choices made in the editor.
+	 */
+	reanimate : function() {
+						
+	    console.log("reanimate()");
+	    
+	 	var design = this.createDesign();			
 		this.createShow(design);						
 	},
 	
@@ -127,7 +141,7 @@ var effectbrowser = {
         
         this.show  = null;
 	},
-	
+		
 	/**
 	 * Reconstruct Show
 	 *
@@ -323,6 +337,18 @@ var effectbrowser = {
 		
 	},
 	
+	outputJSON : function() {
+		var project = {};
+		
+		project.design = this.createDesign();
+		project.width = 512;
+		project.height = 288;
+		
+		var p = $("<p>");
+		p.text(JSON.stringify(project));
+		$("body").append(p);
+	},
+	
 	init : function() {				
 	    this.populate();
 
@@ -335,7 +361,7 @@ var effectbrowser = {
 	    $("#reanimate").click($.proxy(effectbrowser.reanimate, effectbrowser));       
 	    
 	    // XXX: Cannot distribute media files on Github
-	    krusovice.backgrounds.Registry.loadBackgroundData("../media/backgrounds.json", 
+	    krusovice.backgrounds.Registry.loadBackgroundData("../../../../../olvi/backgrounds/backgrounds.json", 
 	     												  "../../../../../olvi/backgrounds/", 
 	     												  $.proxy(this.createBackgroundSelector, this));
 
@@ -344,7 +370,10 @@ var effectbrowser = {
 	    krusovice.music.Registry.loadData("../../../../../olvi/music/songs.json", 
 										  "../../../../../olvi/music/", 
 										  $.proxy(this.createSongSelector, this));
-	    	    
+
+		$("#images").val("../testdata/kakku.png\n../testdata/kakku.png\n../testdata/kakku.png\n");	    	 
+		
+		$("#create-json").click($.proxy(this.outputJSON, this));
 	}
 
 }

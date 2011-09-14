@@ -66,6 +66,13 @@ krusovice.Design.prototype = {
      *
      */
     musicStart : 0,
-        
+    
+    
+    /**
+     * @type Number 
+     *
+     * How many seconds delay between photos. Can be negative.
+     */
+    nextDelay : 0,
 
 };
