@@ -359,9 +359,34 @@ krusovice.utils = {
     		width : width,
     		height : width / ratio
     	}
-    }
+    },
     
-              
+ 
+ 	/**
+ 	 * http://stackoverflow.com/questions/1682495/jquery-resize-to-aspect-ratio/5654801#5654801
+ 	 */
+ 	resizeAspectRatio : function(srcWidth, srcHeight, maxWidth, maxHeight) {
+	    
+	    var resizeWidth = srcWidth;
+	    var resizeHeight = srcHeight;
+	
+	    var aspect = resizeWidth / resizeHeight;
+	
+	    if (resizeWidth > maxWidth)
+	    {
+	        resizeWidth = maxWidth;
+	        resizeHeight = resizeWidth / aspect;
+	    }
+	    
+	    if (resizeHeight > maxHeight)
+	    {
+	        aspect = resizeWidth / resizeHeight;
+	        resizeHeight = maxHeight;
+	        resizeWidth = resizeHeight * aspect;
+	    }
+	
+	    return { width : resizeWidth, height : resizeHeight };	     		
+ 	}             
     
 }
 

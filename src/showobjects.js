@@ -243,7 +243,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      * 
      * Draw borders around the image.
      */
-    prepare : function() {
+    prepare : function(width, height) {
 
         console.log("Prepare photo");
 
@@ -261,7 +261,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         console.log("Loading image image obj:" + this.data.image + " URL:" + this.data.imageURL);
 	                    
         function imageLoaded() {
-            self.framed = self.createFramedImage(self.image);
+            self.framed = self.createFramedImage(self.image, width, height);
             self.object = self.createRendererObject();
             console.log("Got obj");
             console.log(self.object);
@@ -301,7 +301,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      * 
      * @param {Image} img Image object (loaded)
      */
-    createFramedImage : function(img) {
+    createFramedImage : function(img, width, height) {
                        
        // Drop shadow blur size in pixels
        // Shadow is same length to both X and Y dirs
@@ -311,8 +311,17 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        var frameColor = "#FFFFFF";
                
        // Actual pixel data dimensions, not ones presented in DOM tree
-       var nw = img.naturalWidth || img.width;
-       var nh = img.naturalHeight || img.height;
+
+       // Create temporary <canvas> to work with, with expanded canvas (sic.) size     
+       var buffer = document.createElement('canvas');
+       
+       buffer.width = width;
+       buffer.height = height;
+       console.log("Buffer:" + width + " " + height)
+       var aspect = img.naturalWidth / img.naturalHeight;
+       
+       var nw = height * aspect; 
+       var nh = height;
        
        if(!nw || !nh) {
     	   throw "Unknown image source for framing";
@@ -320,20 +329,15 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     
        // horizontal and vertical frame border sizes
        var borderX = nw * 0.05;
-       var borderY = nh * 0.05;
+       var borderY = nw * 0.05;
        
        // calculate the area we need for the final image
-       var w = borderX * 2 + shadowSize * 2 + nw;
-       var h = borderY * 2 + shadowSize * 2 + nh;
+       var w = nw - borderX * 2 + shadowSize * 2;
+       var h = nh - borderY * 2 + shadowSize * 2;
        
        console.log("Got dimensions:" + nw + " " + w + " " + nh + " " + h);
     
-       // Create temporary <canvas> to work with, with expanded canvas (sic.) size     
-       var buffer = document.createElement('canvas');
-       
-       buffer.width = w;
-       buffer.height = h;
-       
+
        // Remember, remember, YTI Turbo Pascal
        var context = buffer.getContext('2d');
        
@@ -342,8 +346,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        context.shadowBlur = shadowSize;
        context.shadowColor = "black";
     
-       context.fillStyle = "#FFFFFF";
-       context.fillRect(shadowSize, shadowSize, nw+borderX*2, nh+borderY*2);       
+       //context.fillStyle = "#FFFFFF";
+       context.fillStyle = "#eeEEee";
+       context.fillRect(width/2 - w/2, height/2 - h/2, w, h);       
                     
        //Turn off the shadow
        context.shadowOffsetX = 0;
@@ -352,7 +357,16 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        context.shadowColor = "transparent";
        
        // Slap the imge in the frame
-       context.drawImage(img, shadowSize+borderX, shadowSize+borderY);
+       var dimensions = krusovice.utils.resizeAspectRatio(img.naturalWidth, img.naturalHeight, w - (borderX+shadowSize)*2, h - (borderY+shadowSize)*2);
+       //var dimensions = krusovice.utils.resizeAspectRatio(img.naturalWidth, img.naturalHeight, w-10, h-10);
+       
+       dimensions.width -= 10;
+       dimensions.height -= 10;
+       
+       //context.drawImage(img, width/2 - dimensions.width/2, height/2 - dimensions.height/2, dimensions.width, dimensions.height);
+       console.log("h:" + h);
+       context.drawImage(img, width/2 - w/2 + 10, height/2 - h/2 + 10, w-20, h-40);
+       
        
        // We don't need to convert canvas back to imge as drawImage() accepts canvas as parameter
        // http://kaioa.com/node/103

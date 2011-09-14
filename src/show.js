@@ -265,7 +265,7 @@ krusovice.Show.prototype = {
             console.log("Preparing anim object:" + i);
             var e = this.animatedObjects[i];
             e.prepareCallback = cb;
-            e.prepare();             
+            e.prepare(this.width, this.height);             
         }                               
         
     },
