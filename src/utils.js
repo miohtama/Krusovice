@@ -392,10 +392,11 @@ krusovice.utils = {
 
 
 /**
- * Story id -> objects pairs with some helper functions. 
+ * Id -> objects mapper with categorization and other extra functionality.
  *
  * Each object must have **id** and **name** (human readable name) attributes.
- *
+ * Optionaly objects have **categories** array containing list of category ids they belong to.
+ * 
  * Object initialization method can be called when they are added into the registry.
  * 
  * @singleton
@@ -471,6 +472,58 @@ krusovice.utils.Registry = {
         data.forEach(function(e) {d2.push(e.id)});        
         return d2;
         
-    }
+    },
+    
+ 
+ 	/**
+ 	 * Get list of category id -> name pairs.
+ 	 *
+ 	 * This is for objects which have **categories** attribute set
+ 	 * to an array containing category ids.
+ 	 *
+ 	 */
+ 	getCategoriesVocabulary : function() {
+		
+		var categories = [];
+		var idsDone = [];
+		
+		$.each(this.data, function(id, obj) {
+
+			var catIds = obj.categories;
+
+			catIds.forEach(function(catId) {
+				
+				
+				if($.inArray(catId, idsDone) == -1) {
+					var cat = {
+						id : catId,
+						name : catId
+					}
+					categories.push(cat);
+					idsDone.push(catId);
+				}				
+			});
+		
+		});
+		
+		return categories;
+	},
+
+	/**
+	 * Query all objects by category.
+	 */	
+	getItemsInCategory : function(catId) {
+		var songs = [];
+		
+		$.each(this.data, function(id, obj) {
+
+			var catIds = obj.categories;
+			if($.inArray(catId, catIds)) {
+				songs.push(obj);
+			}		
+		});
+		
+		return songs;
+	}
     
 };
