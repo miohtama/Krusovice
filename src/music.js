@@ -106,8 +106,44 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		
 		$(audio).attr("src", songURL);
 		
-	}
+	},
+	
+	
+	getCategoriesVocabulary : function() {
+		var categories = [];
+		
+		$.each(this.data, function(id, obj) {
 
+			var catIds = obj.categories;
+
+			catIds.forEach(function(catId) {
+				if(!categories[catId]) {
+					var cat = {
+						id : catId,
+						name : catId
+					}
+					categories.push(cat);
+				}				
+			});
+		
+		});
+		
+		return categories;
+	},
+
+	getSongsInCategory : function(catId) {
+		var songs = [];
+		
+		$.each(this.data, function(id, obj) {
+
+			var catIds = obj.categories;
+			if($.inArray(catId, catIds)) {
+				songs.push(obj);
+			}		
+		});
+		
+		return songs;
+	}
 
 });
 

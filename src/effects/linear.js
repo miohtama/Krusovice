@@ -30,7 +30,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
             opacity : 1,
             scale : [1,1,1]    
         },
-        
+              
         targetVariation : {        
         },
         
@@ -147,10 +147,14 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
     available : true,
     
     transitions : ["transitionin", "transitionout"],
+    
+    
+    
         
     init : function() {
         // Override default animation parameters
         this.parameters.source.position = [0, 0, krusovice.effects.BEHIND_CAMERA_Z];
+        //this.parameters.opacity.easing = "linear";
     }
         
 });

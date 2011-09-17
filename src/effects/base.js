@@ -202,6 +202,14 @@ krusovice.effects.Base = {
                     
         }, 
         
+        /**
+         * @type object
+         *
+         * Parameter name -> easing method mappings (if overriding global easing)
+         */
+        easing : {        	
+        }
+        
     },
     
     
