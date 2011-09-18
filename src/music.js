@@ -5,6 +5,13 @@ var krusovice = krusovice || {};
 krusovice.music = krusovice.music || {};
 
 krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
+	
+	/**
+	 * Dummy audio filed used play when no song is selected. 
+	 * <audio> element will still feed clock to the process.
+	 * 
+	 */
+	noAudioClip : null,
 
 	/**
 	 * Load music data from JSON file
@@ -58,7 +65,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 	/**
 	 * Load a song from the repository for the show purposes.
 	 *
-	 * @param {String} id Song id
+	 * @param {String} id Song id or null for no music
 	 *
 	 * @param {Object} audio HTMLAudio element used for music playback, or null
 	 *
@@ -67,21 +74,26 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 	 */
 	loadSong : function(id, audio, callback) {
 		
-		if(!id) {
-			throw "Missing id";
-		}
-		
-		var song = this.get(id);
-		
-		if(!song) {
-			throw "Unknown song:" + id;
-		}
-		
+		var songURL, rhytmURL;
 		var rhytmDone = false;
 		var songDone = false;
 		
-		var songURL = song.mp3;
-		var rhytmURL = songURL.replace(".mp3", ".json");
+		if(id) {
+			// Assuming has music
+		
+			var song = this.get(id);
+			
+			if(!song) {
+				throw "Unknown song:" + id;
+			}
+
+			songURL = song.mp3;
+			rhytmURL = songURL.replace(".mp3", ".json");			
+
+		} else {			
+			songURL = this.noAudioClip;								
+		}
+
 
 		function allDone() {
 			if(rhytmDone && songDone) {
@@ -102,9 +114,12 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		
 		$.getJSON(rhytmURL, onRhytmData);
 		
-		$(audio).one("canplay", onMusicBuffered);
-		
-		$(audio).attr("src", songURL);
+		if(audio) {		
+			$(audio).one("canplay", onMusicBuffered);		
+			$(audio).attr("src", songURL);
+		} else {
+			songDone = true;
+		}
 		
 	}
 

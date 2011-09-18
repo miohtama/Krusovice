@@ -590,6 +590,8 @@ krusovice.Show.prototype = {
      * @param {HTML5Audio} audio HTML5 audio element / player
      *
      * @param loadAsResource Add MP3 file to the show resources loading chain
+     *
+     * @return {Object} controller object for the playback
      */
     bindToAudio : function(audio, loadAsResource) {        	
     	
@@ -660,6 +662,42 @@ krusovice.Show.prototype = {
 	            this.loader.add("audio", 1);            
 	        }
 	    }
+	    
+	    return audio;
+    },
+    
+    
+    /**
+     * Play the with no background music using system clock as the clock source. 
+     * 
+     * @return {Object} Controller object with play() and pause() methods
+     */
+    bindToClock : function() {
+    	
+    	var self = this;
+    	var startTime = (new Date().getTime());
+    	var handle = null;
+    	
+    	var controller = {
+    		
+			tick : function() {
+				var now = (new Date().getTime());				
+				self.onClock((now - startTime) / 1000)
+			},
+
+    		play : function() {			
+    			setInterval(this.tick, 500);
+    			self.play();
+    		},
+    		
+    		pause : function() {
+    			self.stop();
+    			clearInterval(handle);
+    		}
+    	}
+    	
+    	return controller;
+    	    	
     },
     
     
