@@ -307,8 +307,9 @@ krusovice.Show.prototype = {
     prepareCanvas : function() {
                 
         var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
-        
+                      
         if(this.elem !== null) {
+        	this.elem.find("canvas").remove();
             this.elem.append($canvas);
         }        
         this.canvas = $canvas.get(0);
