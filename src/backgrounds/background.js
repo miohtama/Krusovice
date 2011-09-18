@@ -350,7 +350,7 @@ krusovice.backgrounds.Plain.prototype = {
 krusovice.backgrounds.createBackground = function(type, duration, timeline, rhytmData, cfg) {    
        
        console.log("Creating background:" + type);
-       
+              
        if(type == "plain") {         
            if(!cfg.color) {
                throw "Color is missing";

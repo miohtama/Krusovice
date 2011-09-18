@@ -321,6 +321,7 @@ krusovice.Show.prototype = {
      * Build background data and add all medias to the loader
      */
     prepareBackground : function() {
+
         var duration = this.getDuration();
         
         var background;
@@ -332,7 +333,17 @@ krusovice.Show.prototype = {
         		color : "#ffffff"
         	}        	
         } else {
-        	background = this.background;
+        	
+        	if(this.background.backgroundId) {
+	        	// Use stock background
+        		// Apply default backgroudn settings by id
+        		// then custom settings
+        		background = $.extend({}, krusovice.backgrounds.Registry.get(this.background.backgroundId), this.background);
+        	} else {
+        		// Totally custom background
+	        	background = this.background;      		
+        	}
+        	
         }
                 
         var timeline = this.timeline;
