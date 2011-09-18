@@ -676,7 +676,7 @@ krusovice.Show.prototype = {
     bindToClock : function() {
     	
     	var self = this;
-    	var startTime = (new Date().getTime());
+    	var startTime = null;
     	var handle = null;
     	
     	var controller = {
@@ -687,6 +687,7 @@ krusovice.Show.prototype = {
 			},
 
     		play : function() {			
+    			startTime = (new Date().getTime());
     			setInterval(this.tick, 500);
     			self.play();
     		},
