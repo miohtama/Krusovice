@@ -34,6 +34,7 @@ krusovice.Design.prototype = {
          * @type String 
          *
          * If this is set then use one of stock backgrounds with this id.
+         * **backgroundId** takes precendence of backgroundType.
          */
         backgroundId : null,
          
@@ -43,8 +44,7 @@ krusovice.Design.prototype = {
          * One of "video", "plain", "gradient", "skybox"
          */
         type : null,
-        
-        
+             
         color : null,
         
         imageId : null,

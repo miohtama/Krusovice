@@ -492,8 +492,7 @@ krusovice.utils.Registry = {
 			var catIds = obj.categories;
 
 			catIds.forEach(function(catId) {
-				
-				
+								
 				if($.inArray(catId, idsDone) == -1) {
 					var cat = {
 						id : catId,
@@ -518,7 +517,8 @@ krusovice.utils.Registry = {
 		$.each(this.data, function(id, obj) {
 
 			var catIds = obj.categories;
-			if($.inArray(catId, catIds)) {
+
+			if($.inArray(catId, catIds) >= 0) {
 				songs.push(obj);
 			}		
 		});
