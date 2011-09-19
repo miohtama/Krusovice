@@ -699,7 +699,7 @@ krusovice.Show.prototype = {
 
     		play : function() {			
     			startTime = (new Date().getTime());
-    			setInterval(this.tick, 500);
+    			handle = setInterval(this.tick, 500);
     			self.play();
     		},
     		
