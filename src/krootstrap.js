@@ -28,6 +28,7 @@ krusovice.load = function(doneCallback, includeDependencies) {
 	     "utils.js",
 	     "design.js",
 	     "inputelement.js",
+	     "project.js",
 	     "loader.js",
 	     "rhytmanalysis.js",
 	     "showobjects.js",
