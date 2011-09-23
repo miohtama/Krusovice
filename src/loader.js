@@ -1,13 +1,13 @@
-"use string";
+"use strict";
 
 var krusovice = krusovice || {};
 
 /**
  * Simple element loader helper
  */
-krusovice.Loader = function() {
-    
-}
+krusovice.Loader = function(cfg) {
+    $.extend(this, cfg);
+};
 
 krusovice.Loader.prototype = {
 
@@ -64,7 +64,7 @@ krusovice.Loader.prototype = {
     add : function(name, count) {
       
         // Let's imagine this is an atomic operation  
-        value = this.loadElements[name] || 0;
+        var value = this.loadElements[name] || 0;
         value += count;               
         this.totalElementsToLoad += count;
         this.loadElements[name] = value;
@@ -74,12 +74,12 @@ krusovice.Loader.prototype = {
     },
 
     getLeftCount : function() {        
-        return totalElementsToLoad;
+        return this.totalElementsToLoad;
     },
     
     mark : function(name, count) {
 
-        value = this.loadElements[name] || 0;
+        var value = this.loadElements[name] || 0;
         value -= count;               
         
         if(value < 0) {
@@ -148,13 +148,13 @@ krusovice.Loader.prototype = {
 
                         
         function imageLoaded() {
-            self.mark("image", 1)
+            self.mark("image", 1);
             callback(img);
         }   
         
         function error() {                        
             var msg = "Failed to load image:" + url;
-            console.error(msg)
+            console.error(msg);
             self.setError(msg);
         }
         
@@ -176,4 +176,4 @@ krusovice.Loader.prototype = {
         
     }
     
-}
+};

@@ -106,7 +106,7 @@ krusovice.utils = {
                     next : null,                    
                     value : 0,
                     easing : null
-            }
+            };
         }
         
         var i;
