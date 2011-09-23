@@ -178,7 +178,7 @@ $.extend(krusovice.backgrounds.Scroll2D, {
             frame.y = (oldFrame.y||0) + krusovice.utils.splitrnd(cfg.maxMove || this.maxMove);
         }
 
-        if(attemps == 0) {
+        if(attemps === 0) {
             console.error(oldFrame);
             console.error(this.image);
             throw "Could not create key frame";
@@ -376,4 +376,4 @@ krusovice.backgrounds.createBackground = function(type, duration, timeline, rhyt
        } else {
            throw "Unknown background type:" + type;
        }
-}
+};

@@ -23,11 +23,11 @@ krusovice.Loader.prototype = {
         images : 0,
         backgroundImages : 0
     },
-    
+
     totalElementsToLoad : 0,
-    
+
     nowLoaded : 0,
-    
+
     /**
      * @type Function
      *
@@ -35,17 +35,17 @@ krusovice.Loader.prototype = {
      *
      */
     callback : null,
-    
-   
-    /** 
+
+
+    /**
      * @type Function
      *
-     * errorCallback(msg) 
+     * errorCallback(msg)
      *
      * Called when we fail
      */
     errorCallback : null,
-    
+
     /**
      * @type String
      *
@@ -53,58 +53,58 @@ krusovice.Loader.prototype = {
      * Contains error message if loading has failed somehow
      */
     errorMessage : null,
-    
+
     /**
-     * Add elements to load queue counter 
+     * Add elements to load queue counter
      *
      * @param {String} name E.g. audio, video, image
      *
      * @param {Nunmber} count How many elements needs to be loaded (still)
      */
     add : function(name, count) {
-      
-        // Let's imagine this is an atomic operation  
+
+        // Let's imagine this is an atomic operation
         var value = this.loadElements[name] || 0;
-        value += count;               
+        value += count;
         this.totalElementsToLoad += count;
         this.loadElements[name] = value;
-  
+
         console.log("Queued resource for loading " + name + " * " + count + " total:" + this.totalElementsToLoad);
-  
+
     },
 
-    getLeftCount : function() {        
+    getLeftCount : function() {
         return this.totalElementsToLoad;
     },
-    
+
     mark : function(name, count) {
 
         var value = this.loadElements[name] || 0;
-        value -= count;               
-        
+        value -= count;
+
         if(value < 0) {
             throw "Loading book keeping failure for:" + name;
         }
 
-                                
+
         this.loadElements[name] = value;
-        
+
         this.nowLoaded += count;
 
         console.log("Loaded name:" + name + " left:" + value + " total loaded:" + this.nowLoaded + " total count:" + this.totalElementsToLoad);
-       
+
         if(this.callback) {
             this.callback(this.getProgress());
         }
     },
-    
+
     /**
      * @return Number 0...1 how much loading is done
      */
     getProgress : function() {
         return this.nowLoaded / this.totalElementsToLoad;
     },
-    
+
     /**
      * Set a flag all resources could not be loaded.
      *
@@ -116,18 +116,18 @@ krusovice.Loader.prototype = {
             this.errorCallback(msg);
         }
     },
-    
-    
+
+
     /**
      * Put an image to a loading chain.
      *
      * If image is an object wait until it is completely laoded.
      * If image is an URL create an image and load it.
      *
-     * @param {Image|String} Image object or URL to an image 
+     * @param {Image|String} Image object or URL to an image
      */
     loadImage : function(obj, callback) {
-        
+
         var self = this;
         var img;
         var load;
@@ -139,41 +139,41 @@ krusovice.Loader.prototype = {
             url = img.getAttribute("src");
             load = false;
         } else {
-        	url = obj;
-            img = new Image();           
+            url = obj;
+            img = new Image();
             load = true;
         }
 
         console.log("Preparing image:" + obj + " needs async load:" + load);
 
-                        
+
         function imageLoaded() {
             self.mark("image", 1);
             callback(img);
-        }   
-        
-        function error() {                        
+        }
+
+        function error() {
             var msg = "Failed to load image:" + url;
             console.error(msg);
             self.setError(msg);
         }
-        
-        self.add("image", 1);       
-        
+
+        self.add("image", 1);
+
         // Load image asynchroniously
         if(load) {
             img.onload = imageLoaded;
             img.onerror = error;
-            img.src = obj;                                
+            img.src = obj;
         } else {
             console.log("Was already loaded");
             if(callback) {
                 callback();
             }
         }
-        
+
         return img;
-        
+
     }
-    
+
 };
