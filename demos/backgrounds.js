@@ -18,51 +18,83 @@ var backgrounds = {
 
     height: 48,
 
-    drawBackgrounds : function() {
+    bgs : [],
 
-        var ids = this.getBackgroundsIds();
+    drawBackground : function() {
 
         var width = this.width;
         var height = this.height;
-        var self = this;
 
-        ids.forEach(function(id) {
+        this.bgs.forEach(function(bg) {
+            console.log("Rendering:" + bg.options.id);
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
 
-            var bg = krusovice.backgrounds.Registry.get(id);
+            var ctx = canvas.getContext("2d");
+            bg.render(ctx, 0);
 
-            function loaded() {
-                var canvas = document.createElement("canvas");
-                canvas.width = width;
-                canvas.height = height;
+            $("#backgrounds").append("<h2>" + bg.options.name + "</h2>");
+            $("#backgrounds").append(canvas);
 
-                var ctx = canvas.getContext("2d");
-            }
-
-            function error() {
-                self.failed = true;
-            }
-
-            var loader = new krusovice.Loader({callback : $.proxy(loaded, this), errorCallback : $.proxy(error, this)});
-
-            bg.prepare(loader, this.width, this.height);
-
-
+            // Store canvas for later grabbing the pixel data
+            bg.canvas = canvas;
         });
 
         this.ready = true;
+
+    },
+
+    prepareBackgrounds : function() {
+
+        var ids = this.getBackgroundIds();
+        var width = this.width;
+        var height = this.height;
+
+        var self = this;
+
+        console.log("Preparing backgrounds:" + ids);
+
+        function error(event, msg) {
+            console.error(msg);
+            self.failed = true;
+        }
+
+        var loader = new krusovice.Loader({allLoadedCallback : $.proxy(this.drawBackground, this), errorCallback : $.proxy(error, this)});
+
+        ids.forEach(function(id) {
+            var bg = krusovice.backgrounds.createBackgroundById(id, 1);
+            self.bgs.push(bg);
+            console.log("Preparing:" + id);
+            bg.prepare(loader, width, height);
+
+        });
+
     },
 
     getBackgroundIds : function() {
         return krusovice.backgrounds.Registry.getIds();
     },
 
+    /**
+     * Called from the controller script to extract PNG data.
+     */
+    getBackgroundThumbnail : function(id) {
+        var i=0;
+        for(i=0; i<this.bgs.length; i++) {
+            var bg = this.bgs[i];
+            if(bg.options.id == id) {
+                return; // XXX
+            }
+        }
+    },
 
     init : function() {
 
         // XXX: Cannot distribute media files on Github
         krusovice.backgrounds.Registry.loadBackgroundData("../../../../../olvi/backgrounds/backgrounds.json",
                                                            "../../../../../olvi/backgrounds/",
-                                                           $.proxy(this.drawBackgrounds, this));
+                                                           $.proxy(this.prepareBackgrounds, this));
 
 
     }

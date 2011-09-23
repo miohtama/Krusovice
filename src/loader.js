@@ -42,9 +42,19 @@ krusovice.Loader.prototype = {
      *
      * errorCallback(msg)
      *
-     * Called when we fail
+     * Called when any item load fails
      */
     errorCallback : null,
+
+
+    /**
+     * @type Function
+     *
+     * allLoadedCallback
+     *
+     * Called when all done
+     */
+    allLoadedCallback : null,
 
     /**
      * @type String
@@ -96,6 +106,16 @@ krusovice.Loader.prototype = {
         if(this.callback) {
             this.callback(this.getProgress());
         }
+
+        this.checkAllLoaded();
+    },
+
+    checkAllLoaded : function() {
+        if(this.nowLoaded >= this.totalElementsToLoad) {
+            if(this.allLoadedCallback) {
+                this.allLoadedCallback();
+            }
+        }
     },
 
     /**
@@ -133,6 +153,10 @@ krusovice.Loader.prototype = {
         var load;
         var url;
 
+        if(!obj) {
+            throw "loadImage(): missing target";
+        }
+
         if(obj.width === 0 || obj.width) {
             // We have a prepared image
             img = obj;
@@ -146,10 +170,10 @@ krusovice.Loader.prototype = {
 
         console.log("Preparing image:" + obj + " needs async load:" + load);
 
-
         function imageLoaded() {
-            self.mark("image", 1);
+            //console.log("imageLoaded()" + url);
             callback(img);
+            self.mark("image", 1);
         }
 
         function error() {

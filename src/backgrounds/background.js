@@ -25,11 +25,15 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
      * @param {String} mediaURL Base URL to image and video data
      */
     loadBackgroundData : function(url, mediaURL, callback) {
+
         var self = this;
-        console.log("Loading backgrounds");
+
+        if(!callback) {
+            throw "Async callback missing";
+        }
+
+        console.log("Loading background data");
         $.getJSON(url, function(data) {
-            console.log("Background data");
-            console.log(data);
             data.forEach(function(obj) {
                 self.fixMediaURLs(obj, mediaURL);
                 self.register(obj);
@@ -64,8 +68,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 /**
  * Background animation.
  */
-krusovice.backgrounds.Background = function(cfg) {
-    $.extend(this, cfg);
+krusovice.backgrounds.Background = function(options, data) {
 };
 
 krusovice.backgrounds.Background.prototype = {
@@ -97,8 +100,9 @@ krusovice.backgrounds.Background.prototype = {
  *
  * Scroll & rotate inside a bigger continuous 2D texture.
  */
-krusovice.backgrounds.Scroll2D = function(data) {
+krusovice.backgrounds.Scroll2D = function(options, data) {
     this.data = data;
+    this.options = options;
 };
 
 $.extend(krusovice.backgrounds.Scroll2D, {
@@ -249,12 +253,18 @@ krusovice.backgrounds.Scroll2D.prototype = {
         // Create a working copy of the data
         this.frames = this.data.frames.slice(0);
 
+        var imageURL = this.data.image;
+
+        var self = this;
+
         // Convert URL to real loaded image object
         function loadedImage(image) {
+            //console.log("Loaded background image:" + imageURL);
+            //console.log(image);
             this.image = image;
         }
 
-        loader.loadImage(this.data.image, $.proxy(loadedImage, this));
+        loader.loadImage(imageURL, $.proxy(loadedImage, this));
     },
 
     getFramePair : function(clock, frames) {
@@ -277,15 +287,14 @@ krusovice.backgrounds.Scroll2D.prototype = {
 
         var frames = this.getFramePair(clock, this.data.frames);
 
-           if(!frames) {
-               console.error("scroll2d background time overflow:" + clock);
-               return;
-           }
+        if(!frames) {
+            console.error("scroll2d background time overflow:" + clock);
+            return;
+        }
 
-           if(!this.image) {
-               //throw "Backgroudn image missing";
-               return;
-           }
+        if(!this.image) {
+           throw "Backgroudn image missing";
+        }
 
         //var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
 
@@ -333,8 +342,8 @@ krusovice.backgrounds.Scroll2D.prototype = {
 /**
  * Single color background
  */
-krusovice.backgrounds.Plain = function(data) {
-    this.data = data;
+krusovice.backgrounds.Plain = function(options) {
+    this.options = options;
 };
 
 krusovice.backgrounds.Plain.prototype = {
@@ -350,7 +359,7 @@ krusovice.backgrounds.Plain.prototype = {
         console.log("plain");
         if(ctx) {
             ctx.save();
-            ctx.fillStyle = this.data.color;
+            ctx.fillStyle = this.options.color;
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
         }
@@ -360,7 +369,7 @@ krusovice.backgrounds.Plain.prototype = {
 
 krusovice.backgrounds.createBackground = function(type, duration, timeline, rhytmData, cfg) {
 
-       console.log("Creating background:" + type);
+       console.log("Creating background type:" + type);
 
        if(type == "plain") {
            if(!cfg.color) {
@@ -372,8 +381,23 @@ krusovice.backgrounds.createBackground = function(type, duration, timeline, rhyt
            if(!data.frames) {
                throw "Ooops";
            }
-           return new krusovice.backgrounds.Scroll2D(data);
+           return new krusovice.backgrounds.Scroll2D(cfg, data);
        } else {
            throw "Unknown background type:" + type;
        }
+};
+
+/**
+ * @param {String} id One of stock background ids
+ */
+krusovice.backgrounds.createBackgroundById = function(id, duration, timeline, rhytmData, cfg) {
+
+    console.log("Creating background by id:" + id);
+
+    var bgData = $.extend({}, krusovice.backgrounds.Registry.get(id), cfg);
+    var type = bgData.type;
+
+    console.log(bgData);
+
+    return krusovice.backgrounds.createBackground(type, duration, timeline, rhytmData, bgData);
 };
