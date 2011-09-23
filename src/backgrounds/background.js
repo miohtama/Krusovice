@@ -36,6 +36,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
         $.getJSON(url, function(data) {
             data.forEach(function(obj) {
                 self.fixMediaURLs(obj, mediaURL);
+                self.fixThumbnails(obj, mediaURL);
                 self.register(obj);
             });
             callback();
@@ -62,7 +63,17 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
                 obj.image = mediaURL + obj.image;
             }
         }
+    },
+
+    /**
+     * Fix thumbnail URLs of the background.
+     *
+     * XXX: Hardcoded for now
+     */
+    fixThumbnails : function(obj, mediaURL) {
+        obj.thumbnail = mediaURL + "thumbnails/" + obj.id + ".png";
     }
+
 });
 
 /**

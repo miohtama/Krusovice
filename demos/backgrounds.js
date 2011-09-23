@@ -14,9 +14,9 @@ var backgrounds = {
 
     failedMessage: null,
 
-    width : 48,
+    width : 64,
 
-    height: 48,
+    height: 36,
 
     bgs : [],
 
