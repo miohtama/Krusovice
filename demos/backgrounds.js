@@ -12,7 +12,7 @@ var backgrounds = {
      */
     ready : false,
 
-    failed: true,
+    failedMessage: null,
 
     width : 48,
 
@@ -57,7 +57,7 @@ var backgrounds = {
 
         function error(event, msg) {
             console.error(msg);
-            self.failed = true;
+            self.failed = msg;
         }
 
         var loader = new krusovice.Loader({allLoadedCallback : $.proxy(this.drawBackground, this), errorCallback : $.proxy(error, this)});
@@ -84,7 +84,9 @@ var backgrounds = {
         for(i=0; i<this.bgs.length; i++) {
             var bg = this.bgs[i];
             if(bg.options.id == id) {
-                return; // XXX
+                var canvas = bg.canvas;
+                var data = canvas.toDataURL();
+                return data;
             }
         }
     },
