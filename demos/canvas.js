@@ -66,14 +66,14 @@ var canvas = {
         var frame1 = $("<div class='frame1'>");
 
         // 1.0 = the first image visible
-        this.renderShowFrame(frame1, width, height, 1);
+        this.renderShowFrame(frame1, width, height, 3);
 
         $("#canvases").append(frame1);
 
         var frame2 = $("<div class='frame2'>");
 
         // 1.0 = the first image visible
-        this.renderShowFrame(frame2, width, height, 3);
+        this.renderShowFrame(frame2, width, height, 9);
 
         $("#canvases").append(frame2);
 
