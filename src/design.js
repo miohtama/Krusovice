@@ -75,6 +75,26 @@ krusovice.Design.prototype = {
      */
     nextDelay : 0,
 
+    /**
+     * @type Number
+     *
+     * How many seconds before the first animation appears
+     */
+    leadTime : 0,
+
+    /**
+     * @type Number
+     *
+     * How many seconds empty after the last animation
+     */
+    coolingTime : 0,
+
+    /**
+     * @type Number
+     *
+     * How long render the credits frames (last frame)
+     */
+    creditsTime : 0,
 
     /**
      * Default transition settings.
@@ -96,6 +116,8 @@ krusovice.Design.prototype = {
             // Duration will come from the plan item itself
         }
 
-    }
+    },
+
+
 
 };
