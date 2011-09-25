@@ -404,6 +404,10 @@ krusovice.utils = {
      },
 
      calculateAspectRatioFit : function(srcWidth, srcHeight, maxWidth, maxHeight) {
+
+        //return krusovice.utils.resizeAspectRatio(srcWidth, srcHeight, maxWidth, maxHeight);
+
+
         if(srcWidth > srcHeight) {
             return { width : maxWidth, height : maxHeight * srcHeight/srcWidth };
         }  else {

@@ -335,12 +335,12 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
        // Texture sampling base
        var base = Math.max(width, height);
-       var size = krusovice.utils.calculateAspectRatioFit(base, base, naturalWidth, naturalHeight)
+       var size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, base, base)
        buffer.width = size.width;
        buffer.height = size.height;
        buffer.naturalWidth = naturalWidth;
        buffer.naturalHeight = naturalHeight;
-       console.log("Buffer:" + width + " " + height)
+       console.log("Buffer:" + size.width + " " + size.height)
 
        var nw = size.width;
        var nh = size.height;
