@@ -6,7 +6,7 @@ krusovice.showobjects = krusovice.showobjects || {};
 
 /**
  * Base class for animated show object.
- * 
+ *
  * Show object is an visualization of timeline element.
  * It prepares an 2D image used as a texture. Then
  * it asks the renderer object of the show to give a
@@ -17,37 +17,37 @@ krusovice.showobjects = krusovice.showobjects || {};
  * There are different kind of show objects (images,
  * texts, videos, etc.) and they all share this common
  * base class containing the core animation logic.
- * 
- * 
+ *
+ *
  * Show object animates movement and rotation values
  * based on the animation start and end and easing method.
  * Then it passes these values to the renderer's 3D object.
- * 
- * 
- * 
+ *
+ *
+ *
  */
-krusovice.showobjects.Base = function(cfg) {    
+krusovice.showobjects.Base = function(cfg) {
     $.extend(this, cfg);
 }
 
-krusovice.showobjects.Base.prototype = {    
-    
+krusovice.showobjects.Base.prototype = {
+
     /**
      * @cfg {krusovice.Show} Rendering backend used to create artsy
      */
     renderer : null,
 
     /**
-     * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters  
-     */    
+     * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters
+     */
     data : null,
-    
-    
+
+
     /**
      * Reference to 3d rendering backend object
      */
     object : null,
-    
+
     /**
      * @cfg {Function} Function which is called when async prepare() is ready.
      *
@@ -56,73 +56,73 @@ krusovice.showobjects.Base.prototype = {
     preparedCallback : null,
 
     /**
-     * Internal flag telling whether this object has been already woken up 
+     * Internal flag telling whether this object has been already woken up
      */
     active : false,
-    
+
     init : function() {
-        
+
         // Initialize animation variables
         this.x = this.y = this.w = this.h = 0;
-        
+
         // How many degrees this image has been rotated
         this.rotation = 0;
-        
-        this.opacity = 1;        
+
+        this.opacity = 1;
     },
 
     /**
      * Load all related media resources.
-     * 
-     * Note: animate() can be called before prepare in dummy unit tests runs. 
+     *
+     * Note: animate() can be called before prepare in dummy unit tests runs.
      * Please set-up all state variables in init().
      */
-    prepare : function() {        
+    prepare : function() {
 
     },
-    
-    
-    play : function() {        
+
+
+    play : function() {
     },
-    
+
     /**
      * Render the current object.
-     * 
+     *
      * XXX: Three.js maintains scene graph and will render objects automatically
      */
     render : function() {
-    	
-    	// XXX: 
+
+    	// XXX:
     	//console.log("render");
     	//this.renderer.renderObject(this.object);
     },
-    
+
     /**
      * Set the object to the animation state matched by the clock.
-     * 
-     * We cache the state whether we have been drawing in prior frames, 
+     *
+     * We cache the state whether we have been drawing in prior frames,
      * as this way we can limit the number of 3D objects on the scene.
-     * 
+     *
      * @return Current animation state name
      */
     animate : function(clock) {
-    	
+
     	var state, easing;
-    	    	
+
     	var relativeClock = clock - this.data.wakeUpTime;
-    	
+
     	// console.log("Clock:" + clock + " relative clock:" + relativeClock);
-    		
+
     	// Determine the state of this animation
     	var statedata = krusovice.utils.calculateElementEase(this.data, relativeClock);
-    	
+
     	var animation = statedata.animation;
-    	
+
     	// Don't animate yet - we are waiting for our turn
     	if(animation == "notyet") {
     		return statedata;
     	}
-    	    	
+
     	if(animation != "notyet" && animation != "gone") {
     		if(!this.alive) {
     			this.wakeUp();
@@ -138,25 +138,25 @@ krusovice.showobjects.Base.prototype = {
 			return statedata;
 		}
 
-    	
+
     	if(!this.object) {
     		// XXX: should not happen - raise exception here
     		// when code is more complete
     		return statedata;
     	}
-    	
+
     	// Calculate animation parameters
     	var source = statedata.current;
     	var target = statedata.next;
-    	
+
     	if(!source) {
     		throw "Source animation state missing:" + animation;
     	}
 
     	if(!target) {
     		throw "Target animation state missing:" + animation;;
-    	}    	
-    	
+    	}
+
     	if(!krusovice.utils.isNumber(statedata.value)) {
     		console.error(statedata);
     		console.error(animation);
@@ -164,45 +164,45 @@ krusovice.showobjects.Base.prototype = {
     		console.error(target);
     		throw "Failed to calculate animation step";
     	}
-    	
+
     	this.animateEffect(target, source, statedata.value);
-    	
+
     	var mesh = this.object;
 		return statedata;
-    	
+
     },
-    
+
     /**
      * Calculate animation parameters for current frame and apply them on the 3D object.
-     * 
+     *
      *  @param {krusovice.TimelineAnimation} target
-     *  
+     *
      *  @param {krusovice.TimelineAnimation} source
-     *  
+     *
      *  @param {Number} 0...1 how far the animation has progressed
      */
-    animateEffect : function(target, source, value) {                
+    animateEffect : function(target, source, value) {
         var effectId = source.effectType;
         var effect = krusovice.effects.Manager.get(effectId);
-        
+
         if(!effect) {
             console.error("Animation");
             console.error(source);
             throw "Animation had unknown effect:" + effectId;
         }
-        
+
         effect.animate(this.object, target, source, value);
     },
-    
+
     wakeUp : function() {
 		// Bring object to the 3d scene
     	console.log("Waking up:" + this.data.id);
     	if(this.object) {
 	    	this.renderer.wakeUp(this.object);
     	}
-		this.alive = true;    	
+		this.alive = true;
     },
-    
+
     farewell : function() {
     	console.log("Object is gone:" + this.data.id);
     	if(this.object) {
@@ -211,41 +211,47 @@ krusovice.showobjects.Base.prototype = {
 		this.alive = false;
 
     }
-    
-} 
+
+}
 
 /**
  *
  * Photo
  *
- * @extends krusovice.showobjects.Base 
+ * @extends krusovice.showobjects.Base
  */
-krusovice.showobjects.FramedAndLabeledPhoto = function(cfg) {    
+krusovice.showobjects.FramedAndLabeledPhoto = function(cfg) {
     $.extend(this, cfg);
-} 
+}
 
 $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, krusovice.showobjects.Base.prototype);
 
 $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
-    
+
     /**
-     * HTML image object of the source image 
+     * HTML image object of the source image
      */
     image : null,
-    
+
     /**
-     * HTML <canvas> buffer containing resized and framed image with label text 
+     * HTML <canvas> buffer containing resized and framed image with label text
      */
     framed : null,
-    
+
     /**
      * Load image asynchronously if image source is URL.
-     * 
+     *
      * Draw borders around the image.
+     *
+     * @param {Number} width Canvas width for which we prepare (downscale)
+     *
+     * @param {Number} height Canvas width for which we prepare (downscale)
      */
     prepare : function(width, height) {
 
-        console.log("Prepare photo");
+        if(!width || !height) {
+            throw "FramedAndLabeledPhoto.prepare(): cannot prepare without knowing width and height of target canvas";
+        }
 
 		var self = this;
 		var load;
@@ -255,21 +261,21 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 			this.image = this.data.image;
 			load = false;
 		} else {
-			this.image = new Image();			
+			this.image = new Image();
 			load = true;
 		}
-        console.log("Loading image image obj:" + this.data.image + " URL:" + this.data.imageURL);
-	                    
+        console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
+
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);
             self.object = self.createRendererObject();
             if(self.prepareCallback) {
             	self.prepareCallback(true);
             }
-        }   
-        
-        function error() {            
-            
+        }
+
+        function error() {
+
             var msg = "Failed to load image:" + self.data.imageURL;
             console.error(msg);
 
@@ -278,7 +284,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
                 self.prepareCallback(false, msg);
             }
         }
-        
+
         // Load image asynchroniously
         if(load) {
         	if(!this.prepareCallback) {
@@ -286,97 +292,111 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         	}
         	this.image.onload = imageLoaded;
         	this.image.onerror = error;
-            this.image.src = this.data.imageURL;                            	
+            this.image.src = this.data.imageURL;
         } else {
             console.log("Was already loaded");
         	imageLoaded();
         }
-       
+
     },
- 
+
     /**
      * Convert raw photo to a framed image with drop shadow
-     * 
+     *
      * @param {Image} img Image object (loaded)
      */
     createFramedImage : function(img, width, height) {
-                       
+
+       if(!width || !height) {
+           throw "Width and height missing";
+       }
+
        // Drop shadow blur size in pixels
        // Shadow is same length to both X and Y dirs
        var shadowSize = 5;
-       
+
        // Picture frame color
        var frameColor = "#FFFFFF";
-               
+
        // Actual pixel data dimensions, not ones presented in DOM tree
 
-       // Create temporary <canvas> to work with, with expanded canvas (sic.) size     
+       // Create temporary <canvas> to work with, with expanded canvas (sic.) size
        var buffer = document.createElement('canvas');
-       
+
        buffer.width = width;
        buffer.height = height;
        console.log("Buffer:" + width + " " + height)
-       var aspect = img.naturalWidth / img.naturalHeight;
-       
-       var nw = height * aspect; 
+
+       // <canvas> source doesn't give naturalWidth
+       var naturalWidth = img.naturalWidht || img.width;
+       var naturalHeight = img.naturalHeight || img.height;
+
+       if(!naturalWidth) {
+            console.error(img);
+            throw "Image does not have width/height information available";
+       }
+
+       var aspect = naturalWidth / naturalHeight;
+
+       var nw = height * aspect;
        var nh = height;
-       
+
        if(!nw || !nh) {
     	   throw "Unknown image source for framing";
        }
-    
+
        // horizontal and vertical frame border sizes
        var borderX = nw * 0.05;
        var borderY = nw * 0.05;
-       
+
        // calculate the area we need for the final image
        var w = nw - borderX * 2 + shadowSize * 2;
        var h = nh - borderY * 2 + shadowSize * 2;
-       
+
        console.log("Got dimensions:" + nw + " " + w + " " + nh + " " + h);
-    
+
 
        // Remember, remember, YTI Turbo Pascal
        var context = buffer.getContext('2d');
-       
+
        context.shadowOffsetX = 0;
        context.shadowOffsetY = 0;
        context.shadowBlur = shadowSize;
        context.shadowColor = "black";
-    
+
        //context.fillStyle = "#FFFFFF";
        context.fillStyle = "#eeEEee";
-       context.fillRect(width/2 - w/2, height/2 - h/2, w, h);       
-                    
+       context.fillRect(width/2 - w/2, height/2 - h/2, w, h);
+
        //Turn off the shadow
        context.shadowOffsetX = 0;
        context.shadowOffsetY = 0;
        context.shadowBlur = 0;
        context.shadowColor = "transparent";
-       
+
        // Slap the imge in the frame
-       var dimensions = krusovice.utils.resizeAspectRatio(img.naturalWidth, img.naturalHeight, w - (borderX+shadowSize)*2, h - (borderY+shadowSize)*2);
+       var dimensions = krusovice.utils.resizeAspectRatio(naturalWidth, naturalHeight, w - (borderX+shadowSize)*2, h - (borderY+shadowSize)*2);
        //var dimensions = krusovice.utils.resizeAspectRatio(img.naturalWidth, img.naturalHeight, w-10, h-10);
-       
+
        dimensions.width -= 10;
        dimensions.height -= 10;
-       
+
        //context.drawImage(img, width/2 - dimensions.width/2, height/2 - dimensions.height/2, dimensions.width, dimensions.height);
        console.log("h:" + h);
        context.drawImage(img, width/2 - w/2 + 10, height/2 - h/2 + 10, w-20, h-40);
-       
-       
+
+
        // We don't need to convert canvas back to imge as drawImage() accepts canvas as parameter
        // http://kaioa.com/node/103
        return buffer;
-                
+
     },
-    
+
     createRendererObject : function() {
     	return this.renderer.createQuad(this.framed);
     },
-    
-      
+
+
 });
 
 /**
@@ -392,31 +412,31 @@ $.extend(krusovice.showobjects.TextFrame.prototype, krusovice.showobjects.Base.p
 
 
 $.extend(krusovice.showobjects.TextFrame.prototype, {
-        
+
     /**
-     * HTML <canvas> buffer containing resized and framed image with label text 
+     * HTML <canvas> buffer containing resized and framed image with label text
      */
     framed : null,
-    
-    prepare : function() { 
-        
+
+    prepare : function() {
+
         console.log("Prepare TextFrame");
         // Nothing to load
         if(this.prepareCallback) {
             this.prepareCallback(true);
-        }               
+        }
     },
- 
+
     /**
      * Convert raw photo to a framed image with drop shadow
-     * 
+     *
      * @param {Image} img Image object (loaded)
      */
     createFramedImage : function(img) {
     },
-    
-    render : function() {        
-    }    
-      
+
+    render : function() {
+    }
+
 });
 

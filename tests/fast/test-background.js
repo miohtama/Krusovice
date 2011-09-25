@@ -8,7 +8,7 @@ var BackgroundTest = TestCase("Background");
  * See what kind of timelien output we get for scroll 2d background.
  *
  */
-BackgroundTest.prototype.testScroll2DDataGeneratino = function() {
+BackgroundTest.prototype.testPanoramaDataGeneration = function() {
 
 	var init = this.basicSetup();
 
