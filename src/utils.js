@@ -368,6 +368,7 @@ krusovice.utils = {
       */
      resizeAspectRatio : function(srcWidth, srcHeight, maxWidth, maxHeight) {
 
+        /*
         var resizeWidth = srcWidth;
         var resizeHeight = srcHeight;
 
@@ -387,8 +388,50 @@ krusovice.utils = {
         }
 
         return { width : resizeWidth,
-                 height : resizeHeight };
-     }
+                 height : resizeHeight };*/
+
+
+        var ratio = [maxWidth / srcWidth, maxHeight / srcHeight ];
+        ratio = Math.min(ratio[0], ratio[1]);
+
+        //ratio = [srcWidth * ratio, srcHeight * ratio]
+
+        //# Some codecs raquire w/h to be multiple of 4
+        //ratio = [ratio[0] - ratio[0] % 4, ratio[1] - ratio[1] % 4]
+
+        return { width:srcWidth*ratio, height:srcHeight*ratio };
+
+     },
+
+     calculateAspectRatioFit : function(srcWidth, srcHeight, maxWidth, maxHeight) {
+        if(srcWidth > srcHeight) {
+            return { width : maxWidth, height : maxHeight * srcHeight/srcWidth };
+        }  else {
+            return { width : maxWidth * srcWidth/srcHeight, height : maxHeight };
+        }
+     },
+
+
+    /**
+     * Calculate field of view for new renderer sizes.
+     *
+     * http://widescreengamingforum.com/node/10767
+     *
+     * @param {Number} oldAR Old aspect ratio
+     *
+     * @param {Number} newAR New aspect ratio
+     *
+     * @param {Number} oldFOV Old field of view in degrees
+     */
+    calculateFOV : function(oldAR, newAR, oldFOV) {
+
+        // Convert to radians
+        oldFOV = 2*Math.PI * oldFOV / 360;
+
+        var res = 2*Math.atan((newAR)/(oldAR) * Math.tan(oldFOV/2));
+
+        return 360 * res / (Math.PI*2);
+    }
 
 };
 
@@ -528,6 +571,8 @@ krusovice.utils.Registry = {
         });
 
         return songs;
-    }
+    },
+
+
 
 };

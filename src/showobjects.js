@@ -264,7 +264,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 			this.image = new Image();
 			load = true;
 		}
-        console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
+
+        //console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
 
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);
@@ -323,10 +324,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        // Create temporary <canvas> to work with, with expanded canvas (sic.) size
        var buffer = document.createElement('canvas');
 
-       buffer.width = width;
-       buffer.height = height;
-       console.log("Buffer:" + width + " " + height)
-
        // <canvas> source doesn't give naturalWidth
        var naturalWidth = img.naturalWidht || img.width;
        var naturalHeight = img.naturalHeight || img.height;
@@ -336,55 +333,46 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             throw "Image does not have width/height information available";
        }
 
-       var aspect = naturalWidth / naturalHeight;
+       // Texture sampling base
+       var base = Math.max(width, height);
+       var size = krusovice.utils.calculateAspectRatioFit(base, base, naturalWidth, naturalHeight)
+       buffer.width = size.width;
+       buffer.height = size.height;
+       buffer.naturalWidth = naturalWidth;
+       buffer.naturalHeight = naturalHeight;
+       console.log("Buffer:" + width + " " + height)
 
-       var nw = height * aspect;
-       var nh = height;
+       var nw = size.width;
+       var nh = size.height;
 
        if(!nw || !nh) {
     	   throw "Unknown image source for framing";
        }
 
+       var borderSize = Math.min(nw, nw) * 0.015;
+
        // horizontal and vertical frame border sizes
-       var borderX = nw * 0.05;
-       var borderY = nw * 0.05;
-
-       // calculate the area we need for the final image
-       var w = nw - borderX * 2 + shadowSize * 2;
-       var h = nh - borderY * 2 + shadowSize * 2;
-
-       console.log("Got dimensions:" + nw + " " + w + " " + nh + " " + h);
-
+       var borderX = borderSize;
+       var borderY = borderSize;
 
        // Remember, remember, YTI Turbo Pascal
        var context = buffer.getContext('2d');
 
-       context.shadowOffsetX = 0;
-       context.shadowOffsetY = 0;
-       context.shadowBlur = shadowSize;
-       context.shadowColor = "black";
-
-       //context.fillStyle = "#FFFFFF";
        context.fillStyle = "#eeEEee";
-       context.fillRect(width/2 - w/2, height/2 - h/2, w, h);
+       context.fillRect(0,0,nw,nh);
 
-       //Turn off the shadow
-       context.shadowOffsetX = 0;
-       context.shadowOffsetY = 0;
-       context.shadowBlur = 0;
-       context.shadowColor = "transparent";
+       var dimensions = {width : nw, height : nh };
 
-       // Slap the imge in the frame
-       var dimensions = krusovice.utils.resizeAspectRatio(naturalWidth, naturalHeight, w - (borderX+shadowSize)*2, h - (borderY+shadowSize)*2);
-       //var dimensions = krusovice.utils.resizeAspectRatio(img.naturalWidth, img.naturalHeight, w-10, h-10);
+       context.drawImage(img,
+           borderX,
+           borderY,
+           dimensions.width - borderX*2,
+           dimensions.height - borderY*2);
+       //context.drawImage(img, width/2 - w/2 + 10, height/2 - h/2 + 10, w-20, h-40);
 
-       dimensions.width -= 10;
-       dimensions.height -= 10;
 
-       //context.drawImage(img, width/2 - dimensions.width/2, height/2 - dimensions.height/2, dimensions.width, dimensions.height);
-       console.log("h:" + h);
-       context.drawImage(img, width/2 - w/2 + 10, height/2 - h/2 + 10, w-20, h-40);
-
+       //context.fillStyle = "#ff00ff";
+       //context.fillRect(0, 0, buffer.width, buffer.height);
 
        // We don't need to convert canvas back to imge as drawImage() accepts canvas as parameter
        // http://kaioa.com/node/103
@@ -393,7 +381,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     },
 
     createRendererObject : function() {
-    	return this.renderer.createQuad(this.framed);
+    	return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight);
     },
 
 

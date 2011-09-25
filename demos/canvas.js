@@ -14,6 +14,7 @@ var canvas = {
     // Test following scale sizes
     sizes : [
         {width : 512, height: 288 },
+        {width : 640, height: 360 },
         {width : 720, height: 288 },
         {width : 1024, height: 288 },
         {width : 512, height: 368 },
@@ -62,6 +63,9 @@ var canvas = {
      * Draw the sample canvas twice, using portrait and lanscape image sample.
      */
     addCanvasSamples : function(width, height) {
+
+        var label = $("<div>").text("Projection " + width + " x " + height);
+        $("#canvases").append(label);
 
         var frame1 = $("<div class='frame1'>");
 
