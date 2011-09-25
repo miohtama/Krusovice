@@ -99,8 +99,11 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
 
         THREE.Quaternion.slerp(qa, qb, mesh.quaternion, value);
 
-        //console.log("Position:" + position);
-        //console.log("Scale:" + scale + " base scale:" + baseScale);
+        /*
+        console.log("Position:" + position);
+        console.log("Scale:" + scale + " base scale:" + baseScale);
+        console.log("Rotation:" + mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
+        */
     }
 
 

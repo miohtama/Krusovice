@@ -371,8 +371,12 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        //context.drawImage(img, width/2 - w/2 + 10, height/2 - h/2 + 10, w-20, h-40);
 
 
-       //context.fillStyle = "#ff00ff";
-       //context.fillRect(0, 0, buffer.width, buffer.height);
+       /*
+       context.fillStyle = "#ff00ff";
+       context.fillRect(0, 0, dimensions.width, dimensions.height);
+       context.fillStyle = "#00ff00";
+       context.fillRect(borderX, borderY, dimensions.width - borderX*2, dimensions.height - borderY*2);
+       */
 
        // We don't need to convert canvas back to imge as drawImage() accepts canvas as parameter
        // http://kaioa.com/node/103

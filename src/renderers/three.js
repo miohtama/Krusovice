@@ -140,20 +140,24 @@ krusovice.renderers.Three.prototype = {
         texture.magFilter = THREE.LinearFilter;
 
         if(!src.width) {
-            throw "createQuad(): Source widht missing when creating 3D presentation";
+            throw "createQuad(): Source width missing when creating 3D presentation";
         }
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
-        var plane = new THREE.PlaneGeometry(dimensions.width, dimensions.height, 4, 4);
+        var plane = new THREE.StraightPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
 
         //console.log("Created plane:" + dimensions.width + " x " + dimensions.height + " srcWidth:" + srcWidth + " srcHeight:" + srcHeight);
         var material = new THREE.MeshBasicMaterial( { map: texture } );
+        //var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe : true, wireframeLinewidth : 1 } );
+
+        //var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true } );
 
         var mesh = new THREE.Mesh( plane, material );
         mesh.overdraw = true;
+        //mesh.overdraw = false;
+        //mesh.doubleSided = true;
         mesh.useQuaternion = true;
-
         // Add a special fix parameter to make landscape images closer to camera
         // XXX: Think something smarter here.
         if(srcWidth > srcHeight) {
@@ -208,3 +212,99 @@ krusovice.renderers.Three.prototype = {
         return this.renderer.domElement.getContext("2d");
     }
 };
+
+
+
+
+
+/**
+ * @author mr.doob / http://mrdoob.com/
+ * based on http://papervision3d.googlecode.com/svn/trunk/as3/trunk/src/org/papervision3d/objects/primitives/Plane.as
+ */
+
+THREE.StraightPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight ) {
+
+    THREE.Geometry.call( this );
+
+    var ix, iy,
+    width_half = width / 2,
+    height_half = height / 2,
+    gridX = segmentsWidth || 1,
+    gridY = segmentsHeight || 1,
+    gridX1 = gridX + 1,
+    gridY1 = gridY + 1,
+    segment_width = width / gridX,
+    segment_height = height / gridY;
+
+    var fixFactor = 3;
+
+
+    for( iy = 0; iy < gridY1; iy++ ) {
+
+        for( ix = 0; ix < gridX1; ix++ ) {
+
+            var x = ix * segment_width - width_half;
+            var y = iy * segment_height - height_half;
+
+            //x += ix * fixFactor;
+
+            //y += 1;
+
+            var vx = new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) );
+
+            if(iy == 0 ||iy == gridY1-1) {
+                // HACK HACK HACK
+                vx.expandY = false;
+            }
+
+            if(ix == 0 ||ix == gridX1-1) {
+                // HACK HACK HACK
+                vx.expandX = false;
+            }
+
+            this.vertices.push(vx);
+
+        }
+
+    }
+
+    for( iy = 0; iy < gridY; iy++ ) {
+
+        for( ix = 0; ix < gridX; ix++ ) {
+
+            var a = ix + gridX1 * iy;
+            var b = ix + gridX1 * ( iy + 1 );
+            var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+            var d = ( ix + 1 ) + gridX1 * iy;
+
+            //c += 10;
+            //d += 10;
+            var f = new THREE.Face4( a, b, c, d );
+
+            if(ix == gridX - 1 || iy == gridY -1) {
+                // Anti-alias gap fix
+                f.planeEdge = true;
+                //console.log("Made edge");
+            }
+
+            this.faces.push(f);
+
+            this.faceVertexUvs[ 0 ].push( [
+                        new THREE.UV( ix / gridX, iy / gridY ),
+                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
+                    ] );
+
+        }
+
+    }
+
+    this.computeCentroids();
+    this.computeFaceNormals();
+
+};
+
+THREE.StraightPlaneGeometry.prototype = new THREE.Geometry();
+THREE.StraightPlaneGeometry.prototype.constructor = THREE.StraightPlaneGeometry;
+
