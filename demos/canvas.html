@@ -2,15 +2,33 @@
 	<!-- Render preview of all backgrounds -->
     <head>
         <title>Canvas size tests</title>
-        <script src=../src/krootstrap.js></script>
+        <script src="../src/krootstrap.js"></script>
+        <script src="../testdata/horizontal-and-vertical.js"></script>
 
         <script type="text/javascript" src="canvas.js"></script>
+
+        <style>
+
+            #canvases {
+                min-width: 3000px;
+            }
+
+            .frame1 {
+                display: inline-block;
+                margin-right: 20px;
+                margin-bottom: 20px;
+            }
+
+            .frame2 {
+                display: inline-block;
+            }
+        </style>
     </head>
 
 	<body>
 		<h1>Canvas sampler</h1>
 
-		<div id="backgrounds">
+		<div id="canvases">
 
 		</div>
 	</body>

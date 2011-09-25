@@ -40,7 +40,7 @@ krusovice.Loader.prototype = {
     /**
      * @type Function
      *
-     * errorCallback(msg)
+     * errorCallback(msg, progress)
      *
      * Called when any item load fails
      */
@@ -125,16 +125,20 @@ krusovice.Loader.prototype = {
         return this.nowLoaded / this.totalElementsToLoad;
     },
 
-    /**
-     * Set a flag all resources could not be loaded.
-     *
-     * @param {String} msg Error message which tells how we failed
-     */
     setError : function(msg) {
         this.errorMessage = msg;
         if(this.errorCallback) {
             this.errorCallback(msg);
         }
+    },
+
+    /**
+     * Fire an error of failing to load a certain resource.
+     *
+     * @param {String} msg Error message which tells how we failed
+     */
+    fireError : function(msg) {
+        this.setError(msg);
     },
 
 

@@ -248,7 +248,7 @@ krusovice.Timeliner.prototype = {
 
 			if(!elem.duration) {
 			    // Use default duration in the case funny input data happens
-				elem.duration = this.duration || 8.0;
+				elem.duration = this.duration || 8.0;
 			}
 
 
