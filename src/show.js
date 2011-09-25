@@ -245,13 +245,6 @@ krusovice.Show.prototype = {
 
         function loadcb(progress) {
             $this.trigger("loadprogress", progress);
-
-            if(progress >= 1) {
-                self.loaded = true;
-                console.log("Show resources loaded");
-                $this.trigger("loadend");
-                $this.trigger("loaddone");
-            }
         }
 
 
@@ -259,14 +252,22 @@ krusovice.Show.prototype = {
             console.log("Triggering loaderror");
             self.errorMessage = msg;
             $this.trigger("loaderror", [msg]);
+        }
 
-            if(progress >= 1) {
-                $this.trigger("loaddone");
+
+        function loaddone() {
+            self.loaded = true;
+            console.log("All show resources loaded, error status:" + self.errorMessage);
+            if(!self.errorMessage) {
+                $this.trigger("loadend");
             }
+            $this.trigger("loaddone");
         }
 
         this.loader.callback = loadcb;
         this.loader.errorCallback = loaderror;
+        this.loader.allLoadedCallback = loaddone;
+
 
         console.log("Starting loading, total objects " + this.loader.totalElementsToLoad);
 
@@ -277,8 +278,8 @@ krusovice.Show.prototype = {
                 self.loader.mark("animatedobject", 1);
             } else {
                 console.log("Got error:" + errorMessage);
-                self.loader.mark("animatedobject", 1);
                 self.loader.fireError(errorMessage);
+                self.loader.mark("animatedobject", 1);
             }
         }
 

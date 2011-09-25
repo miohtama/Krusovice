@@ -50,6 +50,20 @@ Start Google Chrome from command line, Ubuntu/Linux::
 Unit tests
 ------------
 
+Fast tests::
+
+    java -jar JsTestDriver-1.3.2.jar --port 9876  &
+    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+
+Slow tests::
+
+    python -m "SimpleHTTPServer" &
+    java -Xmx512M -jar JsTestDriver-1.3.2.jar --port 9876 --config jsTestDriver-render.conf &
+    java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+
+JsTestDriver brief
+--------------------
+
 JsTestDriver is a Javascript unit testing tool and framework from Google.
 It will automatically load a set fo static JS files and execute unit test
 cases for them.
@@ -242,6 +256,7 @@ Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the f
 
 You might need to also increase the default Java heap site if you get out of memory errors::
 
+        java -Xmx512M -jar JsTestDriver-1.3.2.jar --port 9876 --config jsTestDriver-render.conf &
         java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
 
 
