@@ -26,7 +26,7 @@ them on a timeline based on music rhytm data.
 Timeline visualization
 =======================
 
-Timeline visualization is an utility which shows your built 
+Timeline visualization is an utility which shows your built
 timeline, so you can see where slides come in and out.
 
 Player
@@ -46,12 +46,12 @@ Start Google Chrome with no security from command lin, OSX::
 Start Google Chrome from command line, Ubuntu/Linux::
 
 	chromium-browser --disable-web-security
-        
+
 Unit tests
 ------------
 
 JsTestDriver is a Javascript unit testing tool and framework from Google.
-It will automatically load a set fo static JS files and execute unit test 
+It will automatically load a set fo static JS files and execute unit test
 cases for them.
 
 JsTestDriver provides its own unit testing suite, but it can be integrated with
@@ -62,35 +62,35 @@ JsTestDriver limitations
 
 Currently JsTestDriver has some limitations which I hope to have as features in the future
 
-* You still need to Alt-Tab to the browser to check console logs 
- 
+* You still need to Alt-Tab to the browser to check console logs
+
 JS-test-driver command line
 =============================
 
 * http://code.google.com/p/js-test-driver/wiki/GettingStarted
 
 ::
-        
+
         wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar
         java -jar JsTestDriver-1.3.2.jar --port 9876
-        
+
 Then visit
 
         http://localhost:9876
-        
+
 Leave the browser running. Put the job JsTestDriver on background.
 
 Now trigger a test run::
 
         java -jar JsTestDriver-1.3.2.jar --tests all
-           
+
 Asserts with JsTestDriver
 ===========================
 
 A good guide to different asserts you can make is in the source code itself
 
 * http://code.google.com/p/js-test-driver/source/browse/trunk/JsTestDriver/src/com/google/jstestdriver/javascript/Asserts.js
-                         
+
 Eclipse plug-in
 =============================
 
@@ -104,8 +104,8 @@ Install JsTestDrive plug-in
 
         Only version 1.1.1.e or later works. Don't pick
         version 1.1.1.c.
-        
-* http://code.google.com/p/js-test-driver/issues/detail?id=214       
+
+* http://code.google.com/p/js-test-driver/issues/detail?id=214
 
 *Run Configurations...* -> for JSTest. Select a .conf file from the project root.
 Don't run it yet, just save.
@@ -120,11 +120,11 @@ and Chrome for testing and debugging. The test browser can has its console all t
 so you can check the console messages from there.
 
 The test machinery has been set-up now.
-Now you can 
+Now you can
 
  * Run tests manually from Eclipse launcher
- 
- * Toggle checkbox *Run on Save* in the run configuration to see unit tests results after each file save 
+
+ * Toggle checkbox *Run on Save* in the run configuration to see unit tests results after each file save
 
 After run you see the test output in *JsTestDriver* view per browser.
 
@@ -132,7 +132,7 @@ After run you see the test output in *JsTestDriver* view per browser.
 
         For some reason I could not get output/stacktrace from failed tests on Chrome
         on one of two test Macs. Safari was ok.
-        
+
 Command-line
 ========================================
 
@@ -141,14 +141,14 @@ unit tests using `JsTestDriver <http://code.google.com/p/js-test-driver/wiki/Get
 JSTestDriver is remote browser controlling and continuous integration framework
 for JSUnit unit tests.
 
-We use Python `Watchdog <https://github.com/gorakhargosh/watchdog>`_ 
+We use Python `Watchdog <https://github.com/gorakhargosh/watchdog>`_
 to monitor Javascript file save events.
 
 Because Javascript lacks static compile time checks, rigirous unit testing
 is the only way to tame this bastard of Scheme. Especially considering
 that you have to Microsoft legacy devouring your code and mind.
-        
-What we will accomplish        
+
+What we will accomplish
 
 * Save Javascript file in your favorite editor
 
@@ -160,36 +160,36 @@ These instructions are for OSX and Linux. Windows users can adapt
 with necessary skillz0r.
 
 .. note ::
-        
+
         JsTestDriver supports other Javascript unit test frameworks besides JsUnit.
         For example, QUnit bindings are available.
 
 Install JsTestDriver::
 
         wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar
-        
+
 Install Watchdog (in `virtualenv isolated Python <http://pypi.python.org/pypi/virtualenv>`_)::
 
         git clone git://github.com/gorakhargosh/watchdog.git
         cd watchdog
-        python setup.py install        
-        
+        python setup.py install
+
 Create `JsTestDriver.conf file <http://code.google.com/p/js-test-driver/wiki/ConfigurationFile>`_
-telling where to load tests and where to load data.        
+telling where to load tests and where to load data.
 
 Start JsTestDriver as a background process::
 
 ::
-        
+
         java -jar JsTestDriver-1.3.2.jar --port 9876 &
 
-Capture browser(s) by visiting in the URL in a browser opened on the 
-computer running tests (usually your own computer...). 
+Capture browser(s) by visiting in the URL in a browser opened on the
+computer running tests (usually your own computer...).
 These browsers will keep executing unit test
 until the page is closed::
 
         http://localhost:9876/capture
-                
+
 .. warning ::
 
         The success with new browser versions vary. JsTestDriver uses console exception stack trace
@@ -197,19 +197,23 @@ until the page is closed::
         or even stable, stack trace format. If you get just report "test failed" without further
         information how it failed try to switch the test browser. I had best luck with Google Chrome
         version 13 (the exact version number is very important!).
-        Please report further browser problems to JsTestDriver discussion group.        
-                
+        Please report further browser problems to JsTestDriver discussion group.
+
 .. note ::
 
-        Google doesn't provide old Chrome downloads. Niiice. 
-        
-Specifically the following browsers failed to produce useable stack traces 
-with JsTestDriver 1.3.2: Firefox 6, Chrome 14, Safari 5.1, Opera 11.50. 
-Pass/fail output still works. 
+        Google doesn't provide old Chrome downloads. Niiice.
+
+.. note ::
+
+        Disable Chrome automatic update: http://www.sitepoint.com/how-to-disable-google-chrome-updates/
+
+Specifically the following browsers failed to produce useable stack traces
+with JsTestDriver 1.3.2: Firefox 6, Chrome 14, Safari 5.1, Opera 11.50.
+Pass/fail output still works.
 
 This magic spell will make Watchdog to rerun tests on file-system changes::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all' 
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all'
 
 To run a single test case (e.g. Timeliner)::
 
@@ -229,17 +233,17 @@ Use ``--captureConsole`` to control whether you want to see console output in th
 
         You can normally insert debug breakpoints in the web browser Javascript debugger.
         The test execution will pause.
-        
+
 Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the following terminal commands::
 
-        # hit CTRL+C to stop Watchdog        
+        # hit CTRL+C to stop Watchdog
         fg # Bring JsTestDriver process to foreground
-        # hit CTRL+C        
-        
+        # hit CTRL+C
+
 You might need to also increase the default Java heap site if you get out of memory errors::
 
         java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
-                        
+
 
 Static data
 ++++++++++++++
@@ -256,7 +260,7 @@ of static media files::
 Async tests
 ++++++++++++++
 
-These tests are runned separately because the JsTestDriver server cannot serve images and 
+These tests are runned separately because the JsTestDriver server cannot serve images and
 running the tests are slow.
 
 We use Python SimpleHTTPServer to serve data,.
@@ -266,12 +270,12 @@ How to run::
 	python -m SimpleHTTPServer &
 	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --port 9876 &
 	# Capture
-	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all	
+	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
 
 More info
 
-* http://groups.google.com/group/js-test-driver/browse_thread/thread/a14e2d24ec563d78        
-        
+* http://groups.google.com/group/js-test-driver/browse_thread/thread/a14e2d24ec563d78
+
 More info
 ++++++++++++
 
@@ -281,7 +285,7 @@ More info
 
 * http://startingonsoftware.blogspot.com/2011/02/javascript-headless-unit-testing_15.html
 
-* http://code.google.com/p/js-test-driver/issues/detail?id=263&start=100        
+* http://code.google.com/p/js-test-driver/issues/detail?id=263&start=100
 
 Breakpoints and Eclipse JsTestDriver
 ========================================
@@ -309,11 +313,11 @@ Available test sets
 
 Fast (no images, canvas stressing)::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all' 
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all'
 
 Render (loads images, renders several frames, async)::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all' 
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all'
 
 Documentation
 ---------------
@@ -329,9 +333,9 @@ Installing JSDuck::
 
         # --pre installs 2.0 beta version
         sudo gem install --pre jsduck
-                              
+
 Building docs with JSDuck::
-                
+
         bin/build-docs.sh
 
 More info
@@ -344,17 +348,17 @@ Release
 To run the most fucked up release script ever::
 
         wget http://yui.zenfs.com/releases/yuicompressor/yuicompressor-2.4.6.zip
-        unzip yuicompressor-2.4.6.zip 
+        unzip yuicompressor-2.4.6.zip
         bin/release.py -d build trunk
-        
+
 .. note ::
 
-        All JS files must terminate with newline or the compressor will complain.        
-      
+        All JS files must terminate with newline or the compressor will complain.
+
 Music
 -------
 
-The out of the box project contains CC licensed music files for testing purposes 
+The out of the box project contains CC licensed music files for testing purposes
 
 * http://www.jamendo.com/en/artist/Emerald_Park
 
@@ -365,18 +369,18 @@ Echo Nest REMIX
 
 Echo Nest Remix API works by uploading data to Echo Nest servers for audio analysis.
 First MP3 is decoded with ffmpeg and then raw data is uploaded(?).
-    
-Echo Nest remix API Python bindings can be installed:    
+
+Echo Nest remix API Python bindings can be installed:
 
 ::
 
     source pyramid/bin/activate
     svn checkout http://echo-nest-remix.googlecode.com/svn/trunk/ echo-nest-remix
     cd echo-nest-remix
-    # Apparently this puts some crap to /usr/local and /usr/local/bin 
+    # Apparently this puts some crap to /usr/local and /usr/local/bin
     sudo python setup.py install
     sudo ln -s `which ffmpeg` /usr/local/bin/en-ffmpeg
-    
-    
 
-TODO: How to build rhytm .json data files by hand.      
+
+
+TODO: How to build rhytm .json data files by hand.

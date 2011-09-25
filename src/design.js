@@ -3,7 +3,7 @@ var krusovice = krusovice || {};
 /**
  * Design object captures all input needed to prepare a show.
  *
- * Design is stateful - it is serialized and can be used to save and restore editing state.  
+ * Design is stateful - it is serialized and can be used to save and restore editing state.
  * Thus, all resource references must be go through id mechanism.
  *
  */
@@ -12,7 +12,7 @@ krusovice.Design = function(cfg) {
 }
 
 /**
- * 
+ *
  */
 krusovice.Design.prototype = {
 
@@ -22,43 +22,43 @@ krusovice.Design.prototype = {
      * Show input elements. Will be converted to timeline in {@link krusovice"Timeliner}.
      */
     plan : null,
-    
+
     /**
      * @type {Object}
      *
-     * Background info 
+     * Background info
      */
     background : {
- 
+
         /**
-         * @type String 
+         * @type String
          *
          * If this is set then use one of stock backgrounds with this id.
          * **backgroundId** takes precendence of backgroundType.
          */
         backgroundId : null,
-         
+
         /**
          * @type String
          *
          * One of "video", "plain", "gradient", "skybox"
          */
         type : null,
-             
+
         color : null,
-        
+
         imageId : null,
-        
+
         videoId : null
     },
-    
+
     /**
      * @type String
      *
      * Background song id. Song id is associated with the serve side music file and generated rhytm analysis data.
      */
     songId : null,
-    
+
     /**
      * @type Number
      *
@@ -66,13 +66,36 @@ krusovice.Design.prototype = {
      *
      */
     musicStart : 0,
-    
-    
+
+
     /**
-     * @type Number 
+     * @type Number
      *
      * How many seconds delay between photos. Can be negative.
      */
     nextDelay : 0,
+
+
+    /**
+     * Default transition settings.
+     */
+    transitions : {
+
+        transitionIn : {
+            type : "zoomin",
+            duration : 2.0
+        },
+
+        transitionOut : {
+            type :  "hold",
+            duration : 2.0
+        },
+
+        onScreen : {
+            type :  "hold"
+            // Duration will come from the plan item itself
+        }
+
+    }
 
 };

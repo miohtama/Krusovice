@@ -26,11 +26,9 @@ var canvas = {
      */
     renderShowFrame : function(elem, width, height, clock) {
 
-        var elems = window.horizontalAndVerticalPlan;
-        if(!elems) {
-            throw "Failed to load sample fixtures";
-        }
-        var timeliner = krusovice.Timeliner.createSimpleTimeliner(elems);
+        var design = window.getHorizontalAndVerticalDesign();
+
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, null, design.transitions);
         var timeline = timeliner.createPlan();
 
         var cfg = {
@@ -38,7 +36,11 @@ var canvas = {
             height : height,
             timeline : timeline,
             elem : elem,
-            realtime : false
+            realtime : false,
+            background : {
+                type : "plain",
+                color : "#dddddd"
+            }
         };
 
         // Create show

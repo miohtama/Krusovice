@@ -270,8 +270,8 @@ krusovice.backgrounds.Scroll2D.prototype = {
 
         // Convert URL to real loaded image object
         function loadedImage(image) {
-            //console.log("Loaded background image:" + imageURL);
-            //console.log(image);
+            console.log("Loaded background image:" + imageURL);
+            console.log(image);
             this.image = image;
         }
 
@@ -304,7 +304,7 @@ krusovice.backgrounds.Scroll2D.prototype = {
         }
 
         if(!this.image) {
-           throw "Backgroudn image missing";
+           throw "Background image missing when scalling Scroll2D.render()";
         }
 
         //var eased = krusovice.utils.ease("linear", 0, 1, frames.delta);
