@@ -41,6 +41,8 @@ var backgrounds = {
             bg.canvas = canvas;
         });
 
+        console.log("All ready");
+
         this.ready = true;
 
     },

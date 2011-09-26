@@ -32,7 +32,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
             throw "Async callback missing";
         }
 
-        console.log("Loading background data");
+        console.log("Loading background data:" + url);
         $.getJSON(url, function(data) {
             data.forEach(function(obj) {
                 self.fixMediaURLs(obj, mediaURL);
