@@ -53,6 +53,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 				obj.mp3 = mediaURL + obj.mp3;
 			}
 		}
+
 	},
 
 

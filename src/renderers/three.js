@@ -28,7 +28,6 @@ krusovice.renderers = krusovice.renderers || {};
 krusovice.renderers.Three = function(cfg) {
     $.extend(this, cfg);
 
-
     if(!window.THREE) {
         throw "THREE 3d lib is not loaded";
     }
@@ -57,6 +56,10 @@ krusovice.renderers.Three.prototype = {
 
     scene : null,
 
+    /**
+     * Use WebGL backend
+     */
+    webGL : false,
 
     // Default pixel sizes used for photo quad
     // Will be aspect ratio resized
@@ -99,7 +102,13 @@ krusovice.renderers.Three.prototype = {
             fov = krusovice.utils.calculateFOV(baseAspect, aspect, baseFOV);
         }
 
-        var renderer = new THREE.CanvasRenderer();
+        var renderer;
+        if(this.webGL) {
+            renderer = new THREE.WebGLRenderer();
+        } else {
+            renderer = new THREE.CanvasRenderer();
+        }
+
 
         // var renderer = new THREE.WebGLRenderer();
 
@@ -109,6 +118,7 @@ krusovice.renderers.Three.prototype = {
                                       far);
 
         var scene = new THREE.Scene();
+
 
         // Camera is always in fixed position
         camera.position.z = 550;
@@ -135,28 +145,59 @@ krusovice.renderers.Three.prototype = {
     createQuad : function(src, srcWidth, srcHeight) {
 
         // http://mrdoob.github.com/three.js/examples/canvas_materials_video.html
-        var texture = new THREE.Texture(src);
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
 
+        var texture;
+
+        if(this.webGL && src.getContext) {
+            if(false) {
+                this.testsrc = new Image();
+                //
+                this.testsrc.src = "http://localhost:8888/static/1317056241/images/512.png";
+                this.testsrc.crossorigin = "";
+                texture = new THREE.Texture(this.testsrc, THREE.UVMapping);
+
+                this.testsrc.onload = function() {
+                    texture.needsUpdate = true;
+                };
+            }
+            console.log("Using src:");
+            console.log(this.testsrc);
+
+            texture = new THREE.Texture(src, THREE.UVMapping);
+            //texture =  THREE.ImageUtils.loadTexture( "http://localhost:8888/test_data/images/512.png", THREE.UVMapping);
+            texture.needsUpdate = true;
+            //texture.repeat.set( 1000, 1000 );
+
+        } else {
+            texture = new THREE.Texture(src);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+        }
+
+        /*
         if(!src.width) {
             throw "createQuad(): Source width missing when creating 3D presentation";
-        }
+        }*/
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
         var plane = new THREE.StraightPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
-
+        //
+        //var plane = new THREE.CubeGeometry( 200, 200, 200 );
         //console.log("Created plane:" + dimensions.width + " x " + dimensions.height + " srcWidth:" + srcWidth + " srcHeight:" + srcHeight);
-        var material = new THREE.MeshBasicMaterial( { map: texture } );
+
+        //var material;
+
+        var material = new THREE.MeshBasicMaterial( {  map: texture } );
+
         //var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe : true, wireframeLinewidth : 1 } );
 
         //var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true } );
 
         var mesh = new THREE.Mesh( plane, material );
-        mesh.overdraw = true;
+        //mesh.overdraw = true;
         //mesh.overdraw = false;
-        //mesh.doubleSided = true;
+        mesh.doubleSided = true;
         mesh.useQuaternion = true;
         // Add a special fix parameter to make landscape images closer to camera
         // XXX: Think something smarter here.

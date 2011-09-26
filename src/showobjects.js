@@ -269,6 +269,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);
+            //self.framed = self.image;
             self.object = self.createRendererObject();
             if(self.prepareCallback) {
             	self.prepareCallback(true);
@@ -334,8 +335,11 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        }
 
        // Texture sampling base
-       var base = Math.max(width, height);
-       var size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, base, base)
+       //var base = Math.max(width, height);
+       //var size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, base, base)
+
+
+       var size = {width:512,height:512};
        buffer.width = size.width;
        buffer.height = size.height;
        buffer.naturalWidth = naturalWidth;

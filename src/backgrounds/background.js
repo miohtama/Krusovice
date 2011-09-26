@@ -72,6 +72,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
      */
     fixThumbnails : function(obj, mediaURL) {
         obj.thumbnail = mediaURL + "thumbnails/" + obj.id + ".png";
+        //console.log("Got thumbnail URL:" + obj.thumbnail);
     }
 
 });

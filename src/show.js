@@ -202,6 +202,11 @@ krusovice.Show.prototype = {
 
 
     /**
+     * Use WebGL renderer
+     */
+    webGL : false,
+
+    /**
      * Control individual render layers.
      *
      * Most useful for debugging.
@@ -393,7 +398,8 @@ krusovice.Show.prototype = {
         this.renderer = new krusovice.renderers.Three({
             width : this.width,
             height : this.height,
-            elem : this.elem
+            elem : this.elem,
+            webGL : this.webGL
         });
 
         this.renderer.setup();
@@ -490,9 +496,25 @@ krusovice.Show.prototype = {
      *
      */
     loopAnimation : function() {
+
+
+        var self = this;
+        function loop() {
+            self.loopAnimation();
+        }
+
+
         if(this.playing) {
             this.render();
-            krusovice.utils.requestAnimationFrame($.proxy(this.loopAnimation, this), this.canvas);
+
+            if(this.webGL) {
+                setTimeout(loop, 20);
+            } else {
+                krusovice.utils.requestAnimationFrame($.proxy(this.loopAnimation, this), this.canvas);
+            }
+
+            //krusovice.utils.requestAnimationFrame(loop);
+            //
         }
     },
 
