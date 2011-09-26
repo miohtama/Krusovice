@@ -17,6 +17,14 @@ krusovice.Design = function(cfg) {
 krusovice.Design.prototype = {
 
     /**
+     * @type String
+     *
+     * Show title as human readable name.
+     */
+    title : null,
+
+
+    /**
      * @type {Array}
      *
      * Show input elements. Will be converted to timeline in {@link krusovice"Timeliner}.
@@ -116,8 +124,6 @@ krusovice.Design.prototype = {
             // Duration will come from the plan item itself
         }
 
-    },
-
-
+    }
 
 };
