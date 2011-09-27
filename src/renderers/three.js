@@ -222,13 +222,23 @@ krusovice.renderers.Three.prototype = {
             throw "Oh mama, can we call this a null pointer exception?";
         }
 
+        if(!mesh.added) {
+            this.scene.addObject(mesh);
+            mesh.added = true;
+        } else {
+            mesh.visible = true;
+        }
+
         //console.log("Including new mesh on the scene");
         //console.log(mesh);
-        this.scene.addObject(mesh);
     },
 
+    /**
+     * Make sure this object is no longer visible
+     */
     farewell : function(mesh) {
-        this.scene.removeObject(mesh);
+        // this.scene.removeObject(mesh);
+        mesh.visible = false;
     },
 
 

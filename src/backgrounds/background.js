@@ -34,12 +34,25 @@ krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
         console.log("Loading background data:" + url);
         $.getJSON(url, function(data) {
-            data.forEach(function(obj) {
-                self.fixMediaURLs(obj, mediaURL);
-                self.fixThumbnails(obj, mediaURL);
-                self.register(obj);
-            });
+            self.processData(data, mediaURL);
             callback();
+        });
+    },
+
+    /**
+     * Load data directly from array.
+     */
+    processData : function(data, mediaURL) {
+        var self = this;
+
+        if(!data) {
+            throw "Background data was not provided";
+        }
+
+        data.forEach(function(obj) {
+            self.fixMediaURLs(obj, mediaURL);
+            self.fixThumbnails(obj, mediaURL);
+            self.register(obj);
         });
     },
 
@@ -368,7 +381,6 @@ krusovice.backgrounds.Plain.prototype = {
     render : function(ctx) {
         // Single colour bg
         // https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas
-        console.log("plain");
         if(ctx) {
             ctx.save();
             ctx.fillStyle = this.options.color;

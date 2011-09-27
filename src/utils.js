@@ -299,18 +299,19 @@ krusovice.utils = {
      * @param {Object} element For which DOM element rendering we sync our animations (Usually <canvas>)
      *
      */
-    requestAnimationFrame : (function(){
+    requestAnimationFrame : function(callback, elem) {
 
-        var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+       /*
+       var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 
-        // XXX: bug with Chrome 14 or so
-        if(is_chrome) {
-             return function(callback, element) {
-               window.setTimeout(callback, 1000 / 60);
+       // XXX: bug with Chrome 14 or so
+       if(is_chrome) {
+            return function(callback, element) {
+              window.setTimeout(callback, 1000 / 60);
              };
-        }
+       }*/
 
-      return  window.requestAnimationFrame       ||
+      var func = window.requestAnimationFrame       ||
               window.webkitRequestAnimationFrame ||
               window.mozRequestAnimationFrame    ||
               window.oRequestAnimationFrame      ||
@@ -318,7 +319,10 @@ krusovice.utils = {
               function(/* function */ callback, /* DOMElement */ element){
                 window.setTimeout(callback, 1000 / 60);
               };
-    })(),
+
+       func(callback);
+       //setTimeout(callback, 20);
+    },
 
 
     /**

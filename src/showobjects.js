@@ -120,17 +120,23 @@ krusovice.showobjects.Base.prototype = {
 
     	// Don't animate yet - we are waiting for our turn
     	if(animation == "notyet") {
+
+    	    if(this.alive) {
+    	        this.farewell();
+    	    }
+
     		return statedata;
     	}
 
     	if(animation != "notyet" && animation != "gone") {
-    		if(!this.alive) {
+    	    // XXX: This is unnecessary... just keep object around all the time
+    		if(!this.alive || !this.object) {
     			this.wakeUp();
     		}
     	}
 
 		if(animation == "gone") {
-	    	// Time to die
+	    	// Time to disappear
 	    	if(this.alive) {
 				this.farewell();
 	    	}
