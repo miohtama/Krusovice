@@ -1,3 +1,4 @@
+(function () {
 "use strict";
 
 var krusovice = krusovice || {};
@@ -129,5 +130,4 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 
 });
-
-
+}());

@@ -1,3 +1,4 @@
+(function () {
 "use strict";
 
 var krusovice = krusovice || {};
@@ -205,3 +206,4 @@ krusovice.Loader.prototype = {
     }
 
 };
+}());
