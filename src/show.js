@@ -207,6 +207,12 @@ krusovice.Show.prototype = {
     webGL : false,
 
     /**
+     * Take some steps in order to optimize speed and network bandwidth and have less quality output.
+     */
+    preview : false,
+
+
+    /**
      * Control individual render layers.
      *
      * Most useful for debugging.

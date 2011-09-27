@@ -83,8 +83,10 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 	 *
 	 * @param {Function} callback called when all done
 	 *
+	 * @param {boolean} prelisten Load low quality audio version
+	 *
 	 */
-	loadSong : function(id, audio, callback) {
+	loadSong : function(id, audio, callback, prelisten) {
 
 		var songURL, rhytmURL;
 		var rhytmDone = false;
@@ -93,13 +95,13 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		if(id) {
 			// Assuming has music
 
-			var song = this.get(id);
+            var song = this.get(id);
+			var songURL = this.getAudioURL(id, prelisten);
 
 			if(!song) {
 				throw "Unknown song:" + id;
 			}
 
-			songURL = song.mp3;
 			rhytmURL = songURL.replace(".mp3", ".json");
 
 		} else {
@@ -135,21 +137,29 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 	},
 
-    getAudioURL : function(songId) {
+    /**
+     * @param {Boolean} prelisten Get low quality preview version
+     */
+    getAudioURL : function(songId, prelisten) {
 
         // XXX: add <audio> API format detection here
-        var needOGG = navigator.userAgent.toLowerCase().indexOf("firefox") >= 0;
+        var needOGG = navigator.userAgent.toLowerCase().indexOf("firefox") >= 0 || navigator.userAgent.toLowerCase().indexOf("chrome") >= 0;
 
         var song = this.get(songId);
 
         var url = song.mp3;
 
+        if(prelisten) {
+            url = url.replace(".mp3", ".prelisten.mp3");
+        }
+
         if(needOGG) {
             url = url.replace(".mp3", ".ogg");
+        } else {
+            url = url.replace(".mp3", ".aac");
         }
 
         return url;
-
     }
 
 
