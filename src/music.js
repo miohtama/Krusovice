@@ -25,14 +25,22 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		console.log("Loading songs:" + url);
 		$.getJSON(url, function(data) {
 			console.log("Got song data");
-			console.log(data);
-			data.forEach(function(obj) {
-				self.fixMediaURLs(obj, mediaURL);
-				self.register(obj);
-			})
+            self.processData(data);
 			callback();
 		});
 	},
+
+
+    /**
+     * Decode song bank data to internal format.
+     */
+    processData : function(data, mediaURL) {
+        var self = this;
+        data.forEach(function(obj) {
+            self.fixMediaURLs(obj, mediaURL);
+            self.register(obj);
+        });
+    },
 
 	/**
 	 * Make image URLs loadable
@@ -55,6 +63,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		}
 
 	},
+
 
 
 	/**
@@ -125,7 +134,22 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 	},
 
+    getAudioURL : function(songId) {
 
+        // XXX: add <audio> API format detection here
+        var needOGG = navigator.userAgent.toLowerCase().indexOf("firefox") >= 0;
+
+        var song = this.get(songId);
+
+        var url = song.mp3;
+
+        if(needOGG) {
+            url = url.replace(".mp3", ".ogg");
+        }
+
+        return url;
+
+    }
 
 
 });

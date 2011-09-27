@@ -5,7 +5,7 @@ var songData = [
 		"artist" : "grapes",
 		"authorURL" : "http://dig.ccmixter.org/dig?user=grapes",
 		"name" : "Test song",
-		"mp3" : "sample-song.mp3",
+		"mp3" : "test-song.mp3",
 		"license" : "Creative Commons",
 		"categories" : ["Test"]
 	}

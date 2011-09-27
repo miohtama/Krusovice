@@ -355,6 +355,7 @@ krusovice.Show.prototype = {
      */
     prepareBackground : function() {
 
+
         var duration = this.getDuration();
 
         var background;
@@ -460,18 +461,27 @@ krusovice.Show.prototype = {
      * @return {Number} How many seconds this show is long
      */
     getDuration : function() {
-        var lastElem = this.animatedObjects[this.animatedObjects.length - 1];
 
-        // TimelineElement of last animated object
-        var tl = lastElem.data;
+        var stopPoint;
 
-        var duration = 0;
+        if(this.animatedObjects && this.animatedObjects.length >= 1) {
+            var lastElem = this.animatedObjects[this.animatedObjects.length - 1];
 
-        for(var i=0; i<tl.animations.length-1; i++) {
-            duration += tl.animations[i].duration;
+            // TimelineElement of last animated object
+            var tl = lastElem.data;
+
+            var duration = 0;
+
+            for(var i=0; i<tl.animations.length-1; i++) {
+                duration += tl.animations[i].duration;
+            }
+
+            stopPoint = tl.wakeUpTime + duration;
+
+        } else {
+            stopPoint = 0;
         }
 
-        var stopPoint = tl.wakeUpTime + duration;
 
         return stopPoint;
     },
@@ -506,15 +516,7 @@ krusovice.Show.prototype = {
 
         if(this.playing) {
             this.render();
-
-            if(this.webGL) {
-                setTimeout(loop, 20);
-            } else {
-                krusovice.utils.requestAnimationFrame($.proxy(this.loopAnimation, this), this.canvas);
-            }
-
-            //krusovice.utils.requestAnimationFrame(loop);
-            //
+            krusovice.utils.requestAnimationFrame(loop);
         }
     },
 
@@ -524,7 +526,8 @@ krusovice.Show.prototype = {
      * Can be manually called after onClock(). Automatically called when playing.
      */
     requestAnimationFrame : function() {
-        krusovice.utils.requestAnimationFrame($.proxy(this.render, this), this.canvas);
+        //krusovice.utils.requestAnimationFrame($.proxy(this.render, this), this.canvas);
+        setTimeout($.proxy(this.render, this), 10);
     },
 
     render : function() {

@@ -59,7 +59,7 @@ var effectbrowser = {
             type : "image",
             label : null,
             duration : 1.5,
-            imageURL : "../testdata/kakku.png"
+            imageURL : "ukko.jpg"
         };
 
         var lines = $("#images").val().split("\n");
@@ -67,6 +67,7 @@ var effectbrowser = {
         // Add image elements to show
         lines.forEach(function(l) {
             l = l.trim();
+            console.log("Got line:" + l);
             if(l != "") {
                 var copy = $.extend({}, baseelem);
                 copy.imageURL = l;
@@ -99,9 +100,19 @@ var effectbrowser = {
             baseplan[i].id = i;
         }
 
-        var backgroundId = $("#background option:selected").val() || "blue";
+
+        var backgroundId = $("#background option:selected").val() || "plain-white";
+
+        if(backgroundId == "random") {
+            // XXX: Not supported right now
+            backgroundId = "plain-white";
+        }
 
         var background = krusovice.backgrounds.Registry.get(backgroundId);
+
+        if(!background) {
+            throw "Background data missing:" + backgroundId;
+        }
 
         console.log("Created background data:");
         console.log(background);
@@ -149,15 +160,21 @@ var effectbrowser = {
      */
     createShow : function(design) {
 
-           var audio = document.getElementById("audio");
+        console.log("Got design");
+        console.log(design);
+
+        var audio = document.getElementById("audio");
+        var songURL;
 
         // Create timeline
 
         var rhytmData = null;
         if(this.song) {
             rhytmData = this.song.rhytmData;
+            songURL = krusovice.music.Registry.getAudioURL(this.song.id);
         } else {
             rhytmData = null;
+            songURL = krusovice.music.Registry.getAudioURL("test-song");
         }
 
         var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhytmData, design.settings);
@@ -172,8 +189,8 @@ var effectbrowser = {
         visualizer.render(div);
 
         // Set dummy song on <audio>
+
         if(!rhytmData) {
-            var songURL = "../testdata/sample-song.mp3";
             audio.setAttribute("src", songURL);
         }
 
@@ -362,15 +379,14 @@ var effectbrowser = {
         $("#reanimate").click($.proxy(effectbrowser.reanimate, effectbrowser));
 
         // XXX: Cannot distribute media files on Github
-        krusovice.backgrounds.Registry.processData(window.backgroundData, "../testdata/");
+        krusovice.backgrounds.Registry.processData(window.backgroundData, "./");
         this.createBackgroundSelector();
 
-
         // XXX: Cannot distribute media files on Github
-        krusovice.music.Registry.processData(window.songData, "../testdata/");
+        krusovice.music.Registry.processData(window.songData, "./");
         this.createSongSelector();
 
-        $("#images").val("../testdata/kakku.png\n../testdata/kakku.png\n../testdata/kakku.png\n");
+        $("#images").val("ukko.jpg\nukko.jpg\nukko.jpg\n");
 
         $("#create-json").click($.proxy(this.outputJSON, this));
     }
