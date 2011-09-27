@@ -6,30 +6,30 @@ krusovice.music = krusovice.music || {};
 
 krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
-	/**
-	 * Dummy audio filed used play when no song is selected.
-	 * <audio> element will still feed clock to the process.
-	 *
-	 */
-	noAudioClip : null,
+    /**
+     * Dummy audio filed used play when no song is selected.
+     * <audio> element will still feed clock to the process.
+     *
+     */
+    noAudioClip : null,
 
-	/**
-	 * Load music data from JSON file
-	 *
-	 * @param {String} url URL to songs.json
-	 *
-	 * @param {String} mediaURL Base URL to image and video data
-	 */
-	loadData : function(url, mediaURL, callback) {
-		var self = this;
-		console.log("Loading songs:" + url);
-		$.getJSON(url, function(data) {
-			console.log("Got song data");
-			console.log(data);
+    /**
+     * Load music data from JSON file
+     *
+     * @param {String} url URL to songs.json
+     *
+     * @param {String} mediaURL Base URL to image and video data
+     */
+    loadData : function(url, mediaURL, callback) {
+        var self = this;
+        console.log("Loading songs:" + url);
+        $.getJSON(url, function(data) {
+            console.log("Got song data");
+            console.log(data);
             self.processData(data, mediaURL);
-			callback();
-		});
-	},
+            callback();
+        });
+    },
 
 
     /**
@@ -43,102 +43,103 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
         });
     },
 
-	/**
-	 * Make image URLs loadable
-	 */
-	fixMediaURLs : function(obj, mediaURL) {
+    /**
+     * Make image URLs loadable
+     */
+    fixMediaURLs : function(obj, mediaURL) {
 
-		if(!mediaURL) {
-			throw "Using image-based backgrounds needs base media URL";
-		}
+        if(!mediaURL) {
+            throw "Using image-based backgrounds needs base media URL";
+        }
 
-		if(mediaURL[mediaURL.length-1] != "/") {
-			throw "Media URL must end with slash:" + mediaURL;
-		}
+        if(mediaURL[mediaURL.length-1] != "/") {
+            throw "Media URL must end with slash:" + mediaURL;
+        }
 
-		if(obj.mp3 && typeof(obj.mp3) == "string") {
-			if(!obj.mp3.match("^http")) {
-				// Convert background source url from relative to absolute
-				obj.mp3 = mediaURL + obj.mp3;
-			}
-		}
+        if(obj.mp3 && typeof(obj.mp3) == "string") {
+            if(!obj.mp3.match("^http")) {
+                // Convert background source url from relative to absolute
+                obj.mp3 = mediaURL + obj.mp3;
+            }
+        }
 
-	},
+    },
 
 
 
-	/**
-	 * Load rhytm data for MP3;
-	 */
-	loadRhytmData : function(file, callback) {
+    /**
+     * Load rhytm data for MP3;
+     */
+    loadRhytmData : function(file, callback) {
 
-	},
+    },
 
-	/**
-	 * Load a song from the repository for the show purposes.
-	 *
-	 * @param {String} id Song id or null for no music
-	 *
-	 * @param {Object} audio HTMLAudio element used for music playback, or null
-	 *
-	 * @param {Function} callback called when all done
-	 *
-	 * @param {boolean} prelisten Load low quality audio version
-	 *
-	 */
-	loadSong : function(id, audio, callback, prelisten) {
+    /**
+     * Load a song from the repository for the show purposes.
+     *
+     * @param {String} id Song id or null for no music
+     *
+     * @param {Object} audio HTMLAudio element used for music playback, or null
+     *
+     * @param {Function} callback called when all done
+     *
+     * @param {boolean} prelisten Load low quality audio version
+     *
+     */
+    loadSong : function(id, audio, callback, prelisten) {
 
-		var songURL, rhytmURL;
-		var rhytmDone = false;
-		var songDone = false;
+        var songURL, rhytmURL;
+        var rhytmDone = false;
+        var songDone = false;
+        var song;
 
-		if(id) {
-			// Assuming has music
+        if(id) {
+            // Assuming has music
 
-            var song = this.get(id);
-			var songURL = this.getAudioURL(id, prelisten);
+            song = this.get(id);
+            songURL = this.getAudioURL(id, prelisten);
 
-			if(!song) {
-				throw "Unknown song:" + id;
-			}
+            if(!song) {
+                throw "Unknown song:" + id;
+            }
 
             var mp3 = song.mp3;
-			rhytmURL = mp3.replace(".mp3", ".json");
+            rhytmURL = mp3.replace(".mp3", ".json");
 
-		} else {
-			songURL = this.noAudioClip;
-		}
+        } else {
+            songURL = this.noAudioClip;
+        }
 
-		console.log("Loading song URL " + songURL + " for audio element:" + audio);
+        console.log("Loading song URL " + songURL + " for audio element:" + audio);
 
 
-		function allDone() {
-			if(rhytmDone && songDone) {
-				callback(song);
-			}
-		}
+        function allDone() {
+            if(rhytmDone && songDone) {
+                callback(song);
+            }
+        }
 
-		function onRhytmData(data) {
-			song.rhytmData = data;
-			rhytmDone = true;
-			allDone();
-		}
+        function onRhytmData(data) {
+            song.rhytmData = data;
+            rhytmDone = true;
+            allDone();
+        }
 
-		function onMusicBuffered() {
-			songDone = true;
-			allDone();
-		}
+        function onMusicBuffered() {
+            songDone = true;
+            allDone();
+        }
 
-		$.getJSON(rhytmURL, onRhytmData);
+        $.getJSON(rhytmURL, onRhytmData);
 
-		if(audio) {
-			$(audio).one("canplay", onMusicBuffered);
-			$(audio).attr("src", songURL);
-		} else {
-			songDone = true;
-		}
+        if(audio) {
+            $(audio).one("canplay", onMusicBuffered);
+            $(audio).attr("src", songURL);
+        } else {
+            songDone = true;
+        }
 
-	},
+    },
 
     /**
      * @param {Boolean} prelisten Get low quality preview version
