@@ -453,7 +453,13 @@ krusovice.Show.prototype = {
      * Stop playing the show
      */
     stop : function() {
+        console.log("Show stopping");
         this.playing = false;
+
+        if(this.realtime) {
+            this.clockUpdated = 0;
+            this.clock = 0;
+        }
     },
 
 
@@ -649,6 +655,7 @@ krusovice.Show.prototype = {
         if(this.realtime && this.playing) {
             this.clockUpdated = (new Date().getTime()) / 1000;
         }
+
     },
 
     /**
@@ -784,12 +791,15 @@ krusovice.Show.prototype = {
             play : function() {
                 startTime = (new Date().getTime());
                 handle = setInterval(this.tick, 500);
+                self.onClock(0);
                 self.play();
             },
 
             pause : function() {
                 self.stop();
+                console.log("Clearing inteval()");
                 clearInterval(handle);
+                console.log("Done");
             }
         }
 

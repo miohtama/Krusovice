@@ -233,6 +233,9 @@ krusovice.renderers.Three.prototype = {
         //console.log(mesh);
     },
 
+    /**
+     * Make sure this object is no longer visible
+     */
     farewell : function(mesh) {
         // this.scene.removeObject(mesh);
         mesh.visible = false;

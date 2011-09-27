@@ -320,7 +320,8 @@ krusovice.utils = {
                 window.setTimeout(callback, 1000 / 60);
               };
 
-       func(callback, elem);
+       func(callback);
+       //setTimeout(callback, 20);
     },
 
 

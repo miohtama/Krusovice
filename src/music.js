@@ -25,7 +25,8 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 		console.log("Loading songs:" + url);
 		$.getJSON(url, function(data) {
 			console.log("Got song data");
-            self.processData(data);
+			console.log(data);
+            self.processData(data, mediaURL);
 			callback();
 		});
 	},
