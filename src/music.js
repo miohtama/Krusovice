@@ -102,11 +102,14 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 				throw "Unknown song:" + id;
 			}
 
-			rhytmURL = songURL.replace(".mp3", ".json");
+            var mp3 = song.mp3;
+			rhytmURL = mp3.replace(".mp3", ".json");
 
 		} else {
 			songURL = this.noAudioClip;
 		}
+
+		console.log("Loading song URL " + songURL + " for audio element:" + audio);
 
 
 		function allDone() {
