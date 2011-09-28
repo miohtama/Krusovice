@@ -2,7 +2,7 @@
 
 var krusovice = krusovice || {};
 
-krusovice.version = "trunk" // $VERSION_LINE
+krusovice.version = "trunk"; // $VERSION_LINE
 
 /*global console,window*/
 
@@ -72,7 +72,7 @@ krusovice.load = function(doneCallback, includeDependencies) {
 
               if(src.indexOf("krootstrap.js") >= 0) {
                   // Current 'script' ok
-                  return src;;
+                  return src;
               }
           }
 
