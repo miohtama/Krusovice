@@ -253,7 +253,7 @@ krusovice.effects.Manager.register(krusovice.effects.SlightMove);
 
 krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
 
-    id : "slightmoveleft",
+    id : "slightmoveleftright",
 
     name : "Slight Move Left -> Right",
 
@@ -261,7 +261,7 @@ krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.Qua
 
     transitions : ["onscreen"],
 
-    easing : "easeInQuad",
+    easing : "easeInOutSine",
 
     init : function() {
         // Override default animation parameters
@@ -284,13 +284,13 @@ krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.Qua
         var p = this.parameters;
 
         p.source.axis = [0,0,1];
-        p.source.angle = Math.PI/10;
-        p.sourceVariation.angle = krusovice.utils.splitrnd(Math.PI/8);
+        p.source.angle = Math.PI/32;
+        p.sourceVariation.angle = krusovice.utils.splitrnd(Math.PI/32);
 
         p.target.axis = [0,0,1];
         p.targetVariation.axis = [0,0,1];
-        p.target.angle = -Math.PI/10;
-        p.targetVariation.angle = krusovice.utils.splitrnd(Math.PI/8);
+        p.target.angle = -Math.PI/32;
+        p.targetVariation.angle = krusovice.utils.splitrnd(Math.PI/32);
 
     }
 
