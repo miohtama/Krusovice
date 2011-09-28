@@ -154,12 +154,12 @@ $.extend(krusovice.backgrounds.Scroll2D, {
     /**
      * How many seconds we vary between movements
      */
-    spanVariation : 2,
+    spanVariation : 10,
 
     /**
      * Average duration of camera movement
      */
-    spanDuration : 5,
+    spanDuration : 15,
 
 
     /**

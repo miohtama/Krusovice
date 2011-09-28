@@ -203,7 +203,8 @@ var effectbrowser = {
             rhytmData : rhytmData,
             background : design.background,
             elem : $("#show"),
-            webGL : true
+            webGL : true,
+            realtime : true
         };
 
         // Create show
