@@ -354,7 +354,7 @@ krusovice.backgrounds.Scroll2D.prototype = {
             if(!ctx) {
                 throw "oops";
             }
-            console.log("Scroll 2D bg draw index:" + frames.index + " delta:" + frames.delta + " x:" + x + " y:" + y + " w:" + w +  " h:" + h + " width:" + this.width +  " height:" + this.height);
+            //console.log("Scroll 2D bg draw index:" + frames.index + " delta:" + frames.delta + " x:" + x + " y:" + y + " w:" + w +  " h:" + h + " width:" + this.width +  " height:" + this.height);
             // https://developer.mozilla.org/en/Canvas_tutorial/Using_images#Slicing
             ctx.drawImage(this.image, x, y, w, h, 0, 0, this.width, this.height);
         }
