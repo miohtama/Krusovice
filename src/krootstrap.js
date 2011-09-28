@@ -1,4 +1,3 @@
-(function() {
 "use strict";
 
 var krusovice = krusovice || {};
@@ -169,5 +168,6 @@ krusovice.load = function(doneCallback, includeDependencies) {
        }
 
        loadJS(files.shift());
+
+
 };
-}());
