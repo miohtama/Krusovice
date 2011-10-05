@@ -38,6 +38,7 @@ var text = {
             timeline : timeline,
             elem : elem,
             realtime : false,
+            webGL : true,
             background : {
                 type : "plain",
                 color : "#dddddd"
@@ -73,7 +74,7 @@ var text = {
         var frame1 = $("<div class='frame1'>");
 
         // 1.0 = the first image visible
-        this.renderShowFrame(frame1, width, height, 0, data);
+        this.renderShowFrame(frame1, width, height, 3, data);
         $("#canvases").append(frame1);
     },
 

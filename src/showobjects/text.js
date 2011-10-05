@@ -52,6 +52,11 @@ $.extend(krusovice.showobjects.Text.prototype, {
     backgroundColor : null,
 
     /**
+     * 3D object used
+     */
+    object : null,
+
+    /**
      * Font id or null
      */
     font : null,
@@ -86,19 +91,27 @@ $.extend(krusovice.showobjects.Text.prototype, {
         this.width = width;
         this.height = height;
 
-        function done() {
-            self.prepareMesh();
+        function done(success, errorMessage) {
+            if(success) {
+                self.prepareMesh();
+            }
+
             if(self.prepareCallback) {
-                self.prepareCallback();
+                self.prepareCallback(success, errorMessage);
             }
 
         }
 
+         function imageloaded(image) {
+            self.backgroundImage = image;
+            done(true);
+         }
+
 
         if(this.shape.backgroundImage) {
-             loader.loadImage(this.backgroundImage, done);
+             loader.loadImage(this.shape.backgroundImage, imageloaded);
         } else {
-            done();
+            done(true);
         }
     },
 
@@ -109,8 +122,14 @@ $.extend(krusovice.showobjects.Text.prototype, {
        // Create <canvas> to work with
        var buffer = document.createElement('canvas');
 
+       if(!width || !height) {
+           throw "Bad width/height:" + width + " " + height;
+       }
+
        buffer.width = width;
        buffer.height = height;
+
+       console.log("Text buffer:" + buffer.width + " " + buffer.height);
 
        return buffer;
     },
@@ -120,12 +139,14 @@ $.extend(krusovice.showobjects.Text.prototype, {
      *
      * @parma text Text to draw
      */
-    drawLabel : function(labelData, text) {
+    drawLabel : function(buffer, labelData, text) {
         var ctx = this.buffer.getContext("2d");
-
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#000000";
+        ctx.fillText(text, labelData.x + 20, labelData.y + 20);
     },
 
-    drawLabels : function() {
+    drawLabels : function(buffer) {
         var self = this;
 
         if(!this.data.labels) {
@@ -139,12 +160,12 @@ $.extend(krusovice.showobjects.Text.prototype, {
                 console.error(self.shape);
                 throw "No label " + labelId + " in shape " + self.shape.id;
             }
-            self.drawLabel(labelData, text);
+            self.drawLabel(buffer, labelData, text);
         });
     },
 
-    drawBackground : function() {
-        var ctx = this.buffer.getContext("2d");
+    drawBackground : function(buffer) {
+        var ctx = buffer.getContext("2d");
         if(this.image) {
             ctx.drawImage(this.image, 0, 0, this.buffer.width, this.buffer.height);
         } else {
@@ -164,7 +185,6 @@ $.extend(krusovice.showobjects.Text.prototype, {
      */
     prepareMesh : function() {
         var buffer = this.buffer = this.createBuffer(this.width, this.height);
-
         var buffer2;
 
         this.drawFrontSide(buffer);
@@ -176,7 +196,10 @@ $.extend(krusovice.showobjects.Text.prototype, {
             buffer2 = null;
         }
 
-        return this.renderer.createQuad(buffer, buffer2);
+        this.object = this.renderer.createQuad(buffer, this.width, this.height);
+
+        console.log("Created object");
+        console.log(this.object);
     },
 
     /**

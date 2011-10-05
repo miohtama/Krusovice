@@ -68,10 +68,10 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
 
         var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
 
-        //console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);
-        //console.log("Source:" + source.position);
-        //console.log("Target:" + target.position);
-        //console.log("Position:" + position);
+        console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);
+        console.log("Source:" + source.position);
+        console.log("Target:" + target.position);
+        console.log("Position:" + position);
 
         if(!krusovice.utils.isNumber(position[0])) {
             throw "Serious fail";

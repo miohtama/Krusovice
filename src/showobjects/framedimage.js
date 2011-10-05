@@ -35,7 +35,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      *
      * @param {Number} height Canvas width for which we prepare (downscale)
      */
-    prepare : function(width, height) {
+    prepare : function(loader, width, height) {
 
         if(!width || !height) {
             throw "FramedAndLabeledPhoto.prepare(): cannot prepare without knowing width and height of target canvas";

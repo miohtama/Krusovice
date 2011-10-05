@@ -149,22 +149,11 @@ krusovice.renderers.Three.prototype = {
         var texture;
 
         if(this.webGL && src.getContext) {
-            if(false) {
-                this.testsrc = new Image();
-                //
-                this.testsrc.src = "http://localhost:8888/static/1317056241/images/512.png";
-                this.testsrc.crossorigin = "";
-                texture = new THREE.Texture(this.testsrc, THREE.UVMapping);
 
-                this.testsrc.onload = function() {
-                    texture.needsUpdate = true;
-                };
-            }
-            console.log("Using src:");
-            console.log(this.testsrc);
+            console.log("createQuad(), using src:");
+            console.log(src);
 
             texture = new THREE.Texture(src, THREE.UVMapping);
-            //texture =  THREE.ImageUtils.loadTexture( "http://localhost:8888/test_data/images/512.png", THREE.UVMapping);
             texture.needsUpdate = true;
             //texture.repeat.set( 1000, 1000 );
 
@@ -174,31 +163,21 @@ krusovice.renderers.Three.prototype = {
             texture.magFilter = THREE.LinearFilter;
         }
 
-        /*
-        if(!src.width) {
-            throw "createQuad(): Source width missing when creating 3D presentation";
-        }*/
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
         var plane = new THREE.StraightPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
-        //
-        //var plane = new THREE.CubeGeometry( 200, 200, 200 );
-        //console.log("Created plane:" + dimensions.width + " x " + dimensions.height + " srcWidth:" + srcWidth + " srcHeight:" + srcHeight);
-
-        //var material;
 
         var material = new THREE.MeshBasicMaterial( {  map: texture } );
 
-        //var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe : true, wireframeLinewidth : 1 } );
-
-        //var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true } );
-
         var mesh = new THREE.Mesh( plane, material );
-        //mesh.overdraw = true;
-        //mesh.overdraw = false;
+
+        // <canvas> 3d face gap elimimination
+        mesh.overdraw = true;
+
         mesh.doubleSided = true;
         mesh.useQuaternion = true;
+
         // Add a special fix parameter to make landscape images closer to camera
         // XXX: Think something smarter here.
         if(srcWidth > srcHeight) {
