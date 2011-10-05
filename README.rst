@@ -53,7 +53,7 @@ Unit tests
 Fast tests::
 
     java -jar JsTestDriver-1.3.2.jar --port 9876  &
-    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver.conf --tests all
 
 Slow tests::
 

@@ -27,6 +27,12 @@ krusovice.InputElement.prototype = {
      * "image" or "text"
      */
     type : null,
+    
+    /**
+     * Label id -> text content mappings
+     */
+    texts : {        
+    },
 
 	/**
 	 * @type String
