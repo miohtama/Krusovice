@@ -204,6 +204,12 @@ krusovice.showobjects.Base.prototype = {
         }
         this.alive = false;
 
+    },
+
+    /**
+     * Dummy for now
+     */
+    render : function() {
     }
 
 };

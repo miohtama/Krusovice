@@ -58,6 +58,8 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
     prepare : function(loader, width, height) {
 
+        var self = this;
+
         if(!this.data) {
             throw "Input data missing";
         }
@@ -84,11 +86,19 @@ $.extend(krusovice.showobjects.Text.prototype, {
         this.width = width;
         this.height = height;
 
+        function done() {
+            self.prepareMesh();
+            if(self.prepareCallback) {
+                self.prepareCallback();
+            }
+
+        }
+
+
         if(this.shape.backgroundImage) {
-             loader.loadImage(this.backgroundImage, $.proxy(this.prepareMesh, this));
+             loader.loadImage(this.backgroundImage, done);
         } else {
-            // 100% procedural thing
-            this.prepareMesh();
+            done();
         }
     },
 

@@ -43,6 +43,8 @@ krusovice.load = function(doneCallback, includeDependencies) {
          "effects/base.js",
          "effects/linear.js",
          "backgrounds/background.js",
+         "text/textdefinitions.js",
+         "text/text.js",
          "music.js"
     ];
 

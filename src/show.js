@@ -428,7 +428,7 @@ krusovice.Show.prototype = {
             var obj = new krusovice.showobjects.FramedAndLabeledPhoto(cfg);
             return obj;
         } else if(timelineInput.type == "text") {
-            return new krusovice.showobjects.TextFrame(cfg);
+            return new krusovice.showobjects.Text(cfg);
         } else {
             throw "Unknown timeline input type:" + timelineInput.type;
         }
