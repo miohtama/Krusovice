@@ -20,18 +20,83 @@ RenderTest.prototype.createPlan = function() {
 /**
  * Render few first frames of simple timeline.
  */
-RenderTest.prototype.testRenderFewFrames = function(queue) {
+RenderTest.prototype.testRenderFewFramesCanvas = function(queue) {
+    this.renderCore(queue, false);
+};
+
+/**
+ * Render few first frames of simple timeline.
+ */
+RenderTest.prototype.testRenderFewFramesWebGL = function(queue) {
+    this.renderCore(queue, true);
+};
+
+
+/**
+ * Try loading a show which has bad resources and loading should fail
+ */
+RenderTest.prototype.testRenderBadResource = function(queue) {
+
+    var plan = this.createPlan();
+
+    // Test only with a single element
+    plan = plan.slice(0, 1);
+
+    plan[0].imageURL = "http://notexist";
+
+    var cfg = {
+            timeline : plan
+    };
+
+    var show = new krusovice.Show(cfg);
+
+    var $show = $(show);
+
+    queue.call('Step 1: try load non-existant resources', function(callbacks) {
+
+        console.log("Step 1");
+
+        window.assertFalse(show.loaded);
+
+        var interrupt = callbacks.addErrback("Failed to load media resources");
+
+        var onerror = callbacks.add(function() {
+            /// ok
+            console.log("baabaa");
+        });
+
+        $show.bind("loadend", function(event) {
+            console.log("loadend");
+            interrupt();
+        });
+
+        $show.bind("loaderror", function(event, msg) {
+            console.log("loaderror");
+            onerror();
+        });
+
+        show.prepare();
+
+    });
+
+};
+
+/**
+ * @param webGL use WebGL rendering
+ */
+RenderTest.prototype.renderCore = function(queue, webGL) {
 
     var plan = this.createPlan();
 
     var cfg = {
             timeline : plan,
             background : {
-	            type : "plain",
-	            color : "#ffffff"
+                type : "plain",
+                color : "#ffffff"
             },
             elem : null,
-            realtime : false // Enforce external test clock signal
+            realtime : false,
+            webGL : webGL
     };
 
 
@@ -89,54 +154,3 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
     });
 
 };
-
-
-/**
- * Try loading a show which has bad resources and loading should fail
- */
-RenderTest.prototype.testRenderBadResource = function(queue) {
-
-    var plan = this.createPlan();
-
-    // Test only with a single element
-    plan = plan.slice(0, 1);
-
-    plan[0].imageURL = "http://notexist";
-
-    var cfg = {
-            timeline : plan
-    };
-
-    var show = new krusovice.Show(cfg);
-
-    var $show = $(show);
-
-    queue.call('Step 1: try load non-existant resources', function(callbacks) {
-
-        console.log("Step 1");
-
-        window.assertFalse(show.loaded);
-
-        var interrupt = callbacks.addErrback("Failed to load media resources");
-
-        var onerror = callbacks.add(function() {
-            /// ok
-            console.log("baabaa");
-        });
-
-        $show.bind("loadend", function(event) {
-            console.log("loadend");
-            interrupt();
-        });
-
-        $show.bind("loaderror", function(event, msg) {
-            console.log("loaderror");
-            onerror();
-        });
-
-        show.prepare();
-
-    });
-
-};
-
