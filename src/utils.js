@@ -439,6 +439,13 @@ krusovice.utils = {
         var res = 2*Math.atan((newAR)/(oldAR) * Math.tan(oldFOV/2));
 
         return 360 * res / (Math.PI*2);
+    },
+
+    /**
+     * Detect WebGL support
+     */
+    hasWebGL : function() {
+        return !!window.WebGLRenderingContext;
     }
 
 };

@@ -38,7 +38,7 @@ var text = {
             timeline : timeline,
             elem : elem,
             realtime : false,
-            webGL : true,
+            webGL : "auto",
             background : {
                 type : "plain",
                 color : "#dddddd"

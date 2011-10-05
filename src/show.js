@@ -73,6 +73,19 @@ krusovice.Show.prototype = {
     songURL : null,
 
     /**
+     * @cfg {Object} Use WebGL renderer: true, false or "auto"
+     */
+    webGL : "auto",
+
+    /**
+     * @cfg {Boolean} preview
+     *
+     * Take some steps in order to optimize speed and network bandwidth and have less quality output.
+     */
+    preview : false,
+
+
+    /**
      * @cfg {Object} rhytmData Echo Nest API data for rhytm used to animate background effects
      */
     rhytmData : null,
@@ -201,15 +214,6 @@ krusovice.Show.prototype = {
     realtime : true,
 
 
-    /**
-     * Use WebGL renderer
-     */
-    webGL : false,
-
-    /**
-     * Take some steps in order to optimize speed and network bandwidth and have less quality output.
-     */
-    preview : false,
 
 
     /**
@@ -229,6 +233,12 @@ krusovice.Show.prototype = {
      *
      */
     prepare : function() {
+
+        if(this.webGL == "auto") {
+            this.webGL = krusovice.utils.hasWebGL();
+            console.log("Initializing show. WebGL support:" + this.webGL);
+        }
+
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();
