@@ -33,7 +33,6 @@ krusovice.load = function(doneCallback, includeDependencies) {
          "project.js",
          "loader.js",
          "rhytmanalysis.js",
-         "showobjects.js",
          "timeliner.js",
          "timelinevisualizer.js",
          "show.js",
@@ -43,8 +42,10 @@ krusovice.load = function(doneCallback, includeDependencies) {
          "effects/base.js",
          "effects/linear.js",
          "backgrounds/background.js",
-         "text/textdefinitions.js",
-         "text/text.js",
+         "showobjects/showobjects.js",
+         "showobjects/framedimage.js",
+         "showobjects/textdefinitions.js",
+         "showobjects/text.js",
          "music.js"
     ];
 

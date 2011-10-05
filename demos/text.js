@@ -73,7 +73,7 @@ var text = {
         var frame1 = $("<div class='frame1'>");
 
         // 1.0 = the first image visible
-        this.renderShowFrame(frame1, width, height, 3, data);
+        this.renderShowFrame(frame1, width, height, 0, data);
         $("#canvases").append(frame1);
     },
 

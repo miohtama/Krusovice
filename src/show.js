@@ -371,7 +371,7 @@ krusovice.Show.prototype = {
             background = {
                 type : "plain",
                 color : "#ffffff"
-            }
+            };
         } else {
 
             if(this.background.backgroundId) {
