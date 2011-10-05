@@ -25,7 +25,7 @@ krusovice.Show = function(cfg) {
         this.loader = new krusovice.Loader();
     }
 
-}
+};
 
 krusovice.Show.prototype = {
 
@@ -714,6 +714,8 @@ krusovice.Show.prototype = {
      */
     bindToAudio : function(audio, loadAsResource) {
 
+        var self = this;
+
         if(!audio) {
             throw "You should give that audio element";
         }
@@ -723,20 +725,20 @@ krusovice.Show.prototype = {
             //console.log("timeupdate");
 
             var ctime = audio.currentTime;
-            ctime -= this.musicStartTime;
-            this.onClock(ctime);
+            ctime -= self.musicStartTime;
+            self.onClock(ctime);
 
             // Send in render event if we are not in playback mode
             // to visualize the current position on audio
-            if(!this.playing) {
+            if(!self.playing) {
                 console.log("forcing rendering");
-                this.resetClock();
-                this.requestAnimationFrame();
+                self.resetClock();
+                self.requestAnimationFrame();
             }
         }
 
         //
-        $(audio).bind("timeupdate", $.proxy(onTimeUpdate, this));
+        $(audio).bind("timeupdate", onTimeUpdate);
         $(audio).bind("play", $.proxy(this.play, this));
         $(audio).bind("pause", $.proxy(this.stop, this));
 
@@ -769,7 +771,6 @@ krusovice.Show.prototype = {
             HAVE_ENOUGH_DATA (4) Enough data to play the whole video is available
          */
 
-        var self = this;
         // http://www.chipwreck.de/blog/2010/03/01/html-5-video-dom-attributes-and-events/
         if(loadAsResource) {
             if(audio.readyState < 4) {
@@ -801,7 +802,7 @@ krusovice.Show.prototype = {
 
             tick : function() {
                 var now = (new Date().getTime());
-                self.onClock((now - startTime) / 1000)
+                self.onClock((now - startTime) / 1000);
             },
 
             play : function() {
@@ -817,7 +818,7 @@ krusovice.Show.prototype = {
                 clearInterval(handle);
                 console.log("Done");
             }
-        }
+        };
 
         return controller;
 
@@ -831,4 +832,4 @@ krusovice.Show.prototype = {
         return this.ctx;
     }
 
-}
+};
