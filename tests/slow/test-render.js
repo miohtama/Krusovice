@@ -1,19 +1,21 @@
 'use strict';
 
-var RenderTest = AsyncTestCase("Render");
+/*global window,$,console,krusovice*/
+
+var RenderTest = window.AsyncTestCase("Render");
 
 /**
  * Create timeline where we have image URLs relative to JsTestDriver root
  */
 RenderTest.prototype.createPlan = function() {
-    var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
     var plan = timeliner.createPlan();
 
     // fix URls
     plan[0].imageURL = "http://localhost:8000/testdata/kakku.png";
 
     return plan;
-}
+};
 
 /**
  * Render few first frames of simple timeline.
@@ -26,14 +28,14 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
             timeline : plan,
             background : {
 	            type : "plain",
-	            color : "#ffffff",
+	            color : "#ffffff"
             },
             elem : null,
             realtime : false // Enforce external test clock signal
     };
 
 
-    assertEquals(2, plan.length);
+    window.assertEquals(2, plan.length);
 
     var show = new krusovice.Show(cfg);
 
@@ -43,7 +45,7 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
 
         console.log("Step 1");
 
-        assertFalse(show.loaded);
+        window.assertFalse(show.loaded);
 
         var interrupt = callbacks.addErrback("Failed to load media resources");
 
@@ -53,7 +55,7 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
 
         $(show).bind("loadend", function() {
             console.log("loadend");
-            onloaded()
+            onloaded();
         });
 
         $(show).bind("loaderror", function(event, msg) {
@@ -72,21 +74,20 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
 
         console.log("Step 2");
 
-        assertTrue(show.loaded);
+        window.assertTrue(show.loaded);
 
-        assertEquals(2, show.animatedObjects.length);
+        window.assertEquals(2, show.animatedObjects.length);
 
         for(var i=0; i<3; i+=0.1) {
             show.onClock(i);
             show.render();
         }
 
-        assertEquals(30, show.currentFrame);
+        window.ssertEquals(30, show.currentFrame);
 
     });
 
-
-}
+};
 
 
 /**
@@ -102,7 +103,7 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
     plan[0].imageURL = "http://notexist";
 
     var cfg = {
-            timeline : plan,
+            timeline : plan
     };
 
     var show = new krusovice.Show(cfg);
@@ -113,7 +114,7 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
 
         console.log("Step 1");
 
-        assertFalse(show.loaded);
+        window.assertFalse(show.loaded);
 
         var interrupt = callbacks.addErrback("Failed to load media resources");
 
@@ -136,6 +137,5 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
 
     });
 
-
-}
+};
 
