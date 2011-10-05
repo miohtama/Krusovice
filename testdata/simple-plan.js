@@ -9,24 +9,26 @@ var simpleElements = [
 			duration : 2.0,
 			imageURL : "../../testdata/kakku.png"
 		},
-		
+
 		{
 			type : "text",
 			id : 0,
-			label : "Foobar",
-			text : "long long long long text",
+			shape : "box",
+			labels : {
+			     text : "long long long long long text"
+			},
 			duration : 2.0
 		}
 ];
 
 
 var simpleDesign = {
-    
+
     timeline : simpleElements,
-    
+
     background : {
         type : "plain",
         color : "#ffFFff"
     }
-    
+
 }

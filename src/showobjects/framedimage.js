@@ -53,7 +53,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             load = true;
         }
 
-        //console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
+        console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
 
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);

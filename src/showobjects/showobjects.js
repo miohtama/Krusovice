@@ -76,13 +76,18 @@ krusovice.showobjects.Base.prototype = {
      *
      * Note: animate() can be called before prepare in dummy unit tests runs.
      * Please set-up all state variables in init().
+     *
+     * This function MUST call prepareCallback() on both async success or error.
+     *
+     * @param loader krusovice.Loader instance
+     *
+     * @param {Number} width Target canvas width in pixels
+     *
+     * @param {Number} height Target canvas height in pixels
+     *
      */
-    prepare : function() {
+    prepare : function(loader, width, height) {
 
-    },
-
-
-    play : function() {
     },
 
     /**
@@ -207,7 +212,7 @@ krusovice.showobjects.Base.prototype = {
     },
 
     /**
-     * Dummy for now
+     * Dummy for now - scene rendering internal to Three.js
      */
     render : function() {
     }

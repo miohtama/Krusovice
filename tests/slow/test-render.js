@@ -79,11 +79,12 @@ RenderTest.prototype.testRenderFewFrames = function(queue) {
         window.assertEquals(2, show.animatedObjects.length);
 
         for(var i=0; i<3; i+=0.1) {
+            console.log("Rendering frame:" + i);
             show.onClock(i);
             show.render();
         }
 
-        window.ssertEquals(30, show.currentFrame);
+        window.assertEquals(30, show.currentFrame);
 
     });
 

@@ -41,7 +41,7 @@ ShowObjectsTest.prototype.testRenderTransitionIn = function() {
 		renderer : init.renderer
 	});
 
-	object.prepare(512, 512);
+	object.prepare(null, 512, 512);
 
 	// Check that we didn't trigger async image loading in tests
 	assertObject(object.image);
