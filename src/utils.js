@@ -472,8 +472,43 @@ krusovice.utils = {
         ctx.arc(left + radius, top + radius, radius, (Math.PI / 180) * 180, (Math.PI / 180) * 270, false);
         ctx.closePath();
         ctx.fill();
+        ctx.stroke();
         ctx.restore();
+    },
+
+   /**
+    * Read HTTP GET query parameters to a object.
+    *
+    * See: http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+    *
+    *
+    * @param {String} aURL URL to split or null for window.location
+    *
+    * @return {Object} key -> value pairs
+    */
+    splitURLParameters : function (aURL) {
+
+        if(!aURL) {
+            aURL = window.location.href;
+        }
+
+        var vars = {}, hash;
+
+        if(aURL.indexOf("#") >= 0 ){
+            aURL = aURL.slice(0,aURL.indexOf("#"));
+        }
+        var hashes = aURL.slice(aURL.indexOf('?') + 1).split('&');
+
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            //vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+
+        return vars;
     }
+
 
 };
 

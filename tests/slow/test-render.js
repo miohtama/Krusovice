@@ -33,6 +33,35 @@ RenderTest.prototype.testRenderFewFramesWebGL = function(queue) {
 
 
 /**
+ * Test that preview warning message is drawn.
+ */
+RenderTest.prototype.testPreviewWarningMessage = function(queue) {
+
+    console.log("Preview test");
+
+    var config = {
+        previewWarningMessage : $("<div>Test blaa blaa</div>"),
+        duration : 0.5,
+        preview : true
+    };
+
+    var show = null;
+
+    function step3(callbacks) {
+        console.log("step 3");
+        // Check that jQuery message is correctly decoded
+        window.assertEquals(show.previewWarningMessage, "Test blaa blaa");
+    }
+
+    var res = this.renderCore(queue, false, config);
+    show = res.show;
+
+    res.queue.call("Check preview warning message", step3);
+};
+
+
+
+/**
  * Try loading a show which has bad resources and loading should fail
  */
 RenderTest.prototype.testRenderBadResource = function(queue) {
@@ -81,22 +110,9 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
 
 };
 
-/**
- * Test that preview warning message is drawn.
- */
-RenderTest.prototype.testPreviewWarningMessage = function(queue) {
-
-    var config = {
-        previewWarningMessage : $("<div>Test blaa blaa</div>"),
-        duration : 0.5
-    };
-
-    this.renderCore(queue, false, config);
-};
-
 
 /**
- * Tick through the show and see that no exceptions are risen
+ * Tick through the show and see that no exceptions are risen,
  *
  * @param webGL use WebGL rendering
  */
@@ -121,7 +137,7 @@ RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
         extraCfg = {};
     }
 
-
+    // Self sanity check
     window.assertEquals(2, plan.length);
 
     var show = new krusovice.Show(cfg);
@@ -134,10 +150,12 @@ RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
         window.assertFalse(show.loaded);
 
+        // This will cause async abort
         var interrupt = callbacks.addErrback("Failed to load media resources");
 
+        // This will go to next step
         var onloaded = callbacks.add(function() {
-
+            console.log("zzzz");
         });
 
         $(show).bind("loadend", function() {
@@ -147,6 +165,7 @@ RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
         $(show).bind("loaderror", function(event, msg) {
             // Single load failure is enough to stop us
+            console.log("loaderror");
             if(!done) {
                 done = true;
                 interrupt(msg);
@@ -176,5 +195,7 @@ RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
         window.assertEquals(duration*10, show.currentFrame);
 
     });
+
+    return { queue : queue, show : show}
 
 };

@@ -433,6 +433,10 @@ krusovice.Show.prototype = {
         if(this.previewWarningMessage) {
             if(typeof(this.previewWarningMessage) != 'string') {
                 this.previewWarningMessage = $(this.previewWarningMessage).text();
+
+                if(!this.previewWarningMessage) {
+                    throw "Preview warning message cannot be found";
+                }
             }
         }
     },
@@ -690,15 +694,21 @@ krusovice.Show.prototype = {
 
         var x = this.width/2 - dimensions.width/2;
         var y = this.height * 0.8;
-        var border = 5;
+        var border = 10;
+        var w = dimensions.width;
+
+        // XXX: use Mozilla API on FF and font baseline
+        var h = dimensions.height || 10; // textMetrics object does not have height info!
 
         ctx.strokeStyle = "#ffFFff";
+        ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
         ctx.lineWidth = 2;
-        krusovice.utils.fillRoundedRect(ctx, x-border, y-border, dimensions.width+border, dimensions.height+border);
+        krusovice.utils.fillRoundedRect(ctx, x-border, y-border, w+border*2, h+border*2, 3);
 
         ctx.fillStyle = "#ffFFff";
-        ctx.fillText(this.previewWarningMessage, x, y + dimensions.height);
+        ctx.fillText(this.previewWarningMessage, x, y + h);
         ctx.restore();
+
     },
 
     /**
