@@ -121,8 +121,6 @@ ShowTest.prototype.testCanvas = function() {
 
 }
 
-
-
 /**
  * See that plain background initializes properly.
  */

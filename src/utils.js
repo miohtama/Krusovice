@@ -446,6 +446,33 @@ krusovice.utils = {
      */
     hasWebGL : function() {
         return !!window.WebGLRenderingContext;
+    },
+
+
+    /**
+     * Draw a rounded rect on canvas using polygonial functions.
+     *
+     * http://stackoverflow.com/questions/4624614/canvas-drawing-filled-rounded-rect-with-linear-gradient
+     */
+    fillRoundedRect : function(ctx, left, top, width, height, radius) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(left + radius, top);
+        ctx.lineTo(left + width - radius, top);
+        //Top-right-corner:
+        ctx.arc(left + width - radius, top + radius, radius, (Math.PI / 180) * 270, (Math.PI / 180) * 0, false);
+        ctx.lineTo(left + width, top + height - radius);
+        //Bottom-right-corner:
+        ctx.arc(left + width - radius, top + height - radius, radius, (Math.PI / 180) * 0, (Math.PI / 180) * 90, false);
+        ctx.lineTo(left + radius, top + height);
+        //Bottom-left-corner:
+        ctx.arc(left + radius, top + height - radius, radius, (Math.PI / 180) * 90, (Math.PI / 180) * 180, false);
+        ctx.lineTo(left, top + radius);
+        //Top-left-corner:
+        ctx.arc(left + radius, top + radius, radius, (Math.PI / 180) * 180, (Math.PI / 180) * 270, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
     }
 
 };

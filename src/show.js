@@ -84,6 +84,12 @@ krusovice.Show.prototype = {
      */
     preview : false,
 
+    /**
+     * @cfg {String|Object} previewWarningMessage
+     *
+     * Show this message when preview is in progress. It can be string or jQuery object whose text() value is used.
+     */
+    previewWarningMessage : null,
 
     /**
      * @cfg {Object} rhytmData Echo Nest API data for rhytm used to animate background effects
@@ -243,6 +249,7 @@ krusovice.Show.prototype = {
         this.prepareRenderer();
         this.prepareTimeline();
         this.prepareBackground();
+        this.preparePreviewWarning();
         this.loadResources();
     },
 
@@ -422,6 +429,14 @@ krusovice.Show.prototype = {
         this.renderer.setup();
     },
 
+    preparePreviewWarning : function() {
+        if(this.previewWarningMessage) {
+            if(typeof(this.previewWarningMessage) != 'string') {
+                this.previewWarningMessage = $(this.previewWarningMessage).text();
+            }
+        }
+    },
+
     /**
      * Factory of matching input data to actual animated objects.
      *
@@ -575,6 +590,7 @@ krusovice.Show.prototype = {
         this.renderBackground(renderClock);
         this.renderScene(renderClock);
         this.renderFrameLabel(renderClock);
+        this.renderPreviewWarningMessage(renderClock);
     },
 
     /**
@@ -659,6 +675,30 @@ krusovice.Show.prototype = {
             obj.render();
             // console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);
         });
+    },
+
+
+    renderPreviewWarningMessage : function(clock) {
+        var ctx = this.ctx;
+
+        ctx.save();
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
+
+        // Place text center bottom of the screen
+        var dimensions = ctx.measureText(this.previewWarningMessage);
+
+        var x = this.width/2 - dimensions.width/2;
+        var y = this.height * 0.8;
+        var border = 5;
+
+        ctx.strokeStyle = "#ffFFff";
+        ctx.lineWidth = 2;
+        krusovice.utils.fillRoundedRect(ctx, x-border, y-border, dimensions.width+border, dimensions.height+border);
+
+        ctx.fillStyle = "#ffFFff";
+        ctx.fillText(this.previewWarningMessage, x, y + dimensions.height);
+        ctx.restore();
     },
 
     /**

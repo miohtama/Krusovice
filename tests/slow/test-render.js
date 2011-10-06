@@ -82,9 +82,25 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
 };
 
 /**
+ * Test that preview warning message is drawn.
+ */
+RenderTest.prototype.testPreviewWarningMessage = function(queue) {
+
+    var config = {
+        previewWarningMessage : $("<div>Test blaa blaa</div>"),
+        duration : 0.5
+    };
+
+    this.renderCore(queue, false, config);
+};
+
+
+/**
+ * Tick through the show and see that no exceptions are risen
+ *
  * @param webGL use WebGL rendering
  */
-RenderTest.prototype.renderCore = function(queue, webGL) {
+RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
     var plan = this.createPlan();
 
@@ -98,6 +114,12 @@ RenderTest.prototype.renderCore = function(queue, webGL) {
             realtime : false,
             webGL : webGL
     };
+
+    if(extraCfg) {
+        $.extend(cfg, extraCfg);
+    } else {
+        extraCfg = {};
+    }
 
 
     window.assertEquals(2, plan.length);
@@ -143,13 +165,15 @@ RenderTest.prototype.renderCore = function(queue, webGL) {
 
         window.assertEquals(2, show.animatedObjects.length);
 
-        for(var i=0; i<3; i+=0.1) {
+        var duration = extraCfg.duration || 3;
+
+        for(var i=0; i<duration; i+=0.1) {
             console.log("Rendering frame:" + i);
             show.onClock(i);
             show.render();
         }
 
-        window.assertEquals(30, show.currentFrame);
+        window.assertEquals(duration*10, show.currentFrame);
 
     });
 
