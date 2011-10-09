@@ -877,6 +877,8 @@ krusovice.Show.prototype = {
 
     /**
      * 2D canvas context used to record the video.
+     *
+     * This communicates to the external script which can slice frames out of the show for video encoding.
      */
     getCaptureCanvasContext : function() {
         return this.ctx;

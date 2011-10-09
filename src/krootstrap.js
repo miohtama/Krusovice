@@ -46,7 +46,8 @@ krusovice.load = function(doneCallback, includeDependencies) {
          "showobjects/framedimage.js",
          "showobjects/textdefinitions.js",
          "showobjects/text.js",
-         "music.js"
+         "music.js",
+         "tools/fade.js"
     ];
 
 
