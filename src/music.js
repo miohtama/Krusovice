@@ -48,18 +48,11 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
      */
     fixMediaURLs : function(obj, mediaURL) {
 
-        if(!mediaURL) {
-            throw "Using image-based backgrounds needs base media URL";
-        }
-
-        if(mediaURL[mediaURL.length-1] != "/") {
-            throw "Media URL must end with slash:" + mediaURL;
-        }
 
         if(obj.mp3 && typeof(obj.mp3) == "string") {
             if(!obj.mp3.match("^http")) {
                 // Convert background source url from relative to absolute
-                obj.mp3 = mediaURL + obj.mp3;
+                obj.mp3 = krusovie.tools.url.joinRelativePath(mediaURL, obj.mp3);
             }
         }
 
