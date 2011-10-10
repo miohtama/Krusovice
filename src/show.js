@@ -683,6 +683,12 @@ krusovice.Show.prototype = {
 
 
     renderPreviewWarningMessage : function(clock) {
+
+        // Don't render empty box
+        if(!this.previewWarningMessage) {
+            return;
+        }
+
         var ctx = this.ctx;
 
         ctx.save();
