@@ -52,7 +52,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
         if(obj.mp3 && typeof(obj.mp3) == "string") {
             if(!obj.mp3.match("^http")) {
                 // Convert background source url from relative to absolute
-                obj.mp3 = krusovie.tools.url.joinRelativePath(mediaURL, obj.mp3);
+                obj.mp3 = krusovice.tools.url.joinRelativePath(mediaURL, obj.mp3);
             }
         }
 
