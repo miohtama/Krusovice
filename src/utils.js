@@ -445,7 +445,13 @@ krusovice.utils = {
      * Detect WebGL support
      */
     hasWebGL : function() {
-        return !!window.WebGLRenderingContext;
+        var canvas = document.createElement("canvas");
+        try {
+            var ctx = document.getContext("experimental-webgl");
+            return true;
+        } catch(e) {
+            return false;
+        }
     },
 
 

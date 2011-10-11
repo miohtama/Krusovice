@@ -109,7 +109,6 @@ krusovice.renderers.Three.prototype = {
             renderer = new THREE.CanvasRenderer();
         }
 
-
         // var renderer = new THREE.WebGLRenderer();
 
         var camera = new THREE.Camera(fov,
