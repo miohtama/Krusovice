@@ -447,7 +447,7 @@ krusovice.utils = {
     hasWebGL : function() {
         var canvas = document.createElement("canvas");
         try {
-            var ctx = document.getContext("experimental-webgl");
+            var ctx = canvas.getContext("experimental-webgl");
             return true;
         } catch(e) {
             return false;
