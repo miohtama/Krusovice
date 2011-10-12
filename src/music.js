@@ -140,7 +140,11 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
     getAudioURL : function(songId, prelisten) {
 
         // XXX: add <audio> API format detection here
-        var needOGG = navigator.userAgent.toLowerCase().indexOf("firefox") >= 0 || navigator.userAgent.toLowerCase().indexOf("chrome") >= 0;
+
+        var audio = document.createElement("audio");
+
+        var needAAC = audio.canPlayType('audio/mp4; codecs="mp4a.40.5"') !== "";
+        var needOGG = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
 
         var song = this.get(songId);
 
@@ -152,8 +156,10 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
         if(needOGG) {
             url = url.replace(".mp3", ".ogg");
+        } else if(needAAC){
+            url = url.replace(".mp3", ".m4a");
         } else {
-            url = url.replace(".mp3", ".aac");
+            console.error("Could not detect prelisten audio format support");
         }
 
         return url;
