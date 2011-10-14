@@ -1,3 +1,7 @@
+define("krusovice_base", function() {
+    return window.krusovice;
+});
+
 (function() {
     "use strict";
 
@@ -94,9 +98,5 @@ define("krusovice_loader", [
     "tools/fade",
     "tools/url"
 ], function(require) {
-    return window.krusovice;
-});
-
-define("krusovice_base", function() {
     return window.krusovice;
 });

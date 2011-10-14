@@ -1,3 +1,5 @@
+define(['thirdparty/Three'], function(THREE) {
+'use strict';
 /**
  * @author mr.doob / http://mrdoob.com/
  */
@@ -1160,5 +1162,6 @@ THREE.CanvasRenderer = function ( parameters ) {
         }
 
     }
-
 };
+
+});
