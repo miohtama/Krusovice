@@ -592,7 +592,7 @@ krusovice.Show.prototype = {
         //console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);
         this.renderScene(renderClock);
-        this.renderFrameLabel(renderClock);
+        //this.renderFrameLabel(renderClock);
         this.renderPreviewWarningMessage(renderClock);
     },
 
