@@ -3,7 +3,7 @@
 Introduction
 -------------
 
-Krusovice is a high quality HTML5 rhytmic photo show creator
+Krusovice is a high quality HTML5 rhythmic photo show creator
 which you can integrate to your website.
 
 Background
@@ -11,8 +11,8 @@ Background
 
 This is a rewrite and clean-up of previous slideshow9000 attempt.
 
-Music rhytm data is extracted using Echo Nest Remix API.
-Rhytm data must be pregenerated prior real-time photo show run.
+Music rhythm data is extracted using Echo Nest Remix API.
+Rhythm data must be pregenerated prior real-time photo show run.
 
 Componets
 ------------
@@ -21,7 +21,7 @@ Timeliner
 =======================
 
 Timeliner takes in a set of show elements (images, text slides) and puts
-them on a timeline based on music rhytm data.
+them on a timeline based on music rhythm data.
 
 Timeline visualization
 =======================
@@ -398,4 +398,4 @@ Echo Nest remix API Python bindings can be installed:
 
 
 
-TODO: How to build rhytm .json data files by hand.
+TODO: How to build rhythm .json data files by hand.

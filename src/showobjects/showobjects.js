@@ -1,6 +1,5 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 'use strict';
-
-var krusovice = krusovice || {};
 
 krusovice.showobjects = krusovice.showobjects || {};
 
@@ -219,6 +218,6 @@ krusovice.showobjects.Base.prototype = {
 
 };
 
+return krusovice.showobjects;
 
-
-
+});

@@ -1,6 +1,5 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
-
-var krusovice = krusovice || {};
 
 /**
  * HTML5 canvas photo show which is too cool to kick llama's ass
@@ -92,9 +91,9 @@ krusovice.Show.prototype = {
     previewWarningMessage : null,
 
     /**
-     * @cfg {Object} rhytmData Echo Nest API data for rhytm used to animate background effects
+     * @cfg {Object} rhythmData Echo Nest API data for rhythm used to animate background effects
      */
-    rhytmData : null,
+    rhythmData : null,
 
     /**
      * Set to true when all necessary data is loaded to start the playback
@@ -408,7 +407,7 @@ krusovice.Show.prototype = {
         this.background = krusovice.backgrounds.createBackground(background.type,
                                                                  duration,
                                                                  timeline,
-                                                                 this.rhytmData,
+                                                                 this.rhythmData,
                                                                  background);
         this.background.prepare(this.loader, this.width, this.height);
     },
@@ -891,3 +890,4 @@ krusovice.Show.prototype = {
     }
 
 };
+});

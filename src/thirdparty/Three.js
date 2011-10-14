@@ -1,3 +1,4 @@
+define('thirdparty/Three', function() {
 // Three.js r44 - http://github.com/mrdoob/three.js
 var THREE=THREE||{};if(!window.Int32Array)window.Int32Array=Array,window.Float32Array=Array;THREE.Color=function(b){b!==void 0&&this.setHex(b);return this};
 THREE.Color.prototype={constructor:THREE.Color,r:1,g:1,b:1,copy:function(b){this.r=b.r;this.g=b.g;this.b=b.b;return this},setRGB:function(b,c,e){this.r=b;this.g=c;this.b=e;return this},setHSV:function(b,c,e){var f,h,m;if(e==0)this.r=this.g=this.b=0;else switch(f=Math.floor(b*6),h=b*6-f,b=e*(1-c),m=e*(1-c*h),c=e*(1-c*(1-h)),f){case 1:this.r=m;this.g=e;this.b=b;break;case 2:this.r=b;this.g=e;this.b=c;break;case 3:this.r=b;this.g=m;this.b=e;break;case 4:this.r=c;this.g=b;this.b=e;break;case 5:this.r=
@@ -680,3 +681,5 @@ var z=new THREE.Scene;z.addObject(new THREE.Mesh(new THREE.PlaneGeometry(2,2),_m
 D.n13=(N+G)/(N-G);m.projectionMatrix=D.clone()}h.matrix=e.matrixWorld.clone().multiplySelf(n);h.update(null,!0);h.position.copy(e.position);h.near=p;h.far=e.far;f.call(c,b,h,t,!0);m.matrix=e.matrixWorld.clone().multiplySelf(k);m.update(null,!0);m.position.copy(e.position);m.near=p;m.far=e.far;f.call(c,b,m,x,!0);f.call(c,z,w)}};
 if(THREE.WebGLRenderer)THREE.CrosseyedWebGLRenderer=function(b){THREE.WebGLRenderer.call(this,b);this.autoClear=!1;var c=this,e=this.setSize,f=this.render,h,m,k=new THREE.Camera,n=new THREE.Camera;c.separation=10;if(b&&b.separation!==void 0)c.separation=b.separation;(new THREE.Camera(53,window.innerWidth/2/window.innerHeight,1,1E4)).position.z=-10;this.setSize=function(b,f){e.call(c,b,f);h=b/2;m=f};this.render=function(b,e){this.clear();k.fov=e.fov;k.aspect=0.5*e.aspect;k.near=e.near;k.far=e.far;
 k.updateProjectionMatrix();k.position.copy(e.position);k.target.position.copy(e.target.position);k.translateX(c.separation);n.projectionMatrix=k.projectionMatrix;n.position.copy(e.position);n.target.position.copy(e.target.position);n.translateX(-c.separation);this.setViewport(0,0,h,m);f.call(c,b,k);this.setViewport(h,0,h,m);f.call(c,b,n,!1)}};
+window.THREE = THREE;
+return THREE;});

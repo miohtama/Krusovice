@@ -6,7 +6,7 @@
                 <script src=../../thirdparty/Three.js></script>                
 
                 <script src=../../src/utils.js></script>
-                <script src=../../src/rhytmanalysis.js></script>
+                <script src=../../src/rhythmanalysis.js></script>
                 <script src=../../src/timeliner.js></script>
                 <script src=../../src/timelinevisualizer.js></script>
                 <script src=../../src/showobjects.js></script>
@@ -34,7 +34,7 @@
 			        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 			        var plan = timeliner.createPlan();			        
 			        var visualizer = new krusovice.TimelineVisualizer({plan:plan});			        
-			        var div = document.getElementById("visualizer-no-rhytm");	
+			        var div = document.getElementById("visualizer-no-rhythm");	
 			        setupVisualizer(visualizer);		        
 			        visualizer.render(div);					
 
@@ -45,8 +45,8 @@
                                 var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, sampleSongData);
                                 var plan = timeliner.createPlan();                              
                                 
-                                var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:sampleSongData});                                
-                                var div = document.getElementById("visualizer-rhytm");                               
+                                var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhythmData:sampleSongData});                                
+                                var div = document.getElementById("visualizer-rhythm");                               
                                 setupVisualizer(visualizer);                                
                                 visualizer.render(div);          
                                 
@@ -56,7 +56,7 @@
                                 
                                 
                                 var cfg = {
-                                        rhytmData : sampleSongData,
+                                        rhythmData : sampleSongData,
                                         songURL : "../../testdata/sample-song.mp3",
                                         timeline : plan,
                                         backgroundType : "plain",
@@ -76,16 +76,16 @@
        	</head>
 	
 	<body>
-		<h1>No rhytm</h1>
-		<div id="visualizer-no-rhytm">
+		<h1>No rhythm</h1>
+		<div id="visualizer-no-rhythm">
 			
 		</div>
 
                 <div id=show></div>
 
-                <h1>Rhytm</h1>
+                <h1>Rhythm</h1>
                 <div id="player"></div>
-                <div id="visualizer-rhytm">
+                <div id="visualizer-rhythm">
                         
                 </div>
 

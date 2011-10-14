@@ -1,3 +1,4 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /*global window,console*/
@@ -11,7 +12,6 @@ var krusovice = krusovice || {};
  * Misc. utility methods used by various modules.
  */
 krusovice.utils = {
-
     isNumber : function (n) {
       return !isNaN(parseFloat(n)) && isFinite(n);
     },
@@ -620,8 +620,6 @@ krusovice.utils.Registry = {
         });
 
         return songs;
-    },
-
-
-
+    }
 };
+});

@@ -27,7 +27,7 @@ Input::
         {
                 
                 showElements,
-                rhytmData,
+                rhythmData,
                 settings,
                 transitionEffectIds,
                 onScreenEffectIds,                        
@@ -49,12 +49,12 @@ Show elements:
                 imageId,        
         }     
                 
-Rhytm data::
+Rhythm data::
 
         { // Echo nest API output }
         
         
-Match data (how to match transitions to rhytm)::
+Match data (how to match transitions to rhythm)::
         
         {
                 type : "beat",
@@ -65,7 +65,7 @@ Match data (how to match transitions to rhytm)::
 Settings::
 
         {
-                //  Where we start to sync with rhytm data
+                //  Where we start to sync with rhythm data
                 musicStartTime : 0, 
                 
                 transitionIn : {

@@ -168,20 +168,20 @@ var effectbrowser = {
 
         // Create timeline
 
-        var rhytmData = null;
+        var rhythmData = null;
         if(this.song) {
-            rhytmData = this.song.rhytmData;
+            rhythmData = this.song.rhythmData;
             songURL = krusovice.music.Registry.getAudioURL(this.song.id);
         } else {
-            rhytmData = null;
+            rhythmData = null;
             songURL = krusovice.music.Registry.getAudioURL("test-song");
         }
 
-        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhytmData, design.settings);
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhythmData, design.settings);
         var timeline = timeliner.createPlan();
 
         // Create visualization
-        var visualizer = new krusovice.TimelineVisualizer({plan:timeline, rhytmData:rhytmData});
+        var visualizer = new krusovice.TimelineVisualizer({plan:timeline, rhythmData:rhythmData});
         var div = document.getElementById("visualizer");
 
         visualizer.secondsPerPixel = 0.02;
@@ -190,7 +190,7 @@ var effectbrowser = {
 
         // Set dummy song on <audio>
 
-        if(!rhytmData) {
+        if(!rhythmData) {
             audio.setAttribute("src", songURL);
         }
 
@@ -200,7 +200,7 @@ var effectbrowser = {
             width : 512,
             height : 288,
             timeline : timeline,
-            rhytmData : rhytmData,
+            rhythmData : rhythmData,
             background : design.background,
             elem : $("#show"),
             webGL : true,

@@ -5,14 +5,13 @@
  * (start, duration).
  * 
  */
-"use string";
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+"use strict";
 
-var krusovice = krusovice || {};
-
-krusovice.RhytmAnalysis = function(json) {
+krusovice.RhythmAnalysis = function(json) {
 
 	if(!json) {
-		throw "Rhytm data missing";
+		throw "Rhythm data missing";
 	}
 
 	this.data = json;
@@ -40,7 +39,7 @@ krusovice.RhytmAnalysis = function(json) {
 	
 }
 
-krusovice.RhytmAnalysis.prototype = {
+krusovice.RhythmAnalysis.prototype = {
 	
     /**
      * Find next beat from the array of all beats.
@@ -180,3 +179,4 @@ krusovice.RhytmAnalysis.prototype = {
     
 }
 
+});

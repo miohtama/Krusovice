@@ -1,4 +1,5 @@
-var krusovice = krusovice || {};
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+'use strict';
 
 /**
  * Design object captures all input needed to prepare a show.
@@ -63,7 +64,7 @@ krusovice.Design.prototype = {
     /**
      * @type String
      *
-     * Background song id. Song id is associated with the serve side music file and generated rhytm analysis data.
+     * Background song id. Song id is associated with the serve side music file and generated rhythm analysis data.
      */
     songId : null,
 
@@ -127,3 +128,5 @@ krusovice.Design.prototype = {
     }
 
 };
+
+});

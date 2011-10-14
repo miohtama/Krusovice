@@ -1,11 +1,7 @@
-'use strict';
+define(['jquery_bundle', 'krusovice_base', 'showobjects/textdefinitions', 'showobjects/showobjects'], function($, krusovice, textDefinitions) {
+"use strict";
 
 /*global window,$,console*/
-
-var krusovice = krusovice || {};
-
-
-krusovice.showobjects = krusovice.showobjects || {};
 
 /**
  * Text with a monocolor background frame
@@ -225,7 +221,7 @@ krusovice.texts = krusovice.texts || {};
 krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
     init : function() {
-        this.loadData(window.getTextDefinitions());
+        this.loadData(textDefinitions.getTextDefinitions());
     },
 
     /**
@@ -265,3 +261,5 @@ krusovice.texts.Shape.prototype = {
     backgroundImage : null
 
 };
+
+});

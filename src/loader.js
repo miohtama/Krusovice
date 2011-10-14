@@ -1,6 +1,5 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
-
-var krusovice = krusovice || {};
 
 /**
  * Simple element loader helper
@@ -205,3 +204,4 @@ krusovice.Loader.prototype = {
     }
 
 };
+});

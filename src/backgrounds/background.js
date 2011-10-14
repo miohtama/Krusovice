@@ -8,10 +8,9 @@
 /*global $ */
 /*global console */
 
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+
 "use strict";
-
-var krusovice = krusovice || {};
-
 
 krusovice.backgrounds = krusovice.backgrounds || {};
 
@@ -391,7 +390,7 @@ krusovice.backgrounds.Plain.prototype = {
 
 };
 
-krusovice.backgrounds.createBackground = function(type, duration, timeline, rhytmData, cfg) {
+krusovice.backgrounds.createBackground = function(type, duration, timeline, rhythmData, cfg) {
 
        console.log("Creating background type:" + type);
 
@@ -401,7 +400,7 @@ krusovice.backgrounds.createBackground = function(type, duration, timeline, rhyt
            }
            return new krusovice.backgrounds.Plain(cfg);
        } else if(type == "panorama-2d") {
-           var data = krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhytmData, cfg);
+           var data = krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhythmData, cfg);
            if(!data.frames) {
                throw "Ooops";
            }
@@ -414,7 +413,7 @@ krusovice.backgrounds.createBackground = function(type, duration, timeline, rhyt
 /**
  * @param {String} id One of stock background ids
  */
-krusovice.backgrounds.createBackgroundById = function(id, duration, timeline, rhytmData, cfg) {
+krusovice.backgrounds.createBackgroundById = function(id, duration, timeline, rhythmData, cfg) {
 
     console.log("Creating background by id:" + id);
 
@@ -423,5 +422,7 @@ krusovice.backgrounds.createBackgroundById = function(id, duration, timeline, rh
 
     console.log(bgData);
 
-    return krusovice.backgrounds.createBackground(type, duration, timeline, rhytmData, bgData);
+    return krusovice.backgrounds.createBackground(type, duration, timeline, rhythmData, bgData);
 };
+
+});

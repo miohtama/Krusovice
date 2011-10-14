@@ -1,5 +1,5 @@
-var krusovice = krusovice || {};
-
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+'use strict';
 /**
  * InputElement is photo/text frame data with hints to be inserted on the timeline.
  *
@@ -56,3 +56,5 @@ krusovice.InputElement.prototype = {
 	imageURL : null,
 
 };
+
+});

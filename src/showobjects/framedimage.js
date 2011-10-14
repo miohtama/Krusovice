@@ -1,3 +1,4 @@
+define(['jquery_bundle', 'krusovice_base', 'showobjects/showobjects'], function($, krusovice) {
 "use strict";
 
 /*global krusovice,window,$,console*/
@@ -180,4 +181,5 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight);
     }
 
+});
 });

@@ -1,3 +1,4 @@
+define(['jquery_bundle', 'krusovice_base', 'effects/base', 'thirdparty/Three'], function($, krusovice, effects, THREE) {
 "use strict";
 
 /*global krusovice,window,THREE*/
@@ -9,7 +10,7 @@
  *
  * Weighting of the interpolation is based on ease value.
  */
-krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
+effects.Interpolate = $.extend(true, {}, effects.Base, {
 
     name : "Interpolate",
 
@@ -18,7 +19,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
     parameters : {
 
         source : {
-            position : [0, 0, krusovice.effects.ON_SCREEN_Z],
+            position : [0, 0, effects.ON_SCREEN_Z],
             rotation : [0,0,0, 1],
             opacity : 1,
             scale : [1,1,1],
@@ -28,7 +29,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         },
 
         target : {
-            position : [0, 0, krusovice.effects.ON_SCREEN_Z],
+            position : [0, 0, effects.ON_SCREEN_Z],
             rotation : [0, 0, 0, 1],
             opacity : 1,
             scale : [1,1,1]
@@ -82,7 +83,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
         // Some custom adjustments to make photos came close enough to camera in 16:9
         var baseScale = mesh.baseScale;
         if(!baseScale) {
-            throw "krusovice.effects.Interpolate: baseScale missing";
+            throw "effects.Interpolate: baseScale missing";
         }
 
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
@@ -124,7 +125,7 @@ krusovice.effects.Interpolate = $.extend(true, {}, krusovice.effects.Base, {
  * which perform slerp animation.
  *
  */
-krusovice.effects.QuaternionRotate = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.QuaternionRotate = $.extend(true, {}, effects.Interpolate, {
 
    id : "quaternionrotate",
 
@@ -157,7 +158,7 @@ krusovice.effects.QuaternionRotate = $.extend(true, {}, krusovice.effects.Interp
  *
  * Weighting of the interpolation is based on ease value.
  */
-krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.ZoomIn = $.extend(true, {}, effects.Interpolate, {
 
     id : "zoomin",
 
@@ -171,17 +172,17 @@ krusovice.effects.ZoomIn = $.extend(true, {}, krusovice.effects.Interpolate, {
 
     init : function() {
         // Override default animation parameters
-        this.parameters.source.position = [0, 0, krusovice.effects.BEHIND_CAMERA_Z];
+        this.parameters.source.position = [0, 0, effects.BEHIND_CAMERA_Z];
         this.parameters.source.opacity = 0;
         //this.parameters.opacity.easing = "linear";
     }
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.ZoomIn);
+effects.Manager.register(effects.ZoomIn);
 
 
-krusovice.effects.ZoomFar = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.ZoomFar = $.extend(true, {}, effects.Interpolate, {
 
     id : "zoomfar",
 
@@ -195,17 +196,17 @@ krusovice.effects.ZoomFar = $.extend(true, {}, krusovice.effects.Interpolate, {
 
     init : function() {
         // Override default animation parameters
-        this.parameters.source.position = [0, 0, krusovice.effects.FAR_Z];
+        this.parameters.source.position = [0, 0, effects.FAR_Z];
     }
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.ZoomFar);
+effects.Manager.register(effects.ZoomFar);
 
 /**
  * Hold the photo on the screen without moving.
  */
-krusovice.effects.Hold = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.Hold = $.extend(true, {}, effects.Interpolate, {
 
     id : "hold",
 
@@ -217,12 +218,12 @@ krusovice.effects.Hold = $.extend(true, {}, krusovice.effects.Interpolate, {
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.Hold);
+effects.Manager.register(effects.Hold);
 
 /**
  * Have the object on screen but move it a little for extra dynamicity.
  */
-krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.SlightMove = $.extend(true, {}, effects.Interpolate, {
 
     id : "slightmove",
 
@@ -235,15 +236,15 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
     init : function() {
         // Override default animation parameters
         var r = 0.3;
-        //this.parameters.source.position = [-krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
-        //this.parameters.target.position = [krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
+        //this.parameters.source.position = [-effects.ON_SCREEN_MAX_X, 0, 0];
+        //this.parameters.target.position = [effects.ON_SCREEN_MAX_X, 0, 0];
 
-        var x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X;
-        var y = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_Y;
+        var x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X;
+        var y = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_Y;
         this.parameters.sourceVariation.position = [x, y, 0];
 
-        var x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X;
-        var y = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_Y;
+        var x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X;
+        var y = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_Y;
         this.parameters.targetVariation.position = [x, y, 0];
     }
 
@@ -252,7 +253,7 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
 /**
  * Have the object on screen but move it a little for extra dynamicity.
  */
-krusovice.effects.Fade = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.Fade = $.extend(true, {}, effects.Interpolate, {
 
     id : "fade",
 
@@ -269,9 +270,9 @@ krusovice.effects.Fade = $.extend(true, {}, krusovice.effects.Interpolate, {
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.Fade);
+effects.Manager.register(effects.Fade);
 
-krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+effects.SlightMoveLeftRight = $.extend(true, {}, effects.QuaternionRotate, {
 
     id : "slightmoveleftright",
 
@@ -288,17 +289,17 @@ krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.Qua
         var x,y;
         var r = 0.3;
         var r2 = 0.1;
-        //this.parameters.source.position = [-krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
-        //this.parameters.target.position = [krusovice.effects.ON_SCREEN_MAX_X, 0, 0];
+        //this.parameters.source.position = [-effects.ON_SCREEN_MAX_X, 0, 0];
+        //this.parameters.target.position = [effects.ON_SCREEN_MAX_X, 0, 0];
 
-        x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X;
-        y = krusovice.utils.splitrnd(r2) * krusovice.effects.ON_SCREEN_MAX_Y;
-        this.parameters.source.position = [-krusovice.effects.ON_SCREEN_MAX_X*0.3, 0, 0];
+        x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X;
+        y = krusovice.utils.splitrnd(r2) * effects.ON_SCREEN_MAX_Y;
+        this.parameters.source.position = [-effects.ON_SCREEN_MAX_X*0.3, 0, 0];
         this.parameters.sourceVariation.position = [x, y, 0];
 
-        x = krusovice.utils.splitrnd(r) * krusovice.effects.ON_SCREEN_MAX_X + r;
-        y = krusovice.utils.splitrnd(r2) * krusovice.effects.ON_SCREEN_MAX_Y;
-        this.parameters.target.position = [+krusovice.effects.ON_SCREEN_MAX_X*0.3, 0, 0];
+        x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X + r;
+        y = krusovice.utils.splitrnd(r2) * effects.ON_SCREEN_MAX_Y;
+        this.parameters.target.position = [+effects.ON_SCREEN_MAX_X*0.3, 0, 0];
         this.parameters.targetVariation.position = [x, y, 0];
 
         var p = this.parameters;
@@ -316,13 +317,13 @@ krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.Qua
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.SlightMoveLeftRight);
+effects.Manager.register(effects.SlightMoveLeftRight);
 
 
 /**
  * Randomically rotate object around its Z axis
  */
-krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpolate, {
+effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
 
     id : "slightrotatez",
 
@@ -357,12 +358,12 @@ krusovice.effects.SlightRotateZ = $.extend(true, {}, krusovice.effects.Interpola
 });
 
 
-krusovice.effects.Manager.register(krusovice.effects.SlightRotateZ);
+effects.Manager.register(effects.SlightRotateZ);
 
 /**
  * Flip photo 90 degrees around random XY-axis.
  */
-krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+effects.Flip = $.extend(true, {}, effects.QuaternionRotate, {
 
     id : "flip",
 
@@ -384,14 +385,14 @@ krusovice.effects.Flip = $.extend(true, {}, krusovice.effects.QuaternionRotate, 
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.Flip);
+effects.Manager.register(effects.Flip);
 
 
 
 /**
  * Movie "news paper headlines" comes in effect
  */
-krusovice.effects.RotoZoomFar = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+effects.RotoZoomFar = $.extend(true, {}, effects.QuaternionRotate, {
 
     id : "rotozoomfar",
 
@@ -406,13 +407,13 @@ krusovice.effects.RotoZoomFar = $.extend(true, {}, krusovice.effects.QuaternionR
     init : function() {
         var p = this.parameters;
 
-        p.source.position = [0,0, krusovice.effects.FAR_Z];
+        p.source.position = [0,0, effects.FAR_Z];
         p.source.axis = [0,0,1];
         p.source.angle = Math.PI/2;
         p.sourceVariation.angle = Math.PI*6;
         p.source.opacity = 0;
 
-        p.sourceVariation.position = [krusovice.effects.FAR_Z_MAX_X, krusovice.effects.FAR_Z_MAX_Y, 0];
+        p.sourceVariation.position = [effects.FAR_Z_MAX_X, effects.FAR_Z_MAX_Y, 0];
 
         p.target.axis = [0,0,0];
         p.targetVariation.axis = [0,0,0];
@@ -422,9 +423,9 @@ krusovice.effects.RotoZoomFar = $.extend(true, {}, krusovice.effects.QuaternionR
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.RotoZoomFar);
+effects.Manager.register(effects.RotoZoomFar);
 
-krusovice.effects.SpinLeft = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+effects.SpinLeft = $.extend(true, {}, effects.QuaternionRotate, {
 
     id : "spinleft",
 
@@ -439,7 +440,7 @@ krusovice.effects.SpinLeft = $.extend(true, {}, krusovice.effects.QuaternionRota
     init : function() {
         var p = this.parameters;
 
-        p.source.position = [-krusovice.effects.ON_SCREEN_MAX_X*2,
+        p.source.position = [-effects.ON_SCREEN_MAX_X*2,
                              0,
                              -400];
 
@@ -448,7 +449,7 @@ krusovice.effects.SpinLeft = $.extend(true, {}, krusovice.effects.QuaternionRota
         p.source.opacity = 0.3;
         p.sourceVariation.axis = [0.1, 0.1, 0];
 
-        p.sourceVariation.position = [krusovice.effects.ON_SCREEN_MAX_X*0.2, krusovice.effects.ON_SCREEN_MAX_Y*0.2, 0];
+        p.sourceVariation.position = [effects.ON_SCREEN_MAX_X*0.2, effects.ON_SCREEN_MAX_Y*0.2, 0];
 
         p.target.axis = [0,0,0];
         p.targetVariation.axis = [0,0,0];
@@ -458,9 +459,9 @@ krusovice.effects.SpinLeft = $.extend(true, {}, krusovice.effects.QuaternionRota
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.SpinLeft);
+effects.Manager.register(effects.SpinLeft);
 
-krusovice.effects.SpinRight = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
+effects.SpinRight = $.extend(true, {}, effects.QuaternionRotate, {
 
     id : "spinright",
 
@@ -475,7 +476,7 @@ krusovice.effects.SpinRight = $.extend(true, {}, krusovice.effects.QuaternionRot
     init : function() {
         var p = this.parameters;
 
-        p.source.position = [krusovice.effects.ON_SCREEN_MAX_X*2,
+        p.source.position = [effects.ON_SCREEN_MAX_X*2,
                              0,
                              -400];
 
@@ -484,7 +485,7 @@ krusovice.effects.SpinRight = $.extend(true, {}, krusovice.effects.QuaternionRot
         p.source.opacity = 0.3;
         p.sourceVariation.axis = [0.1, 0.1, 0];
 
-        p.sourceVariation.position = [krusovice.effects.ON_SCREEN_MAX_X*0.2, krusovice.effects.ON_SCREEN_MAX_Y*0.2, 0];
+        p.sourceVariation.position = [effects.ON_SCREEN_MAX_X*0.2, effects.ON_SCREEN_MAX_Y*0.2, 0];
 
         p.target.axis = [0,0,0];
         p.targetVariation.axis = [0,0,0];
@@ -494,7 +495,6 @@ krusovice.effects.SpinRight = $.extend(true, {}, krusovice.effects.QuaternionRot
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.SpinRight);
+effects.Manager.register(effects.SpinRight);
 
-
-
+});

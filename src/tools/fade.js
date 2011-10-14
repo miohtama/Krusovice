@@ -4,13 +4,10 @@
 
 // jslint hints
 /*global window*/
-
-(function() {
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
     "use strict";
 
-    // Declare namespace
-    var krusovice = window.krusovice || {};
-    krusovice.tools = krusovice.tools || {};
+    krusovice.tools = krusovice.tools || {};
 
     /**
      * Start audio playing with fade in period.
@@ -27,7 +24,6 @@
      *
      */
     krusovice.tools.fadeIn = function(audio, rampTime, targetVolume, tick) {
-
         //
         if(!targetVolume) {
             targetVolume = 1;
@@ -134,6 +130,4 @@
 
         ramp();
     };
-
-
-})();
+});

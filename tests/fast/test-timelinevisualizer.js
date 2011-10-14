@@ -10,7 +10,7 @@ TimelineVisualizerTest.prototype.testBasicNoMusic = function() {
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
 	var plan = timeliner.createPlan();
 	
-	var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:null});
+	var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhythmData:null});
 	
 	var div = document.createElement("div");
 	
@@ -30,11 +30,11 @@ TimelineVisualizerTest.prototype.testBasicMusic = function() {
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, data);
 	var plan = timeliner.createPlan();
 	
-	var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhytmData:data});
-	console.log("Got data:" + visualizer.rhytmData);
-	assertObject(visualizer.rhytmData);
+	var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhythmData:data});
+	console.log("Got data:" + visualizer.rhythmData);
+	assertObject(visualizer.rhythmData);
 	console.log("hasBeats");
-	console.log(visualizer.rhytmData != null);
+	console.log(visualizer.rhythmData != null);
 	assertTrue(visualizer.hasBeats() == true);
 	
 	var div = document.createElement("div");

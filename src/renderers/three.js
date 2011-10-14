@@ -1,8 +1,7 @@
+define(['jquery_bundle', 'krusovice_base', 'thirdparty/Three'], function($, krusovice, THREE) {
 'use strict';
 
 /*global THREE, window*/
-
-var krusovice = krusovice || {};
 
 krusovice.renderers = krusovice.renderers || {};
 
@@ -27,10 +26,6 @@ krusovice.renderers = krusovice.renderers || {};
  */
 krusovice.renderers.Three = function(cfg) {
     $.extend(this, cfg);
-
-    if(!window.THREE) {
-        throw "THREE 3d lib is not loaded";
-    }
 };
 
 krusovice.renderers.Three.prototype = {
@@ -337,3 +332,4 @@ THREE.StraightPlaneGeometry = function ( width, height, segmentsWidth, segmentsH
 THREE.StraightPlaneGeometry.prototype = new THREE.Geometry();
 THREE.StraightPlaneGeometry.prototype.constructor = THREE.StraightPlaneGeometry;
 
+});

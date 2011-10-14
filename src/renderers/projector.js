@@ -1,3 +1,6 @@
+define(['thirdparty/Three'], function(THREE) {
+'use strict';
+
 /**
  * @author mr.doob / http://mrdoob.com/
  * @author supereggbert / http://www.paulbrunt.co.uk/
@@ -509,3 +512,4 @@ THREE.Projector = function() {
     }
 
 };
+});

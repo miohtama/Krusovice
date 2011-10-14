@@ -1,5 +1,7 @@
-function getTextDefinitions() {
+define(function() {
+"use strict";
 
+var getTextDefinitions = function() {
     return [
         {
             id : "box",
@@ -53,8 +55,9 @@ function getTextDefinitions() {
             height : 0
 
         }
-
-
     ];
-
 }
+
+return { 'getTextDefinitions': getTextDefinitions };
+
+});

@@ -1,7 +1,5 @@
-'use strict';
-
-var krusovice = krusovice || {};
-
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+"use strict";
 
 /**
  * Describe one of transition in, transition out or on screen or gone animation for TimelineElement.
@@ -177,10 +175,10 @@ krusovice.Timeliner.prototype = {
     settings : null,
 
     /**
-     * @cfg {Object} rhytmData Music rhytm data used in timing the elements
+     * @cfg {Object} rhythmData Music rhythm data used in timing the elements
      *
      */
-    rhytmData : null,
+    rhythmData : null,
 
 
     /**
@@ -212,13 +210,13 @@ krusovice.Timeliner.prototype = {
 
 
     /**
-     * Create rhytm analysis interface for laoded rhytm data.
+     * Create rhythm analysis interface for laoded rhythm data.
      *
      * Optionally we can use null data and no beats.
      */
     createMusicAnalysis : function() {
-        if(this.rhytmData) {
-            return krusovice.RhytmAnalysis(this.rhytmData);
+        if(this.rhythmData) {
+            return krusovice.RhythmAnalysis(this.rhythmData);
         } else {
             return null;
         }
@@ -231,7 +229,7 @@ krusovice.Timeliner.prototype = {
      */
     createPlan : function() {
 
-        this.analysis = this.createMusicAnalysis(this.rhytmData);
+        this.analysis = this.createMusicAnalysis(this.rhythmData);
 
         var plan = [];
 
@@ -535,12 +533,12 @@ krusovice.Timeliner.prototype = {
  *
  * @param elements Array of input blocks
  *
- * @param rhytmData Echo nest API data or null if no music
+ * @param rhythmData Echo nest API data or null if no music
  *
  * @param {Number} musicStartTime adjust music start time +- X seconds
  *
  */
-krusovice.Timeliner.createSimpleTimeliner = function(elements, rhytmData, transitions, musicStartTime) {
+krusovice.Timeliner.createSimpleTimeliner = function(elements, rhythmData, transitions, musicStartTime) {
 
     // transitions.musicStartTime -> old way, should be given explicitly
     if(transitions) {
@@ -552,7 +550,7 @@ krusovice.Timeliner.createSimpleTimeliner = function(elements, rhytmData, transi
 
     var input = {
         showElements : elements,
-        rhytmData : rhytmData,
+        rhythmData : rhythmData,
         settings : transitions||krusovice.Timeliner.defaultSettings,
         transitionInEffects : krusovice.effects.Manager.getIds("transitionin"),
         transitionOutEffects : krusovice.effects.Manager.getIds("transitionout"),
@@ -590,3 +588,4 @@ krusovice.Timeliner.defaultSettings = {
         duration : 2.0
     }
 };
+});

@@ -1,6 +1,5 @@
-'use strict';
-
-var krusovice = krusovice || {};
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+"use strict";
 
 /**
  * Visualize show timeline for diagnosis
@@ -12,8 +11,8 @@ krusovice.TimelineVisualizer = function(config) {
 	
 	$.extend(this, config)
 	
-	if(!this.rhytmData) {
-		this.rhytmData = null;
+	if(!this.rhythmData) {
+		this.rhythmData = null;
 	}
 	
     // length in pixels
@@ -28,9 +27,9 @@ krusovice.TimelineVisualizer.prototype = {
     plan : null,
 
     /**
-     * @cfg {Object} rhytmData Rhytm data JSON from Echo Nest Remix API or null if no music 
+     * @cfg {Object} rhythmData Rhythm data JSON from Echo Nest Remix API or null if no music 
      */    
-    rhytmData : null,
+    rhythmData : null,
     
     /** 
      * @cfg {Number} secondsPerPixel How long timeline is covered by single pixel on the timeline. Modify this to change the zoom level.
@@ -80,7 +79,7 @@ krusovice.TimelineVisualizer.prototype = {
 	 * Does this visualization have data for beats
 	 */
 	hasBeats : function() {
-		return (this.rhytmData != null);
+		return (this.rhythmData != null);
 	},
 	
 	createLabelLine : function() {
@@ -143,7 +142,7 @@ krusovice.TimelineVisualizer.prototype = {
 		
 		if(this.hasBeats()) {
 		
-			var beats = this.rhytmData.beats;
+			var beats = this.rhythmData.beats;
 			var currentBeat = 0;
 			
 			//console.log("Rendering beats");
@@ -493,3 +492,4 @@ krusovice.attachSimpleLoadingNote = function(show) {
     
 
 }
+});

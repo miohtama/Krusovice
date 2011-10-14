@@ -1,6 +1,5 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
-
-var krusovice = krusovice || {};
 
 krusovice.music = krusovice.music || {};
 
@@ -61,9 +60,9 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 
     /**
-     * Load rhytm data for MP3;
+     * Load rhythm data for MP3;
      */
-    loadRhytmData : function(file, callback) {
+    loadRhythmData : function(file, callback) {
 
     },
 
@@ -81,8 +80,8 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
      */
     loadSong : function(id, audio, callback, prelisten) {
 
-        var songURL, rhytmURL;
-        var rhytmDone = false;
+        var songURL, rhythmURL;
+        var rhythmDone = false;
         var songDone = false;
         var song;
 
@@ -97,7 +96,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
             }
 
             var mp3 = song.mp3;
-            rhytmURL = mp3.replace(".mp3", ".json");
+            rhythmURL = mp3.replace(".mp3", ".json");
 
         } else {
             songURL = this.noAudioClip;
@@ -107,14 +106,14 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 
         function allDone() {
-            if(rhytmDone && songDone) {
+            if(rhythmDone && songDone) {
                 callback(song);
             }
         }
 
-        function onRhytmData(data) {
-            song.rhytmData = data;
-            rhytmDone = true;
+        function onRhythmData(data) {
+            song.rhythmData = data;
+            rhythmDone = true;
             allDone();
         }
 
@@ -123,7 +122,7 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
             allDone();
         }
 
-        $.getJSON(rhytmURL, onRhytmData);
+        $.getJSON(rhythmURL, onRhythmData);
 
         if(audio) {
             $(audio).one("canplay", onMusicBuffered);
@@ -167,5 +166,4 @@ krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 
 });
-
-
+});

@@ -1,6 +1,5 @@
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
-
-var krusovice = krusovice || {};
 
 krusovice.effects = krusovice.effects || {};
 
@@ -390,7 +389,7 @@ krusovice.effects.Base = {
     	
     },
          
-    time : function(startTime, endTime, rhytmAnalysis) {        
+    time : function(startTime, endTime, rhythmAnalysis) {        
     },    
     
     /**
@@ -409,7 +408,7 @@ krusovice.effects.Base = {
     
     render : function() {        
     }        
-    
-    
-}
+};
 
+return krusovice.effects;
+});

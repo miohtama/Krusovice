@@ -1,28 +1,29 @@
-var krusovice = krusovice || {};
-
-/**
- * Project object captures data for server-side rendering job.
- *
- * Krusovice uses this model to pass information what kind of
- * rendering job the server should do. Besides having the
- * contents of the show, it will also contain metadata for the quality
- * and ownership. 
- */
-krusovice.Project = function(cfg) {
-    $.extend(this, cfg);
-}
-
-/**
- * 
- */
-krusovice.Project.prototype = {
-
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+    'use strict';
+    
     /**
-     * @type {Object}
+     * Project object captures data for server-side rendering job.
      *
-     * See {@link krusovice#Design}.
+     * Krusovice uses this model to pass information what kind of
+     * rendering job the server should do. Besides having the
+     * contents of the show, it will also contain metadata for the quality
+     * and ownership. 
      */
-    design : null,
+    krusovice.Project = function(cfg) {
+        $.extend(this, cfg);
+    }
+    
+    /**
+     * 
+     */
+    krusovice.Project.prototype = {
+    
+        /**
+         * @type {Object}
+         *
+         * See {@link krusovice#Design}.
+         */
+        design : null,
 
 	/**
 	 * @type Number
@@ -55,6 +56,5 @@ krusovice.Project.prototype = {
 	 * For internal use only - you cannot set this.	 	
 	 */
 	pingbackURI : null
-    
-
-};
+    };
+});

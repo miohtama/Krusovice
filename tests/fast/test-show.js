@@ -172,7 +172,7 @@ ShowTest.prototype.basicSetup = function() {
 	var plan = this.createTimeline();
 
     var cfg = {
-        rhytmData : null, // No music
+        rhythmData : null, // No music
         songURL : null,
         timeline : plan,
         background : { type : "plain", color : "#ffffff" },

@@ -4,25 +4,23 @@
 
 // jslint hints
 /*global window*/
-
-(function() {
+define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
     "use strict";
 
     // Declare namespace
-    var krusovice = window.krusovice || {};
-    krusovice.tools = krusovice.tools || {};
-    krusovice.tools.url  = krusovice.tools.url || {};
+    krusovice.tools = krusovice.tools || {};
+    krusovice.tools.url  = krusovice.tools.url || {};
 
-   /**
-    * Read HTTP GET query parameters to a object.
-    *
-    * See: http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
-    *
-    *
-    * @param {String} aURL URL to split or null for window.location
-    *
-    * @return {Object} key -> value pairs
-    */
+    /**
+     * Read HTTP GET query parameters to a object.
+     *
+     * See: http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+     * 
+     *
+     * @param {String} aURL URL to split or null for window.location
+     *
+     * @return {Object} key -> value pairs
+     */
     krusovice.tools.url.splitParameters = function (aURL) {
 
         if(!aURL) {
@@ -64,7 +62,4 @@
 
         return url + path;
     }
-
-
-
-})();
+});
