@@ -249,7 +249,27 @@ krusovice.effects.SlightMove = $.extend(true, {}, krusovice.effects.Interpolate,
 
 });
 
-krusovice.effects.Manager.register(krusovice.effects.SlightMove);
+/**
+ * Have the object on screen but move it a little for extra dynamicity.
+ */
+krusovice.effects.Fade = $.extend(true, {}, krusovice.effects.Interpolate, {
+
+    id : "fade",
+
+    name : "Fade",
+
+    available : true,
+
+    transitions : ["transitionin", "transitionout"],
+
+    init : function() {
+        this.parameters.source.opacity = 0;
+        this.parameters.target.opacity = 1;
+    }
+
+});
+
+krusovice.effects.Manager.register(krusovice.effects.Fade);
 
 krusovice.effects.SlightMoveLeftRight = $.extend(true, {}, krusovice.effects.QuaternionRotate, {
 
