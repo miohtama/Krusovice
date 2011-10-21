@@ -1,4 +1,4 @@
-define(['jquery_bundle', 'krusovice_base', 'effects/base', 'thirdparty/Three'], function($, krusovice, effects, THREE) {
+define("krusovice/effects/linear", ['jquery_bundle', 'krusovice_base', 'krusovice/effects'], function($, krusovice, effects, THREE) {
 "use strict";
 
 /*global krusovice,window,THREE*/

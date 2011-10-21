@@ -4,7 +4,7 @@
 
 // jslint hints
 /*global window*/
-define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/tools/url", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
     "use strict";
 
     // Declare namespace
@@ -15,7 +15,7 @@ define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
      * Read HTTP GET query parameters to a object.
      *
      * See: http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
-     * 
+     *
      *
      * @param {String} aURL URL to split or null for window.location
      *

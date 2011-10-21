@@ -1,4 +1,4 @@
-define(['thirdparty/Three'], function(THREE) {
+define("krusovice/three/canvas", ['thirdparty/Three'], function(THREE) {
 'use strict';
 /**
  * @author mr.doob / http://mrdoob.com/

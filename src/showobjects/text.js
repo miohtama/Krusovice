@@ -1,4 +1,4 @@
-define(['jquery_bundle', 'krusovice_base', 'showobjects/textdefinitions', 'showobjects/showobjects'], function($, krusovice, textDefinitions) {
+define("krusovice/showobjects/text", ['jquery_bundle', 'krusovice_base', 'krusovice/showobjects/textdefinitions'], function($, krusovice, textdefinitions) {
 "use strict";
 
 /*global window,$,console*/
@@ -221,7 +221,9 @@ krusovice.texts = krusovice.texts || {};
 krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
     init : function() {
-        this.loadData(textDefinitions.getTextDefinitions());
+        console.log("Got defs");
+        console.log(textdefinitions);
+        this.loadData(textdefinitions.getDefinitions());
     },
 
     /**

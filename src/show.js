@@ -1,4 +1,5 @@
-define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+/*global define*/
+define("krusovice/show", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /**

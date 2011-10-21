@@ -1,78 +1,96 @@
 'use strict';
 
-/*global window,krusovice,$,TestCase,assertTrue*/
-
-var AspectRatioTest = TestCase("AspectRatioTest");
+/*global amdTestCase,window,krusovice,$,TestCase,assertTrue*/
 
 /**
- *
+ * Various tests showing what kind of fittings of photos we can have in different shapes of videos.
  */
-AspectRatioTest.prototype.testFitLandscapeToMoreLandscape = function() {
+amdTestCase(
+    {
+        testCase : "AspectRatioTest",
+        baseUrl : "/test/src"
+    },
+    ["krusovice_loader"],
+    {
 
-    var sw = 512;
-    var sh = 288;
-    var a = sw / sh;
+        setUp : krusoviceSetUp,
+        /**
+         *
+         */
+        shouldFitLandscapeToMoreLandscape : function() {
 
-    var tw = 1000;
-    var th = 200;
+            var krusovice = this.krusovice;
 
-    var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
+            var sw = 512;
+            var sh = 288;
+            var a = sw / sh;
 
-    console.log("Got:" + d.width + " " + d.height);
+            var tw = 1000;
+            var th = 200;
 
-    // This should be the constraining factor
-    assertEquals(d.height, 200);
+            var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
 
-    assertEquals(d.width/d.height, a);
+            console.log("Got:" + d.width + " " + d.height);
 
-}
+            // This should be the constraining factor
+            assertEquals(d.height, 200);
 
-/**
- *
- */
-AspectRatioTest.prototype.testFitLandscapeToPortrait = function() {
+            assertEquals(d.width/d.height, a);
 
-    var sw = 512;
-    var sh = 288;
-    var a = sw / sh;
+        },
 
-    var tw = 200;
-    var th = 1000;
+        /**
+         *
+         */
+        shouldFitLandscapeToPortrait : function() {
 
-    var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
+            var krusovice = this.krusovice;
 
-    console.log("Got:" + d.width + " " + d.height);
+            var sw = 512;
+            var sh = 288;
+            var a = sw / sh;
 
-    // This should be the constraining factor
-    assertEquals(112.5, d.height);
-
-    assertEquals(d.width/d.height, a);
-
-}
-
-/**
- *
- */
-AspectRatioTest.prototype.testFitLandscapeToSquare = function() {
-
-    var sw = 512;
-    var sh = 288;
-    var a = sw / sh;
-
-    var tw = 512;
-    var th = 512;
-
-    var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
-
-    console.log("Got:" + d.width + " " + d.height);
-
-    // This should be the constraining factor
-    assertEquals(288, d.height);
-
-    assertEquals(d.width/d.height, a);
-
-}
+            var tw = 200;
+            var th = 1000;
 
 
+            var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
+
+            console.log("Got:" + d.width + " " + d.height);
+
+            // This should be the constraining factor
+            window.assertEquals(112.5, d.height);
+
+            window.assertEquals(d.width/d.height, a);
+
+        },
+
+        /**
+         *
+         */
+        shouldFitLandscapeToSquare : function() {
+
+            var krusovice = this.krusovice;
+
+            var sw = 512;
+            var sh = 288;
+            var a = sw / sh;
+
+            var tw = 512;
+            var th = 512;
+
+            var d = krusovice.utils.resizeAspectRatio(sw, sh, tw, th);
+
+            console.log("Got:" + d.width + " " + d.height);
+
+            // This should be the constraining factor
+            window.assertEquals(288, d.height);
+
+            window.assertEquals(d.width/d.height, a);
+
+        }
+
+    }
+);
 
 

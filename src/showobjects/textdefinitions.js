@@ -1,7 +1,17 @@
-define(function() {
-"use strict";
+/*global define*/
 
-var getTextDefinitions = function() {
+
+/**
+ * Define text shapes we can have in the show.
+ */
+define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], function(showobjects) {
+
+    "use strict";
+
+    var textdefinitions = {};
+
+    textdefinitions.getDefinitions = function() {
+
     return [
         {
             id : "box",
@@ -56,8 +66,8 @@ var getTextDefinitions = function() {
 
         }
     ];
-}
+};
 
-return { 'getTextDefinitions': getTextDefinitions };
+    return textdefinitions;
 
 });

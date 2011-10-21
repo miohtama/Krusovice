@@ -1,4 +1,6 @@
-define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+/*global define,window,console*/
+
+define("krusovice/loader", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /**

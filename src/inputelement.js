@@ -1,16 +1,18 @@
-define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+/*global define,window,console*/
+
+define("krusovice/inputelement", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 'use strict';
 /**
  * InputElement is photo/text frame data with hints to be inserted on the timeline.
  *
- * This is the the source object which the end user edits. 
+ * This is the the source object which the end user edits.
  */
 krusovice.InputElement = function() {
-    
+
 }
 
 /**
- * 
+ *
  */
 krusovice.InputElement.prototype = {
 
@@ -18,27 +20,27 @@ krusovice.InputElement.prototype = {
      * @type String
      *
      * Unique id for this element (e.g. image URL)
-     */    
+     */
     id : null,
-    
+
     /**
      * @type String
      *
      * "image" or "text"
      */
     type : null,
-    
+
     /**
      * Label id -> text content mappings
      */
-    texts : {        
+    texts : {
     },
 
 	/**
 	 * @type String
 	 *
 	 * Label text
-	 */    
+	 */
     label : null,
 
 	/**
@@ -47,7 +49,7 @@ krusovice.InputElement.prototype = {
 	 * Duration on the screen (sans transitions)
 	 */
 	duration : 5,
-	
+
 	/**
 	 * @type String
 	 *

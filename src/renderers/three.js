@@ -1,4 +1,4 @@
-define(['jquery_bundle', 'krusovice_base', 'thirdparty/Three'], function($, krusovice, THREE) {
+define("krusovice/renderers/three", ['jquery_bundle', 'krusovice_base', 'thirdparty/Three', "krusovice/three/canvas", "krusovice/three/projector"], function($, krusovice, THREE) {
 'use strict';
 
 /*global THREE, window*/

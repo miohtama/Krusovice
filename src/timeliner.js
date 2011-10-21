@@ -1,4 +1,6 @@
-define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+/*global define,window*/
+
+define("krusovice/timeliner", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /**
@@ -11,8 +13,6 @@ define(['jquery_bundle', 'krusovice_base'], function($, krusovice) {
  *
  *
  */
-
-/*global window,$*/
 
 krusovice.TimelineAnimation = function(cfg) {
     $.extend(true, this, cfg);
