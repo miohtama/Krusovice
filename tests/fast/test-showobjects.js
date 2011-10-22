@@ -1,11 +1,15 @@
+/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals,assertNotEquals*/
+
 'use strict';
 
-var ShowObjectsTest = TestCase("ShowObjects");
+var ShowObjectsTest = function() {};
 
 /**
  * Test that show object animate() goes through states sanely when feed in a clock.
  */
 ShowObjectsTest.prototype.testSaneAnimationStates= function() {
+
+    var krusovice = this.krusovice;
 
 	var init = this.basicSetup();
 
@@ -33,6 +37,7 @@ ShowObjectsTest.prototype.testSaneAnimationStates= function() {
  * Render transition in frame for an test image element
  */
 ShowObjectsTest.prototype.testRenderTransitionIn = function() {
+    var krusovice = this.krusovice;
 
 	var init = this.basicSetup();
 
@@ -47,7 +52,7 @@ ShowObjectsTest.prototype.testRenderTransitionIn = function() {
 	assertObject(object.image);
 
 	// Transition in start
-	var state = object.animate(0)
+	var state = object.animate(0);
 
 	// Check that we got easing correct
 	assertEquals(krusovice.effects.ZoomIn.easing, state.easing);
@@ -55,9 +60,9 @@ ShowObjectsTest.prototype.testRenderTransitionIn = function() {
 	// Render few frames and assert no exceptions fly
 	var i=0;
 	for(i=0; i<1; i+=0.3) {
-		object.animate(0.1)
+		object.animate(0.1);
 	}
-}
+};
 
 
 
@@ -65,7 +70,9 @@ ShowObjectsTest.prototype.testRenderTransitionIn = function() {
  * Create a single timeline element for testing purposes.
  */
 ShowObjectsTest.prototype.createTimelineElement = function() {
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+    var krusovice = this.krusovice;
+
+	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
 	var plan = timeliner.createPlan();
 
 	// Do not try to load
@@ -80,10 +87,12 @@ ShowObjectsTest.prototype.createTimelineElement = function() {
 	elem.image = canvas;
 
 	return plan[0];
-}
-
+};
 
 ShowObjectsTest.prototype.basicSetup = function() {
+
+    var krusovice = this.krusovice;
+
 
 	var renderer = new krusovice.renderers.Three({
 		width: 100,
@@ -99,6 +108,9 @@ ShowObjectsTest.prototype.basicSetup = function() {
 		renderer : renderer
 	};
 
-}
+};
+
+finalizeTestCase("ShowObjects", ShowObjectsTest);
+
 
 
