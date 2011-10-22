@@ -1,6 +1,6 @@
 /*global define*/
 
-define("three-bundle", [
+define("krusovice/thirdparty/three-bundle", [
     "krusovice/thirdparty/Three",
     "krusovice/thirdparty/three-patches/canvas",
     "krusovice/thirdparty/three-patches/projector"

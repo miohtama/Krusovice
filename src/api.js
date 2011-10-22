@@ -1,12 +1,17 @@
-// TODO: This will hold public Krusovice API
+/*global define*/
 
 define("krusovice/api", [
-    "require",
 
+    // Third party code
+    "require",
     "krusovice/thirdparty/jquery-bundle",
     "krusovice/thirdparty/three-bundle",
 
-    "krusovice/krusovice",
+    // Core namespace
+    "krusovice/core",
+
+    // Internal modules
+    /*
     "krusovice/utils",
     "krusovice/design",
     "krusovice/inputelement",
@@ -26,8 +31,8 @@ define("krusovice/api", [
     "krusovice/showobjects/text",
     "krusovice/music",
     "krusovice/tools/fade",
-    "krusovice/tools/url"
-], function(require, krusovice) {
+    "krusovice/tools/url"*/
+], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
     console.log(krusovice);
     return krusovice;

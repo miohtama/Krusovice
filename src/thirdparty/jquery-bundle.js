@@ -1,6 +1,8 @@
 /*global define*/
 
-define("jquery-bundle", ['krusovice/thirdparty/jquery', 'krusovice/thirdparty/easing'], function ($) {
+define("krusovice/thirdparty/jquery-bundle", ['krusovice/thirdparty/jquery', 'krusovice/thirdparty/easing'], function ($) {
+    console.log("In bundle");
+    console.log($);
     return $;
 });
 
