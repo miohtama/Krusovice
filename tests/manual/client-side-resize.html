@@ -1,0 +1,27 @@
+<html>
+    <!-- Test client side resize & EXIF rotation -->
+    <head>
+        <script src=../../src/thirdparty/require.js></script>
+
+        <script type="text/javascript">
+
+            require.config({
+                paths : {
+                    krusovice : "../../src"
+                }
+            });
+        </script>
+
+        <script src="client-side-resize.js"></script>
+    </head>
+
+    <body>
+         <h1>Test client side image preprocessing</h1>
+
+         <form>
+              <input id=files name=files type=file multiple />
+         </form>
+
+         <canvas id="canvas" />
+    </body>
+</html>

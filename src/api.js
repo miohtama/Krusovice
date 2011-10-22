@@ -35,6 +35,6 @@ define("krusovice/api", [
     "krusovice/tools/url"
 ], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
-    console.log(krusovice);
+    window.krusovice = krusovice;
     return krusovice;
 });
