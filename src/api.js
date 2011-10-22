@@ -24,6 +24,8 @@ define("krusovice/api", [
     "krusovice/effects",
     "krusovice/effects/linear",
     "krusovice/backgrounds",
+    "krusovice/backgrounds/plain",
+    "krusovice/backgrounds/scroll2d",
     "krusovice/showobjects",
     "krusovice/showobjects/framedimage",
     "krusovice/showobjects/textdefinitions",
