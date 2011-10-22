@@ -94,11 +94,7 @@ var canvas = {
 
 };
 
-// jQuery will be bootstrap'd dynamically
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Dynamically load debug mode Krusovice
-    krusovice.load(function() {
-        canvas.init();
-    }, true);
+require(["krusovice/api", "../src/thirdparty/domready!"], function(krusovice) {
+    window.krusovice = krusovice;
+    canvas.init();
 });

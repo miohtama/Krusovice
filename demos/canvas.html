@@ -2,7 +2,15 @@
 	<!-- Render preview of all backgrounds -->
     <head>
         <title>Canvas size tests</title>
-        <script src="../src/krootstrap.js"></script>
+        <script src=../src/thirdparty/require.js></script>
+        <script type="text/javascript">
+
+            require.config({
+                paths : {
+                    krusovice : "../src"
+                }
+            });
+        </script>
         <script src="horizontal-and-vertical.js"></script>
 
         <script type="text/javascript" src="canvas.js"></script>
