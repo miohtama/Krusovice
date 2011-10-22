@@ -1,7 +1,15 @@
 <html>
 	<!-- Manual inspection of visualizer renderer output -->
     <head>
-        <script src=../src/krootstrap.js></script>
+        <script src=../src/thirdparty/require.js></script>
+        <script type="text/javascript">
+
+            require.config({
+                paths : {
+                    krusovice : "../src"
+                }
+            });
+        </script>
 
         <link href=../media/visualizer.css rel=stylesheet></link>
 
