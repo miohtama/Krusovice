@@ -1,6 +1,6 @@
 /*global define,window*/
 
-define("krusovice/music", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/music", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 krusovice.music = krusovice.music || {};

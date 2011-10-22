@@ -1,4 +1,4 @@
-define('Three', function() {
+define('krusovice/thirdparty/Three', function() {
 // Three.js r44 - http://github.com/mrdoob/three.js
 var THREE=THREE||{};if(!window.Int32Array)window.Int32Array=Array,window.Float32Array=Array;THREE.Color=function(b){b!==void 0&&this.setHex(b);return this};
 THREE.Color.prototype={constructor:THREE.Color,r:1,g:1,b:1,copy:function(b){this.r=b.r;this.g=b.g;this.b=b.b;return this},setRGB:function(b,c,e){this.r=b;this.g=c;this.b=e;return this},setHSV:function(b,c,e){var f,h,m;if(e==0)this.r=this.g=this.b=0;else switch(f=Math.floor(b*6),h=b*6-f,b=e*(1-c),m=e*(1-c*h),c=e*(1-c*(1-h)),f){case 1:this.r=m;this.g=e;this.b=b;break;case 2:this.r=b;this.g=e;this.b=c;break;case 3:this.r=b;this.g=m;this.b=e;break;case 4:this.r=c;this.g=b;this.b=e;break;case 5:this.r=

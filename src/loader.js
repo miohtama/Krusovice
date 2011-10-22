@@ -1,6 +1,6 @@
 /*global define,window,console*/
 
-define("krusovice/loader", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /**

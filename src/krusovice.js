@@ -1,7 +1,7 @@
 
 /* Define krusovice root */
 
-define("krusovice_base", ["jquery_bundle", "Three"], function() {
+define("krusovice_base", ["krusovice/thirdparty/jquery-bundle"], function() {
     var krusovice = window.krusovice || {};
     return krusovice;
 });

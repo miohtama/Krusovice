@@ -1,10 +1,10 @@
 /*global define*/
 
 define("krusovice/effects/linear",
-    ['jquery_bundle',
+    ["krusovice/thirdparty/jquery-bundle",
      'krusovice_base',
      'krusovice/effects',
-     'Three'
+     'krusovice/thirdparty/Three'
      ], function($, krusovice, effects, THREE) {
 "use strict";
 

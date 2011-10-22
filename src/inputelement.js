@@ -1,6 +1,6 @@
 /*global define,window,console*/
 
-define("krusovice/inputelement", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/inputelement", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
 'use strict';
 /**
  * InputElement is photo/text frame data with hints to be inserted on the timeline.

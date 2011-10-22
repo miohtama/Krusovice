@@ -8,7 +8,7 @@
 
 /*global define,window,console*/
 
-define("krusovice/rhythmanalysis", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/rhythmanalysis", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 krusovice.RhythmAnalysis = function(json) {

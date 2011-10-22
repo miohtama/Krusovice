@@ -1,4 +1,4 @@
-define("krusovice/utils", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/utils", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
 "use strict";
 
 /*global window,console*/
