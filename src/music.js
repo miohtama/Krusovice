@@ -1,11 +1,11 @@
 /*global define,window*/
 
-define("krusovice/music", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/music", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
 "use strict";
 
 krusovice.music = krusovice.music || {};
 
-krusovice.music.Registry = $.extend(true, {}, krusovice.utils.Registry, {
+krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
     /**
      * Dummy audio filed used play when no song is selected.

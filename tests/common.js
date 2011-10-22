@@ -4,13 +4,14 @@
 
 /*global amdTestCase*/
 
+
 function krusoviceSetUp(queue) {
     console.log("Common setup");
-    this.krusovice = this.req('krusovice_loader');
+    this.krusovice = this.req('krusovice/api');
 }
 
 /**
- * Synchronoous test case using require.js.
+ * Shortcut for amdTestCase() with default settings.
  */
 function KrusoviceTestCase(name, functions) {
 
@@ -19,9 +20,13 @@ function KrusoviceTestCase(name, functions) {
     var testcase = amdTestCase(
         {
             testCase : name,
-            baseUrl : "/test/src"
+            baseUrl : "/test/src",
+            paths : {
+                "krusovice" : "/test/src"
+            },
+            waitSeconds : 1
         },
-        ["krusovice_loader"],
+        ["krusovice/api"],
         functions
     );
 

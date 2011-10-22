@@ -1,6 +1,6 @@
 /*global define*/
 
-define("krusovice/effects", ['krusovice/thirdparty/jquery-bundle', "krusovice/core"], function($, krusovice) {
+define("krusovice/effects", ['krusovice/thirdparty/jquery-bundle', "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
 "use strict";
 
 krusovice.effects = krusovice.effects || {};
@@ -51,7 +51,7 @@ $.extend(krusovice.effects, {
  *
  * @singleton
  */
-krusovice.effects.Manager = $.extend(true, {}, krusovice.utils.Registry, {
+krusovice.effects.Manager = $.extend(true, {}, utils.Registry, {
 
     initFunction : "init",
 

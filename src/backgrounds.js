@@ -3,18 +3,15 @@
  *
  */
 
-// JSLint hints
+/*global define*/
 
-/*global $ */
-/*global console */
-
-define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
 
 "use strict";
 
 krusovice.backgrounds = krusovice.backgrounds || {};
 
-krusovice.backgrounds.Registry = $.extend(true, {}, krusovice.utils.Registry, {
+krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
 
     /**
      * Load backgrounds from JSON file

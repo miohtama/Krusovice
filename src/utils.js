@@ -622,4 +622,7 @@ krusovice.utils.Registry = {
         return songs;
     }
 };
+
+return krusovice.utils;
+
 });
