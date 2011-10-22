@@ -1,6 +1,8 @@
+/* Background icon sampler */
+
 "use strict";
 
-/*global krusovice*/
+/*global require, krusovice, window*/
 
 /**
  *
@@ -93,7 +95,9 @@ var backgrounds = {
         }
     },
 
-    init : function() {
+    init : function(krusovice) {
+
+        window.krusovice = krusovice;
 
         // XXX: Cannot distribute media files on Github
         krusovice.backgrounds.Registry.loadBackgroundData("../../../../../olvi/backgrounds/backgrounds.json",
@@ -105,11 +109,6 @@ var backgrounds = {
 
 };
 
-// jQuery will be bootstrap'd dynamically
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Dynamically load debug mode Krusovice
-    krusovice.load(function() {
-        backgrounds.init();
-    }, true);
+require(["krusovice/api", "../src/thirdparty/domready!"], function(krusovice) {
+    backgrounds.init(krusovice);
 });

@@ -2,7 +2,15 @@
 	<!-- Render preview of all backgrounds -->
     <head>
         <title>Background icons</title>
-        <script src=../src/krootstrap.js></script>
+        <script src=../src/thirdparty/require.js></script>
+        <script type="text/javascript">
+
+            require.config({
+                paths : {
+                    krusovice : "../src"
+                }
+            });
+        </script>
 
         <script type="text/javascript" src="backgrounds.js"></script>
     </head>
