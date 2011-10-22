@@ -1,4 +1,11 @@
-define("krusovice/effects/linear", ['jquery_bundle', 'krusovice_base', 'krusovice/effects'], function($, krusovice, effects, THREE) {
+/*global define*/
+
+define("krusovice/effects/linear",
+    ['jquery_bundle',
+     'krusovice_base',
+     'krusovice/effects',
+     'Three'
+     ], function($, krusovice, effects, THREE) {
 "use strict";
 
 /*global krusovice,window,THREE*/
@@ -22,7 +29,7 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
             position : [0, 0, effects.ON_SCREEN_Z],
             rotation : [0,0,0, 1],
             opacity : 1,
-            scale : [1,1,1],
+            scale : [1,1,1]
         },
 
         sourceVariation : {

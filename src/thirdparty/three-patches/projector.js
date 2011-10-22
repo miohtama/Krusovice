@@ -1,5 +1,5 @@
 /*global define*/
-define("krusovice/three/projector", ['thirdparty/Three'], function(THREE) {
+define("krusovice/three/projector", ['Three'], function(THREE) {
 'use strict';
 
 /**

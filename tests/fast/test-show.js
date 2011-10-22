@@ -1,6 +1,8 @@
+/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals,assertNotEquals*/
+
 'use strict';
 
-var ShowTest = TestCase("Show");
+var ShowTest = function() {};
 
 /**
  * Check that show initializas synchronously when we have no media to load.
@@ -8,17 +10,17 @@ var ShowTest = TestCase("Show");
  */
 ShowTest.prototype.testSyncInit = function() {
 
-	var init = this.basicSetup();
+    var init = this.basicSetup();
 
-	var show = init.show;
+    var show = init.show;
 
-	// Construct all elements
-	show.prepare();
+    // Construct all elements
+    show.prepare();
 
-	assertTrue(show.loaded);
+    assertTrue(show.loaded);
 
-	assertEquals(2, show.animatedObjects.length);
-}
+    assertEquals(2, show.animatedObjects.length);
+};
 
 /**
  * Check that transition out effect which uses reserve.
@@ -28,56 +30,58 @@ ShowTest.prototype.testSyncInit = function() {
  */
 ShowTest.prototype.testReverseAnimation = function() {
 
-	var init = this.basicSetup();
+    var krusovice = this.krusovice;
 
-	// Construct all elements
-	init.show.prepare();
+    var init = this.basicSetup();
 
-	// Test one element from the show
-	// This has zoomin effect with reverse animation
-	var object = init.show.animatedObjects[0];
+    // Construct all elements
+    init.show.prepare();
 
-	// Animate the object in the middle of zoom out
-	var state = object.animate(5.0);
+    // Test one element from the show
+    // This has zoomin effect with reverse animation
+    var object = init.show.animatedObjects[0];
 
-	// See that state looks sane
-	console.log(state);
+    // Animate the object in the middle of zoom out
+    var state = object.animate(5.0);
 
-	// We are running effect backwards (transition out)
-	assertTrue(state.current.reverse);
+    // See that state looks sane
+    console.log(state);
 
-	assertEquals("transitionout", state.animation);
-	assertEquals("zoomfar", state.current.effectType);
-	assertEquals("gone", state.next.type);
+    // We are running effect backwards (transition out)
+    assertTrue(state.current.reverse);
 
-	// Check that this orignally was defined as reverse effect
-	var effect = krusovice.effects.Manager.get(state.current.effectType);
-	assertTrue(effect.reverseOut);
+    assertEquals("transitionout", state.animation);
+    assertEquals("zoomfar", state.current.effectType);
+    assertEquals("gone", state.next.type);
 
-	// Fading away
-	assertTrue(state.value < 0.7);
-	assertNotEquals(state.value, 0);
+    // Check that this orignally was defined as reverse effect
+    var effect = krusovice.effects.Manager.get(state.current.effectType);
+    assertTrue(effect.reverseOut);
 
-	// Assume the source Z is on the viewing plane
-	assertEquals(state.current.position[2], 0);
+    // Fading away
+    assertTrue(state.value < 0.7);
+    assertNotEquals(state.value, 0);
 
-	// Assume the target Z is not on the viewing plane (should be far z)
-	assertEquals(krusovice.effects.FAR_Z, state.next.position[2]);
+    // Assume the source Z is on the viewing plane
+    assertEquals(state.current.position[2], 0);
 
-	// Pick two Z values to compare
+    // Assume the target Z is not on the viewing plane (should be far z)
+    assertEquals(krusovice.effects.FAR_Z, state.next.position[2]);
 
-	object.animate(5.0);
-	var z1 = object.object.position.z;
+    // Pick two Z values to compare
 
-	object.animate(5.5);
-	var z2 = object.object.position.z;
+    object.animate(5.0);
+    var z1 = object.object.position.z;
 
-	// We are moving closer to camera
-	console.log("z1: " + z1 + " z2:" + z2);
+    object.animate(5.5);
+    var z2 = object.object.position.z;
 
-	assertTrue(z1 > z2);
+    // We are moving closer to camera
+    console.log("z1: " + z1 + " z2:" + z2);
 
-}
+    assertTrue(z1 > z2);
+
+};
 
 
 /**
@@ -85,27 +89,33 @@ ShowTest.prototype.testReverseAnimation = function() {
  */
 ShowTest.prototype.testFinished = function() {
 
-	var init = this.basicSetup();
+    var krusovice = this.krusovice;
 
-	var show = init.show;
 
-	// Construct all elements
-	show.prepare();
+    var init = this.basicSetup();
 
-	show.onClock(999);
+    var show = init.show;
 
-	var duration = show.getDuration();
+    // Construct all elements
+    show.prepare();
 
-	assertEquals(12, duration);
+    show.onClock(999);
 
-	assertTrue(show.isFinished());
+    var duration = show.getDuration();
 
-}
+    assertEquals(12, duration);
+
+    assertTrue(show.isFinished());
+
+};
 
 /**
  * Check we have canvas properly set up.
  */
 ShowTest.prototype.testCanvas = function() {
+
+    var krusovice = this.krusovice;
+
 
     var init = this.basicSetup();
 
@@ -119,12 +129,15 @@ ShowTest.prototype.testCanvas = function() {
     // Check that we can use this as 2D canvas
     canvasContext.fillRect(0, 0, 10, 10);
 
-}
+};
 
 /**
  * See that plain background initializes properly.
  */
 ShowTest.prototype.testPlainBackground = function() {
+
+    var krusovice = this.krusovice;
+
 
     var init = this.basicSetup();
 
@@ -139,29 +152,31 @@ ShowTest.prototype.testPlainBackground = function() {
     assertEquals("plain", show.background.options.type);
 
     assertEquals("#ffffff", show.background.options.color);
-}
+};
 
 
 /**
  * Create a single timeline element for testing purposes.
  */
 ShowTest.prototype.createTimeline = function() {
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-	var plan = timeliner.createPlan();
+    var krusovice = this.krusovice;
 
-	// Do not try to load
-	// image asynchronously during unit tests
-	var elem = plan[0];
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+    var plan = timeliner.createPlan();
 
-	//elem.image = new Image();
-	var canvas = document.createElement("canvas");
-	canvas.width = 100;
-	canvas.height = 100;
+    // Do not try to load
+    // image asynchronously during unit tests
+    var elem = plan[0];
 
-	elem.image = canvas;
+    //elem.image = new Image();
+    var canvas = document.createElement("canvas");
+    canvas.width = 100;
+    canvas.height = 100;
 
-	return plan;
-}
+    elem.image = canvas;
+
+    return plan;
+};
 
 
 /**
@@ -169,7 +184,9 @@ ShowTest.prototype.createTimeline = function() {
  */
 ShowTest.prototype.basicSetup = function() {
 
-	var plan = this.createTimeline();
+    var krusovice = this.krusovice;
+
+    var plan = this.createTimeline();
 
     var cfg = {
         rhythmData : null, // No music
@@ -183,9 +200,11 @@ ShowTest.prototype.basicSetup = function() {
     var show = new krusovice.Show(cfg);
 
     return {
-    	show : show,
-    	plan : plan
-    }
-}
+        show : show,
+        plan : plan
+    };
+};
+
+finalizeTestCase("Show", ShowTest);
 
 
