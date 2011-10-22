@@ -704,7 +704,9 @@ krusovice.Show.prototype = {
         var w = dimensions.width;
 
         // XXX: use Mozilla API on FF and font baseline
-        var h = dimensions.height || 10; // textMetrics object does not have height info!
+        // textMetrics object does not have height info!
+        var h;
+        h = dimensions.height||10;
 
         ctx.strokeStyle = "#ffFFff";
         ctx.fillStyle = "rgba(128, 128, 128, 0.5)";

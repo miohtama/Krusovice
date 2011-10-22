@@ -36,7 +36,7 @@ function finalizeTestCase(name, obj) {
     // Rename all functions to "should"
     var tests = obj.prototype;
 
-    for (testName in tests) {
+    for(testName in tests) {
         if (tests.hasOwnProperty(testName)) {
             if (testName.indexOf('test') === 0) {
                 var func = tests[testName];
@@ -49,4 +49,8 @@ function finalizeTestCase(name, obj) {
 
     return KrusoviceTestCase(name, tests);
 
+}
+
+function finalizeAsyncTestCase(name, obj) {
+    return KrusoviceTestCase(name, obj.prototype);
 }

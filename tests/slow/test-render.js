@@ -1,13 +1,14 @@
+/*global window,finalizeAsyncTestCase,assertTrue,assertObject,assertEquals,assertNotEquals,assertException,assertString,assertFalse*/
+
 'use strict';
 
-/*global window,$,console,krusovice*/
-
-var RenderTest = window.AsyncTestCase("Render");
+var RenderTest = function() {};
 
 /**
  * Create timeline where we have image URLs relative to JsTestDriver root
  */
 RenderTest.prototype.createPlan = function() {
+    var krusovice = this.krusovice;
     var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
     var plan = timeliner.createPlan();
 
@@ -66,6 +67,8 @@ RenderTest.prototype.testPreviewWarningMessage = function(queue) {
  */
 RenderTest.prototype.testRenderBadResource = function(queue) {
 
+    var krusovice = this.krusovice;
+
     var plan = this.createPlan();
 
     // Test only with a single element
@@ -117,6 +120,8 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
  * @param webGL use WebGL rendering
  */
 RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
+
+    var krusovice = this.krusovice;
 
     var plan = this.createPlan();
 
@@ -196,6 +201,8 @@ RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
     });
 
-    return { queue : queue, show : show}
+    return { queue : queue, show : show };
 
 };
+
+finalizeAsyncTestCase("Render", RenderTest);

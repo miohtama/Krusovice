@@ -53,13 +53,19 @@ Unit tests
 Fast tests::
 
     java -jar JsTestDriver-1.3.2.jar --port 9876  &
-    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver.conf --tests all
+    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver.conf --tests all --reset
 
 Slow tests::
 
     python -m "SimpleHTTPServer" &
     java -Xmx512M -jar JsTestDriver-1.3.2.jar --port 9876 --config jsTestDriver-render.conf &
-    java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+    java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all --reset
+
+If you get::
+
+    Render.testRenderFewFramesWebGL failed (185.00 ms): SECURITY_ERR: SECURITY_ERR: DOM Exception 18
+
+... you did not start Chrome Security disabled (see above).
 
 JsTestDriver brief
 --------------------
