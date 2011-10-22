@@ -1,19 +1,13 @@
 'use strict';
 
-/*global amdTestCase,window,krusovice,$,TestCase,assertTrue*/
+/*global KrusoviceTestCase,window,krusovice,$,TestCase,assertTrue*/
 
 /**
  * Various tests showing what kind of fittings of photos we can have in different shapes of videos.
  */
-amdTestCase(
-    {
-        testCase : "AspectRatioTest",
-        baseUrl : "/test/src"
-    },
-    ["krusovice_loader"],
+KrusoviceTestCase("AspectRatio",
     {
 
-        setUp : krusoviceSetUp,
         /**
          *
          */

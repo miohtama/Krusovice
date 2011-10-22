@@ -1,20 +1,20 @@
 'use strict';
 
-/*global window,krusovice,$,TestCase,assertTrue*/
+/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals*/
 
-var BackgroundTest = TestCase("Background");
+function BackgroundCase() {}
 
 /**
  * See what kind of timelien output we get for scroll 2d background.
  *
  */
-BackgroundTest.prototype.testPanoramaDataGeneration = function() {
+BackgroundCase.prototype.testPanoramaDataGeneration = function() {
 
-	var init = this.basicSetup();
-
-	var cfg = {
-		"type" : "panorama-2d",
-		"image" : new Image(),
+    var init = this.basicSetup();
+    var krusovice = this.krusovice;
+    var cfg = {
+        "type" : "panorama-2d",
+        "image" : new Image(),
         "orignalSize" : {
             "width" : 7018,
             "height" : 1200
@@ -22,72 +22,73 @@ BackgroundTest.prototype.testPanoramaDataGeneration = function() {
         "zoomSizes" : {
             "maxW" : 1300,  "maxH" : 800, "minW" : 900, "minH" : 600
         }
-	};
+    };
 
-	var duration = 30;
-	var background = krusovice.backgrounds.createBackground(cfg.type, duration, init.timeline, null, cfg);
+    var duration = 30;
+    var background = krusovice.backgrounds.createBackground(cfg.type, duration, init.timeline, null, cfg);
 
-	console.log(background);
+    console.log(background);
 
-	// Check that we are long enough and last frame is outside the show duration
-	assertTrue(background.data.frames[background.data.frames.length-1].clock > duration);
+    // Check that we are long enough and last frame is outside the show duration
+    assertTrue(background.data.frames[background.data.frames.length-1].clock > duration);
 
-	// Check that we get valid frame data
-	var keyframes = background.getFramePair(0, background.data.frames);
-	assertObject(keyframes); // not null
+    // Check that we get valid frame data
+    var keyframes = background.getFramePair(0, background.data.frames);
+    assertObject(keyframes); // not null
 
-	console.log("Got frames");
-	console.log(keyframes);
+    console.log("Got frames");
+    console.log(keyframes);
 
-	var keyframes = background.getFramePair(duration+666, background.data.frames);
-	assertEquals(null, keyframes);
+    keyframes = background.getFramePair(duration+666, background.data.frames);
+    assertEquals(null, keyframes);
 
-	// Need to mock this data
-	background.image = new Image();
-	background.image.width = 10;
-	background.image.height = 10;
+    // Need to mock this data
+    background.image = new Image();
+    background.image.width = 10;
+    background.image.height = 10;
 
 
-	// Render some random points
-	for(var i=0; i<duration; i+=5) {
-		background.render(null, 0);
-	}
-}
+    // Render some random points
+    for(var i=0; i<duration; i+=5) {
+        background.render(null, 0);
+    }
+};
 
 
 /**
  * Create a single timeline element for testing purposes.
  */
-BackgroundTest.prototype.createTimeline = function() {
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-	var plan = timeliner.createPlan();
+BackgroundCase.prototype.createTimeline = function() {
+    var krusovice = this.krusovice;
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+    var plan = timeliner.createPlan();
 
-	// Do not try to load
-	// image asynchronously during unit tests
-	var elem = plan[0];
+    // Do not try to load
+    // image asynchronously during unit tests
+    var elem = plan[0];
 
-	//elem.image = new Image();
-	var canvas = document.createElement("canvas");
-	canvas.width = 100;
-	canvas.height = 100;
+    //elem.image = new Image();
+    var canvas = document.createElement("canvas");
+    canvas.width = 100;
+    canvas.height = 100;
 
-	elem.image = canvas;
+    elem.image = canvas;
 
-	return plan;
-}
+    return plan;
+};
 
 
 /**
  * Set up timeline and show objects basd on our test fixture.
  */
-BackgroundTest.prototype.basicSetup = function() {
+BackgroundCase.prototype.basicSetup = function() {
 
-	var timeline = this.createTimeline();
-
+    var timeline = this.createTimeline();
 
     return {
-    	timeline : timeline
-    }
-}
+        timeline : timeline
+    };
+};
 
+finalizeTestCase("Background", BackgroundCase);
 

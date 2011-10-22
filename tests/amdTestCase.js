@@ -126,10 +126,15 @@ window.amdTestCase = function (config, moduleArr, tests) {
                 proto['test_' + testName] = shouldTest(testName);
                 console.log("Added test:" + testName);
             } else if (testName !== 'setUp' && testName !== 'tearDown') {
-                proto[testName] = makeTest(testName);
+
+                if(testName.indexOf('test') === 0) {
+                    proto[testName] = makeTest(testName);
+                } else {
+                    proto[testName] = tests[testName];
+                }
             }
         }
     }
 
-    AsyncTestCase(testCase, proto);
+    return AsyncTestCase(testCase, proto);
 };

@@ -31,7 +31,8 @@ define("krusovice_loader", [
     "krusovice/tools/fade",
     "krusovice/tools/url"
 ], function(require, krusovice) {
-    console.log("Got:" + krusovice);
+    console.log("Kruso init");
+    console.log(krusovice);
     return krusovice;
 });
 

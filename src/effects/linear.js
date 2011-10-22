@@ -250,6 +250,8 @@ effects.SlightMove = $.extend(true, {}, effects.Interpolate, {
 
 });
 
+effects.Manager.register(effects.SlightMove);
+
 /**
  * Have the object on screen but move it a little for extra dynamicity.
  */
