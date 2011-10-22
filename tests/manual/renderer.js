@@ -2,12 +2,17 @@
  * Create dummy test data and send it to the server.
  *
  */
-renderer = {
-		
-	init : function() {
+
+/*global require,window,simpleElements*/
+
+"use strict";
+
+var renderer = {
+
+	init : function(krusovice) {
 
 		var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-		var plan = timeliner.createPlan();        
+		var plan = timeliner.createPlan();
 
 		var design = {
 			plan : simpleElements,
@@ -15,7 +20,7 @@ renderer = {
 				backgroundId : "white"
 			},
 			songId : "theark1"
-		}
+		};
 
 		// JSON payload send to the server
 		var project = {
@@ -25,38 +30,36 @@ renderer = {
 				email : "mikko@industrialwebandmagic.com"
 		};
 
-		
+
 		$("button[name=render]").click( function() {
 			// Create sample show
-						
+
 			var url = $("input[name=rendering-service-url]").val();
-									
+
 			var params = { project :JSON.stringify(project) };
-			
+
 			$.getJSON(url, params, function(data, textStatus, jqXHR) {
 				var message = data.message;
-				alert("Got response:" + message);
+				window.alert("Got response:" + message);
 			});
-			
+
 		});
-		
-		
+
+
 		$("button[name=json]").click( function() {
 			// Create sample show
 
-			var p = $("<p>");						
+			var p = $("<p>");
 			p.text(JSON.stringify(project));
 			$("body").append(p);
 		});
 
 	}
-		
+
 };
 
-document.addEventListener("DOMContentLoaded", function() {    
-	// Dynamically load debug mode Krusovice
-	krusovice.load(function() {
-		renderer.init();
-	}, true);
-}, false);
-               
+
+require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
+    renderer.init(krusovice);
+});
+

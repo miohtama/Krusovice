@@ -4,7 +4,7 @@
 
 // jslint hints
 /*global window*/
-define("krusovice/tools/url", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
+define("krusovice/tools/url", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     "use strict";
 
     // Declare namespace

@@ -1,4 +1,4 @@
-define("krusovice/showobjects/framedimage", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base', 'krusovice/showobjects'], function($, krusovice) {
+define("krusovice/showobjects/framedimage", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", 'krusovice/showobjects'], function($, krusovice) {
 "use strict";
 
 /*global krusovice,window,$,console*/

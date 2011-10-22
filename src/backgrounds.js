@@ -8,7 +8,7 @@
 /*global $ */
 /*global console */
 
-define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
+define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 
 "use strict";
 

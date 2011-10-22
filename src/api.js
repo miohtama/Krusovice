@@ -11,7 +11,6 @@ define("krusovice/api", [
     "krusovice/core",
 
     // Internal modules
-    /*
     "krusovice/utils",
     "krusovice/design",
     "krusovice/inputelement",
@@ -31,7 +30,7 @@ define("krusovice/api", [
     "krusovice/showobjects/text",
     "krusovice/music",
     "krusovice/tools/fade",
-    "krusovice/tools/url"*/
+    "krusovice/tools/url"
 ], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
     console.log(krusovice);

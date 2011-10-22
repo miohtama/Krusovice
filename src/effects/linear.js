@@ -2,7 +2,7 @@
 
 define("krusovice/effects/linear",
     ["krusovice/thirdparty/jquery-bundle",
-     'krusovice_base',
+     "krusovice/core",
      'krusovice/effects',
      'krusovice/thirdparty/three-bundle'
      ], function($, krusovice, effects, THREE) {

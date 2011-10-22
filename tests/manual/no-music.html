@@ -12,18 +12,12 @@
         <script type="text/javascript">
 
             require.config({
-                baseUrl : ".",
                 paths : {
-                    krusovice : "../../src",
+                    krusovice : "../../src"
                 }
             });
 
-            require(["krusovice/api"], function() {
-                console.log("Foobar");
-            });
-
-            /*
-            require(["../../src/api.js", "../../src/thirdparty/domready!"], function(krusovice) {
+            require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
 
 				// Visualization without music
 		        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
@@ -41,7 +35,7 @@
 
 		        var div = document.getElementById("visualizer-no-rhythm");
 		        visualizer.render(div);
-			});*/
+			});
         </script>
     </head>
 
@@ -50,13 +44,6 @@
 		<div id="visualizer-no-rhythm">
 
 		</div>
-
-                <h1>Rhythm</h1>
-                <div id="player"></div>
-                <div id="visualizer-rhythm">
-
-                </div>
-
 
 	</body>
 </html>

@@ -4,7 +4,7 @@
 
 // jslint hints
 /*global window*/
-define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
+define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     "use strict";
 
     krusovice.tools = krusovice.tools || {};

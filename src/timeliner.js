@@ -1,6 +1,6 @@
 /*global define,window*/
 
-define("krusovice/timeliner", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base'], function($, krusovice) {
+define("krusovice/timeliner", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";
 
 /**

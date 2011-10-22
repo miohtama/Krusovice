@@ -35,6 +35,9 @@
  *
 */
 
+
+define('krusovice/thirdparty/easing', ["krusovice/thirdparty/jquery"], function(jQuery) {
+
 // t: current time, b: begInnIng value, c: change In value, d: duration
 jQuery.easing['jswing'] = jQuery.easing['swing'];
 
@@ -171,10 +174,7 @@ jQuery.extend( jQuery.easing,
 	}
 });
 
-
-if (typeof define !== "undefined" && define.amd) {
-    define('krusovice/thirdparty/easing', ["krusovice/thirdparty/jquery"], function(jQuery) {return jQuery.easing });
-}
+});
 
 /*
  *

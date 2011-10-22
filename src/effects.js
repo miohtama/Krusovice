@@ -1,10 +1,7 @@
 /*global define*/
 
-define("krusovice/effects", ['krusovice/thirdparty/jquery-bundle', 'krusovice_base'], function($, krusovice) {
+define("krusovice/effects", ['krusovice/thirdparty/jquery-bundle', "krusovice/core"], function($, krusovice) {
 "use strict";
-
-console.log("Got JQ");
-console.log($);
 
 krusovice.effects = krusovice.effects || {};
 

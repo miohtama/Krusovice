@@ -1,6 +1,6 @@
 /*global define*/
 
-define("krusovice/renderers/three", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base', "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
+define("krusovice/renderers/three", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
 'use strict';
 
 krusovice.renderers = krusovice.renderers || {};

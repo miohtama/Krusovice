@@ -1,4 +1,4 @@
-define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle", 'krusovice_base', 'krusovice/showobjects/textdefinitions'], function($, krusovice, textdefinitions) {
+define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", 'krusovice/showobjects/textdefinitions'], function($, krusovice, textdefinitions) {
 "use strict";
 
 /*global window,$,console*/
