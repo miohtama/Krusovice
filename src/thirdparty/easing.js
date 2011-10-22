@@ -173,7 +173,7 @@ jQuery.extend( jQuery.easing,
 
 
 if (typeof define !== "undefined" && define.amd) {
-    define('jquery/easing', [], function() {return jQuery.easing });
+    define('krusovice/thirdparty/easing', ["krusovice/thirdparty/jquery"], function(jQuery) {return jQuery.easing });
 }
 
 /*

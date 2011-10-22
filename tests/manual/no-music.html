@@ -1,54 +1,62 @@
 <html>
 	<!-- Manual inspection of visualizer renderer output -->
 	<head>
-		<script src=../thirdparty/jquery.js></script>
-                <script src=../thirdparty/jquery.easing.1.3.js></script>                		
-                <script src=../src/utils.js></script>
-                <script src=../src/rhythmanalysis.js></script>
-                <script src=../src/timeliner.js></script>
-                <script src=../src/timelinevisualizer.js></script>
 
-                <script src=../testdata/simple-plan.js></script>
-                <script src=../testdata/sample-song-data.js></script>
+        <link href=../../media/visualizer.css rel=stylesheet></link>
 
-                <link href=../media/visualizer.css rel=stylesheet></link>
-		
-                <script type="text/javascript">
-                	$(document).ready(function() {
-				
+        <script src=../../src/thirdparty/require.js></script>
+
+        <script src=../../testdata/simple-plan.js></script>
+        <script src=../../testdata/sample-song-data.js></script>
+
+        <script type="text/javascript">
+
+            require.config({
+                baseUrl : ".",
+                paths : {
+                    krusovice : "../../src",
+                }
+            });
+
+            require(["krusovice/api"], function() {
+                console.log("Foobar");
+            });
+
+            /*
+            require(["../../src/api.js", "../../src/thirdparty/domready!"], function(krusovice) {
+
 				// Visualization without music
-			        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-			        var plan = timeliner.createPlan();			        
-			        
-			        
-			        // Use linear easing for better debugger
-			        plan.forEach(function(e) {
-			             e.animations[0].easing = e.animations[1].easing = e.animations[2].easing = "linear";   
-			        });
-			        
-			        var visualizer = new krusovice.TimelineVisualizer({plan:plan});			        
-			        
-			        visualizer.secondsPerPixel = 0.02;
-			        visualizer.clockSpan = 50;
-			        
-			        var div = document.getElementById("visualizer-no-rhythm");			        
-			        visualizer.render(div);					                          
-			});
-                </script>		
-       	</head>
-	
+		        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+		        var plan = timeliner.createPlan();
+
+		        // Use linear easing for better debugger
+		        plan.forEach(function(e) {
+		             e.animations[0].easing = e.animations[1].easing = e.animations[2].easing = "linear";
+		        });
+
+		        var visualizer = new krusovice.TimelineVisualizer({plan:plan});
+
+		        visualizer.secondsPerPixel = 0.02;
+		        visualizer.clockSpan = 50;
+
+		        var div = document.getElementById("visualizer-no-rhythm");
+		        visualizer.render(div);
+			});*/
+        </script>
+    </head>
+
 	<body>
 		<h1>No rhythm</h1>
 		<div id="visualizer-no-rhythm">
-			
+
 		</div>
 
                 <h1>Rhythm</h1>
                 <div id="player"></div>
                 <div id="visualizer-rhythm">
-                        
+
                 </div>
 
-		
+
 	</body>
 </html>

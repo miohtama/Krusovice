@@ -7,6 +7,7 @@ define("krusovice_base", ["jquery_bundle", "Three"], function() {
 
 // define our loader module
 
+/*
 define("krusovice_loader", [
     "require",
     "krusovice_base",
@@ -36,7 +37,7 @@ define("krusovice_loader", [
     console.log("Kruso init");
     console.log(krusovice);
     return krusovice;
-});
+});*/
 
 
 

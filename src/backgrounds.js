@@ -285,7 +285,7 @@ krusovice.backgrounds.Scroll2D.prototype = {
         function loadedImage(image) {
             console.log("Loaded background image:" + imageURL);
             console.log(image);
-            this.image = image;
+            self.image = image;
         }
 
         loader.loadImage(imageURL, $.proxy(loadedImage, this));

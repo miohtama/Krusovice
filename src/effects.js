@@ -1,5 +1,10 @@
+/*global define*/
+
 define("krusovice/effects", ['jquery_bundle', 'krusovice_base'], function($, krusovice) {
 "use strict";
+
+console.log("Got JQ");
+console.log($);
 
 krusovice.effects = krusovice.effects || {};
 
@@ -66,10 +71,10 @@ krusovice.effects.Manager = $.extend(true, {}, krusovice.utils.Registry, {
 
         $.each(this.data, function(id, effect) {
             if(effect.available) {
-            	//console.log("Checking:" + transition + " " + effect.transitions);
-            	if($.inArray(transition, effect.transitions) != -1) {
-            		data.push({id:effect.id, name:effect.name});
-            	}
+                //console.log("Checking:" + transition + " " + effect.transitions);
+                if($.inArray(transition, effect.transitions) != -1) {
+                    data.push({id:effect.id, name:effect.name});
+                }
             }
         });
 
@@ -82,7 +87,7 @@ krusovice.effects.Manager = $.extend(true, {}, krusovice.utils.Registry, {
     getIds : function(transition) {
         var data = this.getVocabulary(transition);
         var d2 = [];
-        data.forEach(function(e) {d2.push(e.id)});
+        data.forEach(function(e) {d2.push(e.id);});
         return d2;
     }
 
@@ -230,7 +235,7 @@ krusovice.effects.Base = {
 
         $.each(this.parameters[parametersSlot], function(key, val) {
 
-        	names.push(key);
+            names.push(key);
         });
 
         return names;
@@ -277,8 +282,6 @@ krusovice.effects.Base = {
             value = this.parameters[slot][name];
             if(value !== undefined) {
                 return value;
-            } else {
-                //console.error("Default missing for " + name);
             }
         }
 
@@ -341,7 +344,7 @@ krusovice.effects.Base = {
      * @param {Object} config Global effect configuration
      */
     prepareParameters : function(parametersSlot, obj, config, source) {
-        this.initParameters(parametersSlot, obj, config, source)
+        this.initParameters(parametersSlot, obj, config, source);
     },
 
 
@@ -377,15 +380,15 @@ krusovice.effects.Base = {
      */
     getEasing : function(config, source) {
 
-    	if(source && source.easing) {
-    		return source.easing;
-    	}
+        if(source && source.easing) {
+            return source.easing;
+        }
 
-    	if(config && config.easing) {
-    		return config.easing;
-    	}
+        if(config && config.easing) {
+            return config.easing;
+        }
 
-    	return this.easing;
+        return this.easing;
 
     },
 
