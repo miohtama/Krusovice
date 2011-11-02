@@ -4,7 +4,6 @@
         <script src=../../src/thirdparty/require.js></script>
 
         <script type="text/javascript">
-
             require.config({
                 paths : {
                     krusovice : "../../src"
@@ -18,10 +17,11 @@
     <body>
          <h1>Test client side image preprocessing</h1>
 
-         <form>
+         <form method=POST action="http://localhost:8080">
               <input id=files name=files type=file multiple />
+              <button type=submit>Send</button>
          </form>
 
-         <canvas id="canvas" />
+         <p>Debug data below</p>
     </body>
 </html>
