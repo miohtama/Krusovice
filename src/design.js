@@ -16,6 +16,23 @@ krusovice.Design = function(cfg) {
     $.extend(this, cfg);
 };
 
+
+/**
+ * Make sure design is serializable and contains no local references.
+ */
+krusovice.Design.clean = function(design) {
+
+    // Deep copy object
+    var cleaned = $.extend(true, {}, design);
+
+    // Clean non-serializable references
+    cleaned.plan.forEach(function(e) {
+        e.image = null;
+    });
+
+    return cleaned;
+};
+
 /**
  *
  */
