@@ -9,7 +9,7 @@ define("krusovice/inputelement", ["krusovice/thirdparty/jquery-bundle", "krusovi
  */
 krusovice.InputElement = function() {
 
-}
+};
 
 /**
  *
@@ -56,6 +56,15 @@ krusovice.InputElement.prototype = {
 	 * URL to the image source
 	 */
 	imageURL : null,
+
+	/**
+	 * @type Object
+	 *
+	 * Raw image object. Available only in local Design objects.
+	 *
+	 * This is usually dropped in image file resized <canvas> object.
+	 */
+	image : null
 
 };
 

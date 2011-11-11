@@ -8,10 +8,13 @@ define("krusovice/design", ["krusovice/thirdparty/jquery-bundle", "krusovice/cor
  * Design is stateful - it is serialized and can be used to save and restore editing state.
  * Thus, all resource references must be go through id mechanism.
  *
+ * Design can be local or pure. Local design contain referenecs to non-serializable objects,
+ * like raw image data. Local designs cannot be posted to the server.
+ *
  */
 krusovice.Design = function(cfg) {
     $.extend(this, cfg);
-}
+};
 
 /**
  *
