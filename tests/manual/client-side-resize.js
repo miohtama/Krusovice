@@ -70,9 +70,9 @@ require(["krusovice/thirdparty/jquery",
 
             var resized = new resizer.Resizer({
 
-                maximumWidth : 64,
+                maximumWidth : 1920,
 
-                maximumHeight : 64,
+                maximumHeight : 1080,
 
                 success : success,
 
@@ -82,6 +82,11 @@ require(["krusovice/thirdparty/jquery",
             resized.process(files.item(i));
 
         }
+    }
+
+
+    function createAspectRatios() {
+
     }
 
     function init() {
