@@ -2,6 +2,32 @@
 define("krusovice/design", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 'use strict';
 
+
+function deepCopy(obj) {
+
+    var out, i, len;
+
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+
+        out = [];
+        i = 0;
+        len = obj.length;
+
+        for ( ; i < len; i++ ) {
+            out[i] = deepCopy(obj[i]);
+        }
+        return out;
+    }
+    if (typeof obj === 'object') {
+        out = {};
+        for ( i in obj ) {
+            out[i] = deepCopy(obj[i]);
+        }
+        return out;
+    }
+    return obj;
+}
+
 /**
  * Design object captures all input needed to prepare a show.
  *
@@ -23,12 +49,23 @@ krusovice.Design = function(cfg) {
 krusovice.Design.clean = function(design) {
 
     // Deep copy object
-    var cleaned = $.extend(true, {}, design);
+    var cleaned = {};
+
+    $.extend(true, cleaned, design);
+
+    // jQuery array deep copy workaround
+    // We want to clone <canvas> elements by reference
+    // Above extend() does only shallow copy of arrays
+    var i;
+    for(i=0; i<design.plan.length; i++) {
+        cleaned.plan[i] = $.extend({}, design.plan[i]);
+    }
 
     // Clean non-serializable references
     cleaned.plan.forEach(function(e) {
         e.image = null;
     });
+
 
     return cleaned;
 };
