@@ -1,4 +1,4 @@
-/*global define*/
+/*global define,window*/
 
 define("krusovice/api", [
 
@@ -32,7 +32,8 @@ define("krusovice/api", [
     "krusovice/showobjects/text",
     "krusovice/music",
     "krusovice/tools/fade",
-    "krusovice/tools/url"
+    "krusovice/tools/url",
+    "krusovice/tools/resizer"
 ], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
     window.krusovice = krusovice;

@@ -632,8 +632,12 @@ this.JpegMeta.JpegFile.prototype._parseIfd = function _parseIfd(endian, _binary_
         value = value[0];
         }
     }
-    group._addProperty(tags[tag_field][1], tags[tag_field][0], value);
+
+    // Add property only if we have human readable translation for it available
+    if(tags.hasOwnProperty(tag_field)) {
+        group._addProperty(tags[tag_field][1], tags[tag_field][0], value);
     }
+  }
 }
 
 this.JpegMeta.JpegFile.prototype._jfifHandler = function _jfifHandler(mark, pos) {

@@ -235,7 +235,9 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
             img.onload = function(e) {
                 // Don't leak file data unneeded
                 self.image = img;
-                self.processCanvasResize();
+
+                // Give UI thread some time to breathe
+                setTimeout($.proxy(self.processCanvasResize, self), 10);
             };
 
             var reader = new window.FileReader();
