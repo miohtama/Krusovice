@@ -92,6 +92,27 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
         return jpeg;
     }
 
+    /**
+     * Calculate degrees and flip for the JPEG TIFF orientation to straighten it.
+     *
+     * http://www.impulseadventure.com/photo/exif-orientation.html
+     *
+     * @reurn {Number} Degrees to rotate the image to counter-clockwise to fix the roratino.
+     */
+    function calculateRotation(orientation) {
+
+        // Got values 1,6,8,3 out of Galaxy S
+
+        if(orientation == 8) {
+            return 90;
+        } else if(orientation == 3) {
+            return 180;
+        } else if(orientation == 6) {
+            return 270;
+        }
+        return 0;
+    }
+
 
     /**
      * Global stats of all processed images
@@ -210,15 +231,68 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
                 return this.processNoResize();
             }
 
-            var size = calculateAspectRatioFit(img.naturalWidth, img.naturalHeight, this.maximumWidth, this.maximumHeight);
+            var rotatedSize = { width : img.naturalWidth, height : img.naturalHeight };
+
+            // Rotate width / height to match orientation
+
+            // degrees how much image must rotated to get it to the proper angle
+
+            var rotation = 0;
+
+            // XXX: Not supported, very rare use case
+            // -1 to flip the image
+            var mirror = 1;
+
+            var orientation = this.getOrientation();
+            if(orientation !== null) {
+                rotation = calculateRotation(orientation);
+            }
+
+            if(rotation !== 0) {
+                if(rotation == 90 || rotation == 270) {
+                    rotatedSize = { width : img.naturalHeight, height : img.naturalWidth };
+                }
+            }
+
+            console.log("Image rotation: " + rotation + " rotated size:" + rotatedSize.width + " x " + rotatedSize.height);
+
+            var size = calculateAspectRatioFit(rotatedSize.width, rotatedSize.height, this.maximumWidth, this.maximumHeight);
             var canvas = document.createElement("canvas");
             canvas.width = size.width;
             canvas.height = size.height;
             var context = canvas.getContext("2d");
 
-            // TODO: rotate here
+            //context.translate(canvas.width, 0);
+            context.rotate(-Math.PI*2*rotation/360);
 
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            var x=0, y=0, w=canvas.width, h=canvas.height;
+
+            // Reset orientation parameters to match canvas rotation
+
+            if(rotation == 90) {
+                x = -canvas.height;
+                y = 0;
+                w = canvas.height;
+                h = canvas.width;
+            }
+
+            if(rotation == 270) {
+                x = 0;
+                y = -canvas.width;
+                w = canvas.height;
+                h = canvas.width;
+            }
+
+            if(rotation == 180) {
+                x = -canvas.width;
+                y = -canvas.height;
+            }
+
+            console.log("drawImage():" + x + " " + y + " " + w + " " + h);
+
+            // http://stackoverflow.com/questions/4649836/using-html5-canvas-rotate-image-about-arbitrary-point/4650102#4650102
+            context.drawImage(img, x, y, w, h);
+
             this.canvas = canvas;
             this.processExtractImageFile();
         },
@@ -322,6 +396,25 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
 
             this.read();
 
+        },
+
+        /**
+         * Get orientation from JPEG metadata or null if not available
+         */
+        getOrientation : function() {
+
+            var jpeg = this.metadata;
+
+            if(jpeg) {
+                if(jpeg.tiff) {
+                    if(jpeg.tiff.Orientation) {
+                        return jpeg.tiff.Orientation.value;
+
+                    }
+                }
+            }
+
+            return null;
         }
 
     };
