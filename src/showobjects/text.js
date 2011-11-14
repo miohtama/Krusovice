@@ -1,4 +1,8 @@
-define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", 'krusovice/showobjects/textdefinitions'], function($, krusovice, textdefinitions) {
+define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle",
+    "krusovice/core",
+    'krusovice/showobjects/textdefinitions',
+    "krusovice/tools/html2svg2canvas"], function($, krusovice, textdefinitions, html2svg2canvas) {
+
 "use strict";
 
 /*global window,$,console*/
@@ -88,13 +92,15 @@ $.extend(krusovice.showobjects.Text.prototype, {
         this.height = height;
 
         function done(success, errorMessage) {
-            if(success) {
-                self.prepareMesh();
+
+            // Resource loading failed
+            if(!success) {
+                self.prepareCallback(success, errorMessage);
+                return;
             }
 
-            if(self.prepareCallback) {
-                self.prepareCallback(success, errorMessage);
-            }
+            // Create <canvas> texture (async)
+            self.prepareMesh();
 
         }
 
@@ -135,19 +141,34 @@ $.extend(krusovice.showobjects.Text.prototype, {
      *
      * @parma text Text to draw
      */
-    drawLabel : function(buffer, labelData, text) {
-        var ctx = this.buffer.getContext("2d");
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillStyle = "#000000";
-        ctx.fillText(text, labelData.x + 20, labelData.y + 20);
+    drawLabel : function(buffer, labelData, text, callback) {
+        var renderer = new html2svg2canvas.Renderer({canvas:buffer, callback : callback});
+        renderer.renderText(text);
     },
 
     drawLabels : function(buffer) {
         var self = this;
+        var count = 0;
 
         if(!this.data.labels) {
             console.error(this.data);
             throw "No input text defined";
+        }
+
+        // Count how many labels we draw
+        $.each(this.data.labels, function(k, v) {
+           count++;
+        });
+
+        // Async callback check if all labels have been drawn
+        function done() {
+
+            count--;
+
+            if(self.prepareCallback && count <= 0) {
+                // Let the rendering engine take over
+                self.prepareCallback(true);
+            }
         }
 
         $.each(this.data.labels, function(labelId, text) {
@@ -156,7 +177,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
                 console.error(self.shape);
                 throw "No label " + labelId + " in shape " + self.shape.id;
             }
-            self.drawLabel(buffer, labelData, text);
+            self.drawLabel(buffer, labelData, text, done);
         });
     },
 

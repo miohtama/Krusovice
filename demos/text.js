@@ -78,11 +78,37 @@ var text = {
         $("#canvases").append(frame1);
     },
 
+    renderSample : function() {
+
+        var width = 512;
+        var height = 288;
+
+        var text = $("#textarea").val();
+
+        // 1.0 = the first image visible
+        var frame1 = $("<div class='frame1'>");
+        $("#sample-area").append(frame1);
+
+        var data = {
+            labels :{
+                text :text
+            },
+            shape : "box"
+        };
+
+        this.renderShowFrame(frame1, width, height, 3, data);
+
+    },
+
     init : function() {
         var self = this;
+
+        $("#textarea").change($.proxy(this.renderSample, this));
+
         this.texts.forEach(function(s) {
             self.addCanvasSamples(s);
         });
+
 
     }
 

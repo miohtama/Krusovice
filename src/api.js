@@ -33,7 +33,8 @@ define("krusovice/api", [
     "krusovice/music",
     "krusovice/tools/fade",
     "krusovice/tools/url",
-    "krusovice/tools/resizer"
+    "krusovice/tools/resizer",
+    "krusovice/tools/html2svg2canvas"
 ], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
     window.krusovice = krusovice;
