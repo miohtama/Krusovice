@@ -1,7 +1,7 @@
 define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle",
     "krusovice/core",
     'krusovice/showobjects/textdefinitions',
-    "krusovice/tools/html2svg2canvas"], function($, krusovice, textdefinitions, html2svg2canvas) {
+    "krusovice/tools/text2canvas"], function($, krusovice, textdefinitions, text2canvas) {
 
 "use strict";
 
@@ -95,6 +95,8 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
             // Resource loading failed
             if(!success) {
+                console.error("Resource loading failed for text object");
+                console.error(errorMessage);
                 self.prepareCallback(success, errorMessage);
                 return;
             }
@@ -141,8 +143,17 @@ $.extend(krusovice.showobjects.Text.prototype, {
      *
      * @parma text Text to draw
      */
-    drawLabel : function(buffer, labelData, text, callback) {
-        var renderer = new html2svg2canvas.Renderer({canvas:buffer, callback : callback});
+    drawLabel : function(buffer, labelData, text, textStyles) {
+        var renderer = new text2canvas.Renderer({canvas:buffer});
+
+        // Inline styyles for this element
+        // Most useful for testing / debugging
+        console.log("Text styles");
+        console.log(textStyles);
+        if(textStyles) {
+            $.extend(renderer.css, textStyles);
+        }
+
         renderer.renderText(text);
     },
 
@@ -160,7 +171,10 @@ $.extend(krusovice.showobjects.Text.prototype, {
            count++;
         });
 
+
         // Async callback check if all labels have been drawn
+        // XXX: not really needed currently, but will be needed when svg 2 canvas
+        // support works in browsers
         function done() {
 
             count--;
@@ -171,22 +185,26 @@ $.extend(krusovice.showobjects.Text.prototype, {
             }
         }
 
+        //console.log(self.data);
+
         $.each(this.data.labels, function(labelId, text) {
             var labelData = self.shape.labels[labelId];
             if(!labelData) {
                 console.error(self.shape);
                 throw "No label " + labelId + " in shape " + self.shape.id;
             }
-            self.drawLabel(buffer, labelData, text, done);
+            self.drawLabel(buffer, labelData, text, self.data.textStyles);
+            done();
         });
     },
 
     drawBackground : function(buffer) {
         var ctx = buffer.getContext("2d");
+
         if(this.image) {
             ctx.drawImage(this.image, 0, 0, this.buffer.width, this.buffer.height);
         } else {
-            var background = this.data.backgroundColor ||this.backgroundColor ||"#ffFFff";
+            var background = this.data.backgroundColor ||this.backgroundColor ||"#ffffff";
             ctx.fillStyle = background;
             ctx.fillRect(0, 0, this.buffer.width, this.buffer.height);
         }

@@ -9,7 +9,19 @@ var text = {
 
     // Test following scale sizes
     texts : [
-        { shape : "box", labels : { text : "Test text" }, timepoint : 0 }
+        { shape : "box", labels : { text : "Top left" }, textStyles : { "vertical-align" : "top", "text-align" : "left" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Top center" }, textStyles : { "vertical-align" : "top", "text-align" : "center" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Top right" }, textStyles : { "vertical-align" : "top", "text-align" : "right" }, timepoint : 0 },
+
+        { shape : "box", labels : { text : "Middle left" }, textStyles : { "vertical-align" : "middle", "text-align" : "left" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Middle center" }, textStyles : { "vertical-align" : "middle", "text-align" : "center" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Middle right" }, textStyles : { "vertical-align" : "middle", "text-align" : "right" }, timepoint : 0 },
+
+        { shape : "box", labels : { text : "Bottom left" }, textStyles : { "vertical-align" : "bottom", "text-align" : "left" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Bottom center" }, textStyles : { "vertical-align" : "bottom", "text-align" : "center" }, timepoint : 0 },
+        { shape : "box", labels : { text : "Bottom right" }, textStyles : { "vertical-align" : "bottom", "text-align" : "right" }, timepoint : 0 }
+
+
     ],
 
     /**
@@ -25,12 +37,26 @@ var text = {
                 type : "text",
                 labels : data.labels,
                 duration : 2,
+                textStyles:data.textStyles,
                 shape : data.shape
+            },
+
+            // XXX: Don't know why 2 elemens minimum is needed. Three.js bug?
+            {
+                id : "image",
+                type : "image",
+                duration : 2,
+                imageURL : "../demos/ukko.jpg"
             }
+
         ];
 
         var timeliner = krusovice.Timeliner.createSimpleTimeliner(plan, null, design.transitions);
         var timeline = timeliner.createPlan();
+
+
+        console.log("Timeline");
+        console.log(timeline);
 
         var cfg = {
             width : width,
@@ -38,7 +64,7 @@ var text = {
             timeline : timeline,
             elem : elem,
             realtime : false,
-            webGL : "auto",
+            webGL : true,
             background : {
                 type : "plain",
                 color : "#dddddd"
@@ -46,16 +72,40 @@ var text = {
         };
 
         // Create show
-        var show = new krusovice.Show(cfg);
+        var show;
+
+        this.show = show = new krusovice.Show(cfg);
+
+        show.renderFlags.frameLabel = true;
 
         // Slice a frame out of it
         show.onClock(clock);
 
         $(show).bind("loadend", function() {
+            console.log("Rendering the show");
             show.render();
         });
 
         show.prepare();
+
+        /*
+        var visualizer = new krusovice.TimelineVisualizer({plan:timeline});
+        visualizer.secondsPerPixel = 0.02;
+        visualizer.lineLength = 2000;
+
+        var div = document.createElement("div");
+        visualizer.render(div);
+        elem.append(div);
+        */
+
+        clock = 0;
+        $(elem).click(function() {
+            clock += 0.25;
+            show.onClock(clock);
+            show.render();
+
+            visualizer.setPositionIndicator(clock, true);
+        });
 
         return show;
     },

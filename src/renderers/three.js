@@ -162,7 +162,10 @@ krusovice.renderers.Three.prototype = {
 
         var plane = new THREE.StraightPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
 
+        //console.log("Created plane:" + dimensions.width + " " + dimensions.height);
+
         var material = new THREE.MeshBasicMaterial( {  map: texture } );
+        //var material = new THREE.MeshBasicMaterial( {  color: 0xff00ff } );
 
         var mesh = new THREE.Mesh( plane, material );
 
@@ -211,6 +214,7 @@ krusovice.renderers.Three.prototype = {
      */
     farewell : function(mesh) {
         // this.scene.removeObject(mesh);
+        //console.log("Farewell for object");
         mesh.visible = false;
     },
 
@@ -218,10 +222,10 @@ krusovice.renderers.Three.prototype = {
     render : function(frontBuffer) {
         this.renderer.render(this.scene, this.camera);
 
-        /*
-        console.log("Got three");
-        console.log(this.renderer);
 
+        //console.log("Got three");
+        //console.log(this.renderer);
+        /*
         console.log("Got buffer");
         console.log(frontBuffer);*/
 

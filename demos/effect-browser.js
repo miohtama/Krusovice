@@ -68,10 +68,21 @@ var effectbrowser = {
         lines.forEach(function(l) {
             l = l.trim();
             console.log("Got line:" + l);
+
             if(l != "") {
-                var copy = $.extend({}, baseelem);
-                copy.imageURL = l;
-                baseplan.push(copy);
+
+                if(l.indexOf(".jpg") >= 0) {
+                    var copy = $.extend({}, baseelem);
+                    copy.imageURL = l;
+                    baseplan.push(copy);
+                } else {
+                    var copy = $.extend({}, baseelem);
+                    copy.type = "text";
+                    copy.labels = { text : l };
+                    copy.shape = "box";
+                    baseplan.push(copy);
+
+                }
             }
         });
 
@@ -387,7 +398,7 @@ var effectbrowser = {
         krusovice.music.Registry.processData(window.songData, "./");
         this.createSongSelector();
 
-        $("#images").val("ukko.jpg\nukko.jpg\nukko.jpg\n");
+        $("#images").val("ukko.jpg\nTest text\nukko.jpg\nukko.jpg\n");
 
         $("#create-json").click($.proxy(this.outputJSON, this));
     }

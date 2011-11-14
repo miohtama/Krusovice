@@ -229,7 +229,8 @@ krusovice.Show.prototype = {
      */
     renderFlags : {
           background : true,
-          scene : true
+          scene : true,
+          frameLabel : false
     },
 
     /**
@@ -368,6 +369,9 @@ krusovice.Show.prototype = {
             this.elem.find("canvas").remove();
             this.elem.append($canvas);
         }
+
+        $canvas.attr("id", "show-canvas");
+
         this.canvas = $canvas.get(0);
         this.ctx = this.canvas.getContext("2d");
 
@@ -574,6 +578,7 @@ krusovice.Show.prototype = {
     render : function() {
 
         if(this.errorMessage) {
+            console.error("Error message");
             this.renderError(this.errorMessage);
             return;
         }
@@ -593,7 +598,12 @@ krusovice.Show.prototype = {
         //console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);
         this.renderScene(renderClock);
-        //this.renderFrameLabel(renderClock);
+
+        console.log("xxx");
+        if(this.renderFlags.frameLabel) {
+            this.renderFrameLabel(renderClock);
+        }
+
         this.renderPreviewWarningMessage(renderClock);
     },
 
@@ -659,7 +669,9 @@ krusovice.Show.prototype = {
 
         ctx.save();
         ctx.font = "bold 12px sans-serif";
-        ctx.fillText("Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync, 20, 20);
+        var text = "Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync;
+        console.log("Frame label:" + text);
+        ctx.fillText(text, 20, 20);
         ctx.restore();
     },
 
