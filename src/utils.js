@@ -471,6 +471,29 @@ krusovice.utils = {
         ctx.restore();
     },
 
+
+    /**
+     * Calculate text shadow color based on incoming text color.
+     *
+     * Take inverse grayscale.
+     */
+    calculateShadowColor : function(cssColor) {
+        var r = parseInt(cssColor.substring(1, 3), 16);
+        var g = parseInt(cssColor.substring(3, 5), 16);
+        var b = parseInt(cssColor.substring(7, 9), 16);
+
+        var brightness = (r+g+b) / 3;
+
+        var target = 255 - brightness;
+
+        target = target.toString(16);
+
+        var hex = "#" + target + target + target;
+
+        return hex;
+
+    }
+
 };
 
 
