@@ -3,31 +3,6 @@ define("krusovice/design", ["krusovice/thirdparty/jquery-bundle", "krusovice/cor
 'use strict';
 
 
-function deepCopy(obj) {
-
-    var out, i, len;
-
-    if (Object.prototype.toString.call(obj) === '[object Array]') {
-
-        out = [];
-        i = 0;
-        len = obj.length;
-
-        for ( ; i < len; i++ ) {
-            out[i] = deepCopy(obj[i]);
-        }
-        return out;
-    }
-    if (typeof obj === 'object') {
-        out = {};
-        for ( i in obj ) {
-            out[i] = deepCopy(obj[i]);
-        }
-        return out;
-    }
-    return obj;
-}
-
 /**
  * Design object captures all input needed to prepare a show.
  *
@@ -118,6 +93,7 @@ krusovice.Design.prototype = {
 
         videoId : null
     },
+
 
     /**
      * @type String

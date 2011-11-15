@@ -18,7 +18,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, krusovice.showob
 $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
     /**
-     * HTML image object of the source image
+     * HTML <image> or <canvas> object of the source image
      */
     image : null,
 
@@ -98,6 +98,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      */
     createFramedImage : function(img, width, height) {
 
+       console.log("createFramedImage()");
+       console.log(this.data);
+
        if(!width || !height) {
            throw "Width and height missing";
        }
@@ -105,9 +108,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        // Drop shadow blur size in pixels
        // Shadow is same length to both X and Y dirs
        var shadowSize = 5;
-
-       // Picture frame color
-       var frameColor = "#FFFFFF";
 
        // Actual pixel data dimensions, not ones presented in DOM tree
 
@@ -151,7 +151,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        // Remember, remember, YTI Turbo Pascal
        var context = buffer.getContext('2d');
 
-       context.fillStyle = "#eeEEee";
+       // Draw photo border
+       context.fillStyle = this.data.borderColor || "#eeEEee";
        context.fillRect(0,0,nw,nh);
 
        var dimensions = {width : nw, height : nh };
