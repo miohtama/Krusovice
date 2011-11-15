@@ -98,14 +98,14 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         scale = [ scale[0] * baseScale, scale[1] * baseScale, scale[2] * baseScale];
 
         var opacity = source.opacity + (target.opacity-source.opacity)*value;
-        if(mesh.materials.length >= 0) {
-            var material = mesh.materials[0];
-            material.opacity = opacity;
-        }
+
+        //console.log(mesh);
+
+        var material = mesh.material;
+        material.opacity = opacity;
 
         mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
         mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
-
 
         // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
         var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
@@ -113,12 +113,14 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
 
         THREE.Quaternion.slerp(qa, qb, mesh.quaternion, value);
 
+        //mesh.updateMatrix();
+        //console.log("Position:" + position);
+        //console.log("Scale:" + scale + " base scale:" + baseScale);
+        //console.log("Rotation:" + mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
 
-        /*
-        console.log("Position:" + position);
-        console.log("Scale:" + scale + " base scale:" + baseScale);
-        console.log("Rotation:" + mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
-        */
+        mesh.updateMatrixWorld();
+
+        //console.log(mesh.matrix);
     }
 
 

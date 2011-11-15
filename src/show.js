@@ -599,7 +599,6 @@ krusovice.Show.prototype = {
         this.renderBackground(renderClock);
         this.renderScene(renderClock);
 
-        console.log("xxx");
         if(this.renderFlags.frameLabel) {
             this.renderFrameLabel(renderClock);
         }

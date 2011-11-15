@@ -99,7 +99,8 @@ krusovice.renderers.Three.prototype = {
 
         var renderer;
         if(this.webGL) {
-            renderer = new THREE.WebGLRenderer();
+            // https://github.com/mrdoob/three.js/blob/master/src/renderers/WebGLRenderer.js
+            renderer = new THREE.WebGLRenderer({ antialias : true});
         } else {
             renderer = new THREE.CanvasRenderer();
         }
@@ -160,7 +161,7 @@ krusovice.renderers.Three.prototype = {
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
-        var plane = new THREE.StraightPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
+        var plane = new THREE.PlaneGeometry(dimensions.width, dimensions.height, 4, 4);
 
         //console.log("Created plane:" + dimensions.width + " " + dimensions.height);
 
@@ -220,8 +221,9 @@ krusovice.renderers.Three.prototype = {
 
 
     render : function(frontBuffer) {
-        this.renderer.render(this.scene, this.camera);
 
+        // Let Three.js do its magic
+        this.renderer.render(this.scene, this.camera);
 
         //console.log("Got three");
         //console.log(this.renderer);
