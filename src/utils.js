@@ -301,16 +301,6 @@ krusovice.utils = {
      */
     requestAnimationFrame : function(callback, elem) {
 
-       /*
-       var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-
-       // XXX: bug with Chrome 14 or so
-       if(is_chrome) {
-            return function(callback, element) {
-              window.setTimeout(callback, 1000 / 60);
-             };
-       }*/
-
       var func = window.requestAnimationFrame       ||
               window.webkitRequestAnimationFrame ||
               window.mozRequestAnimationFrame    ||
@@ -321,7 +311,6 @@ krusovice.utils = {
               };
 
        func(callback);
-       //setTimeout(callback, 20);
     },
 
 
