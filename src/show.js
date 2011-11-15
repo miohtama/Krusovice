@@ -317,7 +317,19 @@ krusovice.Show.prototype = {
             console.log("Preparing anim object:" + i);
             var e = this.animatedObjects[i];
             e.prepareCallback = cb;
-            e.prepare(self.loader, this.width, this.height);
+
+            var w, h;
+
+            // On WebGL we can afford huge textures
+            if(this.webGL) {
+                w = 1024;
+                h = 1024;
+            } else {
+                w = 512;
+                h = 512;
+            }
+
+            e.prepare(self.loader, w, h);
         }
 
     },
@@ -454,7 +466,8 @@ krusovice.Show.prototype = {
 
         var cfg = {
             renderer : this.renderer,
-            data : timelineInput
+            data : timelineInput,
+            preview : this.preview
         };
 
         if(timelineInput.type == "image") {

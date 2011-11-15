@@ -244,15 +244,12 @@ krusovice.renderers.Three.prototype = {
 };
 
 
-
-
-
 /**
  * @author mr.doob / http://mrdoob.com/
  * based on http://papervision3d.googlecode.com/svn/trunk/as3/trunk/src/org/papervision3d/objects/primitives/Plane.as
  */
 
-THREE.StraightPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight ) {
+THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight ) {
 
     THREE.Geometry.call( this );
 
@@ -264,61 +261,37 @@ THREE.StraightPlaneGeometry = function ( width, height, segmentsWidth, segmentsH
     gridX1 = gridX + 1,
     gridY1 = gridY + 1,
     segment_width = width / gridX,
-    segment_height = height / gridY;
+    segment_height = height / gridY,
+    normal = new THREE.Vector3( 0, 0, 1 );
 
-    var fixFactor = 3;
+    // Body vertices
+    for ( iy = 0; iy < gridY1; iy++ ) {
 
-
-    for( iy = 0; iy < gridY1; iy++ ) {
-
-        for( ix = 0; ix < gridX1; ix++ ) {
+        for ( ix = 0; ix < gridX1; ix++ ) {
 
             var x = ix * segment_width - width_half;
             var y = iy * segment_height - height_half;
 
-            //x += ix * fixFactor;
-
-            //y += 1;
-
-            var vx = new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) );
-
-            if(iy == 0 ||iy == gridY1-1) {
-                // HACK HACK HACK
-                vx.expandY = false;
-            }
-
-            if(ix == 0 ||ix == gridX1-1) {
-                // HACK HACK HACK
-                vx.expandX = false;
-            }
-
-            this.vertices.push(vx);
+            this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, - y, 0 ) ) );
 
         }
 
     }
 
-    for( iy = 0; iy < gridY; iy++ ) {
+    for ( iy = 0; iy < gridY; iy++ ) {
 
-        for( ix = 0; ix < gridX; ix++ ) {
+        for ( ix = 0; ix < gridX; ix++ ) {
 
             var a = ix + gridX1 * iy;
             var b = ix + gridX1 * ( iy + 1 );
             var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
             var d = ( ix + 1 ) + gridX1 * iy;
 
-            //c += 10;
-            //d += 10;
-            var f = new THREE.Face4( a, b, c, d );
+            var face = new THREE.Face4( a, b, c, d );
+            face.normal.copy( normal );
+            face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
 
-            if(ix == gridX - 1 || iy == gridY -1) {
-                // Anti-alias gap fix
-                f.planeEdge = true;
-                //console.log("Made edge");
-            }
-
-            this.faces.push(f);
-
+            this.faces.push( face );
             this.faceVertexUvs[ 0 ].push( [
                         new THREE.UV( ix / gridX, iy / gridY ),
                         new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
@@ -330,12 +303,35 @@ THREE.StraightPlaneGeometry = function ( width, height, segmentsWidth, segmentsH
 
     }
 
+    this.borderFaces = [];
+    var self = this;
+
+    function addBorderFace(left, top, right, bottom) {
+        var vi = self.vertices.length;
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(top, left, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(top, right, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(bottom, right, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(bottom, left, 0)));
+
+        var face = new THREE.Face4(vi, vi+1, vi+2, vi+3);
+
+        face.normal.copy( normal );
+        face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
+        self.faces.push( face );
+        self.borderFaces.push(face);
+    }
+
+    addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0);
+    addBorderFace(-frameWidth, 0, 0, height);
+    addBorderFace(width, 0, width+frameWidth, height);
+    addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight);
+
     this.computeCentroids();
-    this.computeFaceNormals();
 
 };
 
-THREE.StraightPlaneGeometry.prototype = new THREE.Geometry();
-THREE.StraightPlaneGeometry.prototype.constructor = THREE.StraightPlaneGeometry;
+THREE.FramedPlaneGeometry.prototype = new THREE.Geometry();
+THREE.FramedPlaneGeometry.prototype.constructor = THREE.FramedPlaneGeometry;
+
 
 });

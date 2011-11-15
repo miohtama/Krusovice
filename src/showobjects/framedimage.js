@@ -132,7 +132,11 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        //var size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, base, base)
 
 
-       var size = {width:512,height:512};
+       //var size = {width:512,height:512};
+
+
+       var size = { width:width, height:height};
+
        buffer.width = size.width;
        buffer.height = size.height;
        buffer.naturalWidth = naturalWidth;
@@ -161,6 +165,11 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
        var dimensions = {width : nw, height : nh };
 
+       // console.log("Scaling into:" + borderX + " " + borderY + " " + dimensions.width + " " + dimensions.height);
+
+       borderX = Math.floor(borderX);
+       borderY = Math.floor(borderY);
+
        context.drawImage(img,
            borderX,
            borderY,
@@ -169,6 +178,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
 
        this.renderLabels(buffer);
+
+       document.body.appendChild(buffer);
 
        return buffer;
 
