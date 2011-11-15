@@ -16,9 +16,6 @@ require(["krusovice/thirdparty/jquery",
     var mesh = null;
     var i = 0;
 
-
-
-
     function loop() {
         var canvas = document.getElementsByTagName("canvas")[0];
         if(!canvas) { throw "Ooops"; }
@@ -28,6 +25,8 @@ require(["krusovice/thirdparty/jquery",
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         mesh.rotation.y += 0.01;
+        mesh.rotation.x += 0.02;
+
         //mesh.updateMatrix();
         mesh.updateMatrixWorld();
 
@@ -37,10 +36,12 @@ require(["krusovice/thirdparty/jquery",
     }
 
     function createObjects() {
+
         var plane = new THREE.FramedPlaneGeometry(512, 512, 4, 4, 32, 32);
-        var material = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );
+        var material = new THREE.MeshFaceMaterial();
+
         mesh = new THREE.Mesh(plane, material);
-        mesh.doubleSided = true;
+        //mesh.doubleSided = true;
         //mesh.useQuaternion = true;
         //mesh.position = [0,0,krusovice.effects.ON_SCREEN_Z];
         //mesh.rotation.z = 3;

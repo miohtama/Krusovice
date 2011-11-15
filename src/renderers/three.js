@@ -125,6 +125,17 @@ krusovice.renderers.Three.prototype = {
         this.scene = scene;
         this.camera = camera;
 
+        var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.x = 0;
+        directionalLight.position.y = 0.5;
+        directionalLight.position.z = -1.0;
+        directionalLight.position.normalize();
+
+        scene.add( directionalLight );
+
+        var ambient = new THREE.AmbientLight( 0x333333 );
+        scene.add( ambient );
+
     },
 
 
@@ -262,7 +273,9 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     gridY1 = gridY + 1,
     segment_width = width / gridX,
     segment_height = height / gridY,
-    normal = new THREE.Vector3( 0, 0, 1 );
+    normal = new THREE.Vector3( 0, 0, -1 ),
+    normal2 = new THREE.Vector3( 0, 0, 1 );
+
 
     // Body vertices
     for ( iy = 0; iy < gridY1; iy++ ) {
@@ -291,6 +304,8 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
             face.normal.copy( normal );
             face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
 
+            face.materialIndex = 0;
+
             this.faces.push( face );
             this.faceVertexUvs[ 0 ].push( [
                         new THREE.UV( ix / gridX, iy / gridY ),
@@ -306,19 +321,38 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     this.borderFaces = [];
     var self = this;
 
-    function addBorderFace(left, top, right, bottom) {
+    function addBorderFace(left, top, right, bottom, clockwise) {
+
         var vi = self.vertices.length;
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(top, left, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(top, right, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(bottom, right, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(bottom, left, 0)));
+
+        left -= width_half;
+        top -= height_half;
+        right -= width_half;
+        bottom -= height_half;
+
+        console.log("face " + left + " " + top + " " + right + " " + bottom);
+
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(left, top,  0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(right, top, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(right, bottom, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(left, bottom, 0)));
+
+        // Create faces for both sides
 
         var face = new THREE.Face4(vi, vi+1, vi+2, vi+3);
-
         face.normal.copy( normal );
         face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
+        face.materialIndex = 1;
         self.faces.push( face );
         self.borderFaces.push(face);
+
+        face = new THREE.Face4(vi, vi+3, vi+2, vi+1);
+        face.normal.copy(normal2);
+        face.vertexNormals.push(normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone());
+        face.materialIndex = 2;
+        self.faces.push(face);
+        self.borderFaces.push(face);
+
     }
 
     addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0);
@@ -326,11 +360,23 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     addBorderFace(width, 0, width+frameWidth, height);
     addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight);
 
+
+    var fillMaterial = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );
+    var borderMaterial = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.FlatShading });
+    var borderMaterial2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x00dd00, specular: 0x009900, shininess: 30, shading: THREE.FlatShading });
+
+    this.materials = [fillMaterial, borderMaterial, borderMaterial2];
+
     this.computeCentroids();
 
 };
 
 THREE.FramedPlaneGeometry.prototype = new THREE.Geometry();
+
+THREE.FramedPlaneGeometry.prototype.setBorderMaterial = function(material) {
+
+}
+
 THREE.FramedPlaneGeometry.prototype.constructor = THREE.FramedPlaneGeometry;
 
 
