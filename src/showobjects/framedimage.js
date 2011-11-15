@@ -181,9 +181,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
         var data = this.data;
 
-        console.log("bbbbbbbb");
-        console.log(this);
-
         if(!data.label) {
             return;
         }
@@ -207,7 +204,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         renderer.css.color = color;
         renderer.css["shadow-color"] = krusovice.utils.calculateShadowColor(color);
 
-        console.log("rendering photo label:" + label);
+        //console.log("rendering photo label:" + label);
         renderer.renderText(label);
     },
 
