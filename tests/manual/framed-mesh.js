@@ -35,11 +35,18 @@ require(["krusovice/thirdparty/jquery",
         //console.log("Frame:" + i++);
     }
 
-    function createObjects() {
+    function createObjects(texture, img) {
 
         var plane = new THREE.FramedPlaneGeometry(512, 512, 4, 4, 32, 32);
-        var material = new THREE.MeshFaceMaterial();
 
+        texture.needsUpdate = true;
+        texture.minFilter = texture.magFilter = THREE.NearestFilter;
+
+        var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xffFFff, map:texture});
+        var material = new THREE.MeshFaceMaterial();
+        plane.materials[0] = bodyMaterial;
+        plane.materials[1] = bodyMaterial;
+        //mesh = new THREE.Mesh(plane, material);
         mesh = new THREE.Mesh(plane, material);
         //mesh.doubleSided = true;
         //mesh.useQuaternion = true;
@@ -53,9 +60,22 @@ require(["krusovice/thirdparty/jquery",
     function init() {
         renderer.setup();
 
+        var img = new Image();
 
-        createObjects();
-        loop();
+        function done() {
+            var texture = new THREE.Texture(img, THREE.UVMapping);
+            createObjects(texture, img);
+            loop();
+        }
+
+        //var material = new THREE.MeshFaceMaterial();
+        //var src = "../../demos/test-texture.jpg";
+
+        var src = "../../demos/ukko.jpg";
+        img.onload = done;
+        img.crossOrigin = '';
+        img.src = src;
+
     }
 
     init();

@@ -256,10 +256,8 @@ krusovice.renderers.Three.prototype = {
 
 
 /**
- * @author mr.doob / http://mrdoob.com/
- * based on http://papervision3d.googlecode.com/svn/trunk/as3/trunk/src/org/papervision3d/objects/primitives/Plane.as
+ * Create a plane mesh with fill and border material, optionally different for both sides
  */
-
 THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight ) {
 
     THREE.Geometry.call( this );
@@ -276,19 +274,16 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     normal = new THREE.Vector3( 0, 0, -1 ),
     normal2 = new THREE.Vector3( 0, 0, 1 );
 
+    // Add UV coordinates for back fill material
+    this.faceVertexUvs.push([]);
 
     // Body vertices
     for ( iy = 0; iy < gridY1; iy++ ) {
-
         for ( ix = 0; ix < gridX1; ix++ ) {
-
             var x = ix * segment_width - width_half;
             var y = iy * segment_height - height_half;
-
             this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, - y, 0 ) ) );
-
         }
-
     }
 
     for ( iy = 0; iy < gridY; iy++ ) {
@@ -313,6 +308,23 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
                         new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
                         new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
                     ] );
+
+            // Back side
+
+            face = new THREE.Face4( a, d, c, b );
+            face.normal.copy( normal2 );
+            face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
+
+            face.materialIndex = 1;
+
+            this.faces.push( face );
+            this.faceVertexUvs[0].push( [
+                        new THREE.UV( ix / gridX, iy / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
+                    ] );
+
 
         }
 
@@ -342,14 +354,14 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         var face = new THREE.Face4(vi, vi+1, vi+2, vi+3);
         face.normal.copy( normal );
         face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
-        face.materialIndex = 1;
+        face.materialIndex = 2;
         self.faces.push( face );
         self.borderFaces.push(face);
 
         face = new THREE.Face4(vi, vi+3, vi+2, vi+1);
         face.normal.copy(normal2);
         face.vertexNormals.push(normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone());
-        face.materialIndex = 2;
+        face.materialIndex = 3;
         self.faces.push(face);
         self.borderFaces.push(face);
 
@@ -365,7 +377,7 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     var borderMaterial = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.FlatShading });
     var borderMaterial2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x00dd00, specular: 0x009900, shininess: 30, shading: THREE.FlatShading });
 
-    this.materials = [fillMaterial, borderMaterial, borderMaterial2];
+    this.materials = [fillMaterial, fillMaterial, borderMaterial, borderMaterial2];
 
     this.computeCentroids();
 
@@ -379,5 +391,8 @@ THREE.FramedPlaneGeometry.prototype.setBorderMaterial = function(material) {
 
 THREE.FramedPlaneGeometry.prototype.constructor = THREE.FramedPlaneGeometry;
 
+THREE.fixTexture = function(img) {
+
+}
 
 });
