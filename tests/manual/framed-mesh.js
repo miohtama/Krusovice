@@ -25,7 +25,7 @@ require(["krusovice/thirdparty/jquery",
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         mesh.rotation.y += 0.01;
-        mesh.rotation.x += 0.02;
+        //mesh.rotation.x += 0.02;
 
         //mesh.updateMatrix();
         mesh.updateMatrixWorld();
@@ -37,7 +37,9 @@ require(["krusovice/thirdparty/jquery",
 
     function createObjects(texture, img) {
 
-        var plane = new THREE.FramedPlaneGeometry(512, 512, 4, 4, 32, 32);
+        var dimensions = krusovice.utils.calculateAspectRatioFit(img.width, img.height, 512, 512);
+
+        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, 16, 16);
 
         texture.needsUpdate = true;
         texture.minFilter = texture.magFilter = THREE.NearestFilter;
