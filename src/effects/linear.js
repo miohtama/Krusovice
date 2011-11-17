@@ -98,12 +98,8 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         scale = [ scale[0] * baseScale, scale[1] * baseScale, scale[2] * baseScale];
 
         var opacity = source.opacity + (target.opacity-source.opacity)*value;
-
+        this.setOpacity(mesh, opacity);
         //console.log(mesh);
-
-        var material = mesh.material;
-        material.opacity = opacity;
-
         mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
         mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
 
@@ -121,6 +117,19 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         mesh.updateMatrixWorld();
 
         //console.log(mesh.matrix);
+    },
+
+
+    setOpacity : function(mesh, opacity) {
+
+
+        //var material = mesh.material;
+        //material.opacity = opacity;
+
+        var materials = mesh.geometry.materials;
+        materials.forEach(function(m) {
+           m.opacity =  opacity;
+        });
     }
 
 
