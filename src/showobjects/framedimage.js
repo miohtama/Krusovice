@@ -186,7 +186,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         renderer.css["vertical-align"] = vertical;
         renderer.css["text-align"] = horizontal;
         renderer.css.color = color;
-        renderer.css["shadow-color"] = krusovice.utils.calculateShadowColor(color);
+        renderer.css["border-color"] = krusovice.utils.calculateShadowColor(color);
 
         //console.log("rendering photo label:" + label);
         renderer.renderText(label);

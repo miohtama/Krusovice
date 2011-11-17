@@ -187,13 +187,14 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             var self = this;
             var h = this.calculateLineHeight();
 
-            this.ctx.textAlign = this.css["text-align"];
-            this.ctx.textBaseline = "top";
-            this.ctx.fillStyle = this.css.color;
+            ctx.textAlign = this.css["text-align"];
+            ctx.textBaseline = "top";
+            ctx.fillStyle = this.css.color;
 
-            this.ctx.strokeStyle = this.css["border-color"];
-            this.ctx.lineWidth = this.getHeightAsPixels(this.css["border-size-percents"]);
-
+            ctx.strokeStyle = this.css["border-color"];
+            ctx.lineWidth = this.getHeightAsPixels(this.css["border-size-percents"]);
+            ctx.shadowBlur = 3;
+            ctx.shadowColor = this.css["border-color"];
             /*
             ctx.fillStyle = "#ff0000";
             ctx.fillRect(0, 0, position.width, position.height);
@@ -206,6 +207,7 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
                     ctx.strokeText(line, x, y, position.width);
                 }
                 ctx.fillText(line, x, y, position.width);
+
                 y += h;
             });
 
