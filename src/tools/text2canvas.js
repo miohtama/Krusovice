@@ -46,6 +46,10 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
 
             "color" : "#000000",
 
+            // Add some shadow / border to make text stand
+            // out of various backgrounds
+            "border-color" : "#000000",
+
             // top, middle, bottom
             "vertical-align" : "top",
 
@@ -56,6 +60,8 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             "font-size-percents" : 10,
 
             "padding-percents" : 10,
+
+            "border-size-percents" : 1,
 
             "font-family" : "Helvetica"
 
@@ -185,6 +191,9 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             this.ctx.textBaseline = "top";
             this.ctx.fillStyle = this.css.color;
 
+            this.ctx.strokeStyle = this.css["border-color"];
+            this.ctx.lineWidth = this.getHeightAsPixels(this.css["border-size-percents"]);
+
             /*
             ctx.fillStyle = "#ff0000";
             ctx.fillRect(0, 0, position.width, position.height);
@@ -193,6 +202,9 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             */
             this.lines.forEach(function(line) {
                 console.log("Drawing line:" + x +  " " + y + " line:" + line + " maxWidth:" + position.width);
+                if(self.ctx.lineWidth > 0) {
+                    ctx.strokeText(line, x, y, position.width);
+                }
                 ctx.fillText(line, x, y, position.width);
                 y += h;
             });

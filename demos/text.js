@@ -104,7 +104,7 @@ var text = {
             show.onClock(clock);
             show.render();
 
-            visualizer.setPositionIndicator(clock, true);
+            //visualizer.setPositionIndicator(clock, true);
         });
 
         return show;
@@ -128,6 +128,9 @@ var text = {
         $("#canvases").append(frame1);
     },
 
+    /**
+     * Custom text tester
+     */
     renderSample : function() {
 
         var width = 512;
@@ -143,7 +146,11 @@ var text = {
             labels :{
                 text :text
             },
-            shape : "box"
+            shape : "box",
+            textStyles : {
+                color : "#ffffff",
+                "border-color" : "#000000"
+            }
         };
 
         this.renderShowFrame(frame1, width, height, 3, data);
@@ -156,7 +163,7 @@ var text = {
         $("#textarea").change($.proxy(this.renderSample, this));
 
         this.texts.forEach(function(s) {
-            self.addCanvasSamples(s);
+            //self.addCanvasSamples(s);
         });
 
 
