@@ -193,7 +193,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     },
 
     createRendererObject : function() {
-        var borderColor = this.borderColor || "#eeEEee";
+        var borderColor = this.data.borderColor || "#eeEEee";
         return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     }
 
