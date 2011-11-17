@@ -5,6 +5,10 @@ define("krusovice/renderers/three", ["krusovice/thirdparty/jquery-bundle", "krus
 
 krusovice.renderers = krusovice.renderers || {};
 
+function cssToOpenGLColor(cssColor) {
+    return parseInt(cssColor.substring(1), 16);
+}
+
 /**
  * Show object rendering backend utilizing THREE.js for 3D operations abstraction.
  *
@@ -148,7 +152,7 @@ krusovice.renderers.Three.prototype = {
      *
      * @param srcHeight Natural height
      */
-    createQuad : function(src, srcWidth, srcHeight) {
+    createQuad : function(src, srcWidth, srcHeight, borderColor) {
 
         // http://mrdoob.github.com/three.js/examples/canvas_materials_video.html
 
@@ -161,7 +165,6 @@ krusovice.renderers.Three.prototype = {
 
             texture = new THREE.Texture(src, THREE.UVMapping);
             texture.needsUpdate = true;
-            //texture.repeat.set( 1000, 1000 );
 
         } else {
             texture = new THREE.Texture(src);
@@ -172,19 +175,20 @@ krusovice.renderers.Three.prototype = {
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
-        var plane = new THREE.PlaneGeometry(dimensions.width, dimensions.height, 4, 4);
+        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, 16, 16);
 
-        //console.log("Created plane:" + dimensions.width + " " + dimensions.height);
+        var filler = new THREE.MeshBasicMaterial( {  map: texture } );
+        var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
+        var border = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.FlatShading });
+        var material = new THREE.MeshFaceMaterial();
 
-        var material = new THREE.MeshBasicMaterial( {  map: texture } );
-        //var material = new THREE.MeshBasicMaterial( {  color: 0xff00ff } );
+        plane.materials[0] = plane.materials[1] = filler;
+        plane.materials[2] = plane.materials[3] = border;
 
-        var mesh = new THREE.Mesh( plane, material );
+        var mesh = new THREE.Mesh(plane, material);
 
         // <canvas> 3d face gap elimimination
         mesh.overdraw = true;
-
-        mesh.doubleSided = true;
         mesh.useQuaternion = true;
 
         // Add a special fix parameter to make landscape images closer to camera
@@ -196,8 +200,6 @@ krusovice.renderers.Three.prototype = {
         }
 
         //console.log("Base scale is:"+ mesh.baseScale);
-
-
         return mesh;
     },
 

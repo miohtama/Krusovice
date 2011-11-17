@@ -109,10 +109,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
            throw "Width and height missing";
        }
 
-       // Drop shadow blur size in pixels
-       // Shadow is same length to both X and Y dirs
-       var shadowSize = 5;
-
        // Actual pixel data dimensions, not ones presented in DOM tree
 
        // Create temporary <canvas> to work with, with expanded canvas (sic.) size
@@ -130,12 +126,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        // Texture sampling base
        //var base = Math.max(width, height);
        //var size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, base, base)
-
-
        //var size = {width:512,height:512};
 
-
-       var size = { width:width, height:height};
+       var size = {width:naturalWidth, height:naturalHeight};
 
        buffer.width = size.width;
        buffer.height = size.height;
@@ -150,36 +143,16 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
            throw "Unknown image source for framing";
        }
 
-       var borderSize = Math.min(nw, nw) * 0.015;
-
-       // horizontal and vertical frame border sizes
-       var borderX = borderSize;
-       var borderY = borderSize;
-
        // Remember, remember, YTI Turbo Pascal
        var context = buffer.getContext('2d');
 
-       // Draw photo border
-       context.fillStyle = this.data.borderColor || "#eeEEee";
-       context.fillRect(0,0,nw,nh);
-
-       var dimensions = {width : nw, height : nh };
-
-       // console.log("Scaling into:" + borderX + " " + borderY + " " + dimensions.width + " " + dimensions.height);
-
-       borderX = Math.floor(borderX);
-       borderY = Math.floor(borderY);
-
        context.drawImage(img,
-           borderX,
-           borderY,
-           dimensions.width - borderX*2,
-           dimensions.height - borderY*2);
-
+           0,
+           0,
+           buffer.width,
+           buffer.height);
 
        this.renderLabels(buffer);
-
-       document.body.appendChild(buffer);
 
        return buffer;
 
@@ -220,7 +193,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     },
 
     createRendererObject : function() {
-        return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight);
+        var borderColor = this.borderColor || "#eeEEee";
+        return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     }
 
 });
