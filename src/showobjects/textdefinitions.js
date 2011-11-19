@@ -10,36 +10,71 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
 
     var textdefinitions = {};
 
+    // Spoof get text for now
+    function dummytext(msg) {
+        return msg;
+    }
+
     textdefinitions.getDefinitions = function() {
 
     return [
         {
-            id : "box",
+            id : "clear",
 
-            name : "Box",
+            name : dummytext("Clear"),
 
             labels : {
                 text : {
-                    name : "Text",
-                    x : 0.2,
-                    y : 0.2,
-                    w : 0.6,
-                    h : 0.4
+                    name : dummytext("Text"),
+                    x : 0,
+                    y : 0,
+                    w : 1,
+                    h : 1
                 }
             },
 
-            width : 16,
-            height : 9
+            // Allow to move text around
+            position : true,
+
+            width : 1,
+            height : 1
         },
 
         {
-            id : "note",
+            id : "plain",
 
-            name : "Note",
+            name : dummytext("Plain"),
+
+            labels : {},
+
+            width : 1,
+
+            height : 1
+
+        },
+
+        {
+            id : "postcard",
+
+            name : dummytext("Postcard"),
+
+            labels : {},
+
+            width : 0,
+
+            height : 0
+
+        },
+
+
+        {
+            id : "postit",
+
+            name : dummytext("Post It"),
 
             labels : {
                  text : {
-                    name : "Text",
+                    name : dummytext("Text"),
                     x : 0.2,
                     y : 0.2,
                     w : 0.6,
@@ -50,21 +85,8 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             width : 4,
 
             height : 4
-        },
-
-
-        {
-            id : "postcard",
-
-            name : "Postcard",
-
-            labels : {},
-
-            width : 0,
-
-            height : 0
-
         }
+
     ];
 };
 
