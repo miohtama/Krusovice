@@ -155,6 +155,13 @@ $.extend(krusovice.showobjects.Text.prototype, {
             $.extend(renderer.css, textStyles);
         }
 
+        var color = "#000000";
+
+        renderer.css.color = color;
+        renderer.css["border-color"] = krusovice.utils.calculateShadowColor(color);
+
+        console.log("Text border color:" + renderer.css["border-color"]);
+
         renderer.renderText(text);
     },
 
@@ -236,8 +243,8 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         this.object = this.renderer.createQuad(buffer, this.width, this.height);
 
-        console.log("Created object");
-        console.log(this.object);
+        //console.log("Created object");
+        //console.log(this.object);
 
         if(this.prepareCallback) {
             this.prepareCallback(true);

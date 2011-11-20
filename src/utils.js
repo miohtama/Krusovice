@@ -480,7 +480,7 @@ krusovice.utils = {
     calculateShadowColor : function(cssColor) {
         var r = parseInt(cssColor.substring(1, 3), 16);
         var g = parseInt(cssColor.substring(3, 5), 16);
-        var b = parseInt(cssColor.substring(7, 9), 16);
+        var b = parseInt(cssColor.substring(5, 7), 16);
 
         var brightness = (r+g+b) / 3;
 
