@@ -186,7 +186,6 @@ $.extend(krusovice.showobjects.Text.prototype, {
             if(self.prepareCallback && count <= 0) {
                 // Let the rendering engine take over
                 console.log("all done()");
-                self.prepareCallback(true);
             }
         }
 
@@ -194,13 +193,10 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         $.each(this.data.texts, function(labelId, text) {
             var labelData = self.shape.labels[labelId];
-            if(!labelData) {
-                // console.log("No label " + labelId + " in shape " + self.shape.id)
-                // Ignore extra text payloads
-                done();
-                return;
+            if(labelData) {
+                self.drawLabel(buffer, labelData, text, self.data.textStyles);
             }
-            self.drawLabel(buffer, labelData, text, self.data.textStyles);
+
             done();
         });
     },
@@ -242,6 +238,11 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         console.log("Created object");
         console.log(this.object);
+
+        if(this.prepareCallback) {
+            this.prepareCallback(true);
+        }
+
     },
 
     /**

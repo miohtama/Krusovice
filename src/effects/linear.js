@@ -113,6 +113,7 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         //console.log("Position:" + position);
         //console.log("Scale:" + scale + " base scale:" + baseScale);
         //console.log("Rotation:" + mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
+        //console.log(mesh);
 
         mesh.updateMatrixWorld();
 
