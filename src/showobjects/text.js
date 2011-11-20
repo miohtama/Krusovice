@@ -73,7 +73,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
             throw "Shape id missing";
         }
 
-        if(!this.data.labels) {
+        if(!this.data.texts) {
             throw "Text payload missing";
         }
 
@@ -157,17 +157,20 @@ $.extend(krusovice.showobjects.Text.prototype, {
         renderer.renderText(text);
     },
 
+    /**
+     * Draw InputElement.texts
+     */
     drawLabels : function(buffer) {
         var self = this;
         var count = 0;
 
-        if(!this.data.labels) {
+        if(!this.data.texts) {
             console.error(this.data);
             throw "No input text defined";
         }
 
         // Count how many labels we draw
-        $.each(this.data.labels, function(k, v) {
+        $.each(this.data.texts, function(k, v) {
            count++;
         });
 
@@ -187,11 +190,12 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         //console.log(self.data);
 
-        $.each(this.data.labels, function(labelId, text) {
+        $.each(this.data.texts, function(labelId, text) {
             var labelData = self.shape.labels[labelId];
             if(!labelData) {
-                console.error(self.shape);
-                throw "No label " + labelId + " in shape " + self.shape.id;
+                // console.log("No label " + labelId + " in shape " + self.shape.id)
+                // Ignore extra text payloads
+                return;
             }
             self.drawLabel(buffer, labelData, text, self.data.textStyles);
             done();

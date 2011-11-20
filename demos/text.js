@@ -35,7 +35,7 @@ var text = {
             {
                 id : "text",
                 type : "text",
-                labels : data.labels,
+                texts : data.labels,
                 duration : 2,
                 textStyles:data.textStyles,
                 shape : data.shape
@@ -143,7 +143,7 @@ var text = {
         $("#sample-area").append(frame1);
 
         var data = {
-            labels :{
+            texts :{
                 text :text
             },
             shape : "box",

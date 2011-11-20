@@ -52,6 +52,8 @@ krusovice.InputElement.prototype = {
      * Label id -> text content mappings for shaped text labels
      */
     texts : {
+        text : null,
+        secondary : null
     },
 
 
@@ -101,7 +103,18 @@ krusovice.InputElement.prototype = {
      * CSS color for rendering text shadow on this element
      *
      */
-    textShadowColor : "#000000"
+    textShadowColor : "#000000",
+
+
+    /**
+     * @type String
+     *
+     * For shaped objects (like text) the id of the shape.
+     * These are defined in textdefinitions.js.
+     *
+     * Potentially different photo shapes in the future.
+     */
+    shape : null
 
 
 };
