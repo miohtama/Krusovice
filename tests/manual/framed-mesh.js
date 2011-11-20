@@ -22,21 +22,25 @@ require(["krusovice/thirdparty/jquery",
         if(!canvas) { throw "Ooops"; }
         var ctx = canvas.getContext("2d");
 
-        ctx.fillStyle = "#eeeeee";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        mesh.rotation.y += 0.01;
+        ctx.fillStyle = "#ff00ff";
+        ctx.fillRect(0, 200, 512, 280);
+
+        mesh.rotation.y += 0.02;
         //mesh.rotation.x += 0.02;
 
         //mesh.updateMatrix();
         mesh.updateMatrixWorld();
 
 
-        mesh2.rotation.y -= 0.01;
-        //mesh.rotation.x += 0.02;
+        if(mesh2) {
+            mesh2.rotation.y -= 0.02;
+            //mesh.rotation.x += 0.02;
 
-        //mesh.updateMatrix();
-        mesh2.updateMatrixWorld();
+            //mesh.updateMatrix();
+            mesh2.updateMatrixWorld();
+        }
 
         renderer.render(ctx);
 
@@ -58,7 +62,13 @@ require(["krusovice/thirdparty/jquery",
         texture.minFilter = texture.magFilter = THREE.NearestFilter;
 
         var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xffFFff, map:texture});
+        //bodyMaterial.alphaTest = true;
+        //var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xff000055 });
+
+        bodyMaterial.transparent = false;
+
         var material = new THREE.MeshFaceMaterial();
+        //material.alphaTest = true;
         plane.materials[0] = bodyMaterial;
         plane.materials[1] = bodyMaterial;
         //mesh = new THREE.Mesh(plane, material);
@@ -70,6 +80,8 @@ require(["krusovice/thirdparty/jquery",
         //mesh.rotation.y = 2;
 
         renderer.scene.addObject(mesh);
+
+        mesh.scale = new THREE.Vector3(0.5, 0.5, 0.5);
 
         return mesh;
     }
@@ -84,38 +96,92 @@ require(["krusovice/thirdparty/jquery",
             var texture = new THREE.Texture(img, THREE.UVMapping);
             var mesh = createObjects(texture, img);
 
-            mesh.position.y += 0.5;
+            mesh.position.x += 100;
 
             return mesh;
         }
 
-        function createText() {
+        function createText(callback) {
             var canvas = document.createElement("canvas");
             canvas.width = 512;
             canvas.height = 288;
 
+            var ctx = canvas.getContext("2d");
+
+            //ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //ctx.fillStyle = "rgba(255, 128, 255, 0.5)";
+            //ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             var renderer = new text2canvas.Renderer({canvas:canvas});
+
+            renderer.css["border-color"] = "#ffFFff";
 
             renderer.renderText("Foobar");
 
-            var texture = new THREE.Texture(canvas, THREE.UVMapping);
-            var mesh = createObjects(texture, canvas);
+            /*
+            var img = new Image();
 
-            mesh.position.y -= 0.5;
 
-            return mesh;
+            img.onload = function() {
+                console.log("Uploaded texture");
+
+                var texture = new THREE.Texture(img, THREE.UVMapping);
+                texture.needsUpdate = true;
+                var mesh = createObjects(texture, img);
+                mesh.position.x -= 50;
+                callback(mesh);
+                document.body.appendChild(img);
+            };*/
+
+            function foo() {
+                var texture = new THREE.Texture(canvas, THREE.UVMapping);
+                texture.needsUpdate = true;
+                var mesh = createObjects(texture, canvas);
+                mesh.position.x -= 100;
+                callback(mesh);
+                document.body.appendChild(canvas);
+            }
+
+            foo();
+
+            //img.src = canvas.toDataURL();
+            //img.src = "../../demos/test-texture-transparent.png";
+
+
+
+            // See that it is really transparent
+            //document.body.appendChild(canvas);
+
+            //return mesh;
         }
 
         function done() {
-            var mesh = createImage();
-            var mesh2 = createText();
-            loop(mesh, mesh2);
+
+            var mesh, mesh2;
+
+            function donedone(m2) {
+                mesh2 = m2;
+
+
+                //mesh2.material.map.image = img;
+                //mesh.material.map.image = m2.material.map.image;
+
+                //mesh.material = mesh2.material;
+
+                loop(mesh, mesh2);
+            }
+
+            mesh = createImage();
+
+
+            createText(donedone);
+            //donedone();
         }
 
         //var material = new THREE.MeshFaceMaterial();
         //var src = "../../demos/test-texture.jpg";
 
-        var src = "../../demos/ukko.jpg";
+        var src = "../../demos/test-texture-transparent.png";
         img.onload = done;
         img.crossOrigin = '';
         img.src = src;

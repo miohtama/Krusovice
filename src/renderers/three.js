@@ -102,9 +102,19 @@ krusovice.renderers.Three.prototype = {
         }
 
         var renderer;
+
+
         if(this.webGL) {
             // https://github.com/mrdoob/three.js/blob/master/src/renderers/WebGLRenderer.js
-            renderer = new THREE.WebGLRenderer({ antialias : true});
+
+            var settings  ={
+                antialias : true,
+                //clearColor : 0x00ff00,
+                //clearAlpha : 1,
+                autoClear : false
+            };
+
+            renderer = new THREE.WebGLRenderer(settings);
         } else {
             renderer = new THREE.CanvasRenderer();
         }
