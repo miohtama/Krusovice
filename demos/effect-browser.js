@@ -78,8 +78,8 @@ var effectbrowser = {
                 } else {
                     var copy = $.extend({}, baseelem);
                     copy.type = "text";
-                    copy.labels = { text : l };
-                    copy.shape = "box";
+                    copy.texts = { text : l };
+                    copy.shape = "clear";
                     baseplan.push(copy);
 
                 }

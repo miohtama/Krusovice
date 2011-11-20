@@ -201,6 +201,7 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             ctx.font = "bold 12px sans-serif";
             ctx.fillText("Foobar", 20, 20);
             */
+
             this.lines.forEach(function(line) {
                 console.log("Drawing line:" + x +  " " + y + " line:" + line + " maxWidth:" + position.width);
                 if(self.ctx.lineWidth > 0) {

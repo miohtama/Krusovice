@@ -144,12 +144,13 @@ $.extend(krusovice.showobjects.Text.prototype, {
      * @parma text Text to draw
      */
     drawLabel : function(buffer, labelData, text, textStyles) {
+
         var renderer = new text2canvas.Renderer({canvas:buffer});
 
         // Inline styyles for this element
         // Most useful for testing / debugging
-        console.log("Text styles");
-        console.log(textStyles);
+        //console.log("Text styles");
+        //console.log(textStyles);
         if(textStyles) {
             $.extend(renderer.css, textStyles);
         }
@@ -184,6 +185,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
             if(self.prepareCallback && count <= 0) {
                 // Let the rendering engine take over
+                console.log("all done()");
                 self.prepareCallback(true);
             }
         }
@@ -195,6 +197,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
             if(!labelData) {
                 // console.log("No label " + labelId + " in shape " + self.shape.id)
                 // Ignore extra text payloads
+                done();
                 return;
             }
             self.drawLabel(buffer, labelData, text, self.data.textStyles);
