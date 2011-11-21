@@ -36,6 +36,12 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             // Allow to move text around
             position : true,
 
+            // No background color
+            clear : true,
+
+            // Render frame border
+            border : false,
+
             width : 1,
             height : 1
         },

@@ -185,11 +185,20 @@ krusovice.renderers.Three.prototype = {
 
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
-        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, 16, 16);
+        var borderWidth = 16;
+        if(borderColor === null) {
+            borderWidth = 0;
+        }
+
+        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth);
 
         var filler = new THREE.MeshBasicMaterial( {  map: texture } );
+
+        var border;
+
         var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
-        var border = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.FlatShading });
+        border = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.FlatShading });
+
         var material = new THREE.MeshFaceMaterial();
 
         plane.materials[0] = plane.materials[1] = filler;
@@ -379,10 +388,12 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
 
     }
 
-    addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0);
-    addBorderFace(-frameWidth, 0, 0, height);
-    addBorderFace(width, 0, width+frameWidth, height);
-    addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight);
+    if(frameWidth > 0 && frameHeight > 0) {
+        addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0);
+        addBorderFace(-frameWidth, 0, 0, height);
+        addBorderFace(width, 0, width+frameWidth, height);
+        addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight);
+    }
 
 
     var fillMaterial = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );

@@ -214,9 +214,12 @@ $.extend(krusovice.showobjects.Text.prototype, {
         if(this.image) {
             ctx.drawImage(this.image, 0, 0, this.buffer.width, this.buffer.height);
         } else {
-            var background = this.data.backgroundColor ||this.backgroundColor ||"#ffffff";
-            ctx.fillStyle = background;
-            ctx.fillRect(0, 0, this.buffer.width, this.buffer.height);
+            console.log(this.shape);
+            if(!this.shape.clear) {
+                var background = this.data.backgroundColor ||this.backgroundColor ||"#ffffff";
+                ctx.fillStyle = background;
+                ctx.fillRect(0, 0, this.buffer.width, this.buffer.height);
+            }
         }
     },
 
@@ -241,7 +244,15 @@ $.extend(krusovice.showobjects.Text.prototype, {
             buffer2 = null;
         }
 
-        this.object = this.renderer.createQuad(buffer, this.width, this.height);
+        var borderColor;
+        if(this.shape.border) {
+            borderColor = this.data.borderColor;
+        } else {
+            // texture shapes, clear shape
+            borderColor = null;
+        }
+
+        this.object = this.renderer.createQuad(buffer, this.width, this.height, borderColor);
 
         //console.log("Created object");
         //console.log(this.object);
