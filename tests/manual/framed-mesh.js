@@ -65,7 +65,7 @@ require(["krusovice/thirdparty/jquery",
         //bodyMaterial.alphaTest = true;
         //var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xff000055 });
 
-        bodyMaterial.transparent = false;
+        //bodyMaterial.transparent = false;
 
         var material = new THREE.MeshFaceMaterial();
         //material.alphaTest = true;
