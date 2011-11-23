@@ -520,7 +520,7 @@ krusovice.Show.prototype = {
      */
     getDuration : function() {
 
-        return krusovice.Timeliner.getTotalDuration(this.plan);
+        return krusovice.Timeliner.getTotalDuration(this.timeline);
 
     },
 
