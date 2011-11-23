@@ -80,11 +80,11 @@ $.extend(krusovice.showobjects.Text.prototype, {
         }
 
         if(!this.data.shape) {
-            throw "Shape id missing";
+            throw "Shape id missing from Text show object";
         }
 
         if(!this.data.texts) {
-            throw "Text payload missing";
+            throw "Text payload missing from Text show object";
         }
 
         if(!this.options) {

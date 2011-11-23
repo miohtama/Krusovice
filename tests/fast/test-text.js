@@ -34,12 +34,22 @@ TextTest.prototype.createTimelineElement = function() {
         {
             "id" : 0,
             "type" : "text",
-            "labels" : {
+            "texts" : {
                 "text" : "Testing"
             },
-            "shape" : "box"
+            "shape" : "clear"
+        },
+
+        {
+            "id" : 1,
+            "type" : "text",
+            "texts" : {
+                "text" : "Testing",
+                "secondary" : "Testing"
+            },
+            "shape" : "plain"
         }
-    ]
+    ];
 
 	var timeliner = krusovice.Timeliner.createSimpleTimeliner(elements, null);
 	var plan = timeliner.createPlan();

@@ -13,8 +13,8 @@ var simpleElements = [
 		{
 			type : "text",
 			id : 0,
-			shape : "box",
-			labels : {
+			shape : "clear",
+			texts : {
 			     text : "long long long long long text"
 			},
 			duration : 2.0
