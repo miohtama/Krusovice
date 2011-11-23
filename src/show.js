@@ -102,9 +102,20 @@ krusovice.Show.prototype = {
     loaded : false,
 
     /**
-     * Is play currently in progress
+     * Is play currently in progress.
+     *
+     * The show can render invididual frames even if it's not playing by manually calling onClock() and render().
      */
     playing : false,
+
+
+    /**
+     * Has this show finished playback?
+     *
+     * Playing this show is not possible until you re-bind audio or another clock source when this state
+     * has been reached.
+     */
+    stopped : false,
 
 
     /**
@@ -189,7 +200,16 @@ krusovice.Show.prototype = {
          * Player must react to this event and drop playing -> stopped state.
          *
          */
-        "showfinished"
+        "showfinished",
+
+
+        /**
+         * @event
+         *
+         * Post time updates in show time (translated from music playback time)
+         */
+        "showclock"
+
     ],
 
     /**
@@ -507,7 +527,7 @@ krusovice.Show.prototype = {
         }
 
         this.playing = true;
-
+        this.stopped = false;
         this.loopAnimation();
     },
 
@@ -517,7 +537,7 @@ krusovice.Show.prototype = {
     stop : function() {
         console.log("Show stopping");
         this.playing = false;
-
+        this.stopped = true;
         if(this.realtime) {
             this.clockUpdated = 0;
             this.clock = 0;
@@ -567,6 +587,7 @@ krusovice.Show.prototype = {
             // End of life reached
             if(this.clock > this.getDuration()) {
                 this.playing = false;
+                this.stopped = true;
                 var $this = $(this);
                 $this.trigger("showfinished", this);
             }
@@ -746,9 +767,14 @@ krusovice.Show.prototype = {
      */
     onClock : function(clock) {
         this.clock = clock;
+
         if(this.realtime && this.playing) {
             this.clockUpdated = (new Date().getTime()) / 1000;
         }
+
+        var $this = $(this);
+
+        $this.trigger("showclock", [clock]);
 
     },
 
@@ -808,7 +834,7 @@ krusovice.Show.prototype = {
 
             // Send in render event if we are not in playback mode
             // to visualize the current position on audio
-            if(!self.playing) {
+            if(!self.playing && !self.stopped) {
                 console.log("forcing rendering");
                 self.resetClock();
                 self.requestAnimationFrame();
