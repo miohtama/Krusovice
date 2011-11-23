@@ -170,7 +170,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         }
 
         var label = data.label;
-        var position = data.labelPosition || "bottom-center";
+        var position = data.labelPosition ||"bottom-center";
         var color = data.textColor || "#ffffff";
         var vertical = "bottom";
         var horizontal = "center";
