@@ -103,17 +103,22 @@ krusovice.TimelineAnimation.prototype = {
 
 
 /**
- * TimelineElement describes element inserted on the timeline
+ * TimelineElement describes element inserted on the timeline.
+ *
+ * It contains all copied attributesfrom krusovice.InputElement +
+ * additional calculated timing info created by Timeliner.
  */
 krusovice.TimelineElement = function() {
 };
 
 krusovice.TimelineElement.prototype = {
     id :  null,
-    type : null,
-    text : null,
-    label : null,
-    imageURL : null,
+
+    //type : null,
+    // Contains copied
+    //text : null,
+    //label : null,
+    //imageURL : null,
 
     /**
      * @type Number
@@ -121,6 +126,16 @@ krusovice.TimelineElement.prototype = {
      * Time in seconds when this element is animated for the first time
      */
     wakeUpTime : 0,
+
+
+    /**
+     * @type Number
+     *
+     * Time of empty playback after this element. It's stepping time, but
+     * for the last element it is coolingTime.s
+     */
+    spacingTime : 0,
+
 
     /**
      * Sequence of TimelineAnimations.
@@ -182,10 +197,26 @@ krusovice.Timeliner.prototype = {
 
 
     /**
-     * @cfg {Number} When music starts playing
+     * @cfg {Number} musicStartTime The position of MP3 where the music starts playing
      *
      */
     musicStartTime : 0,
+
+
+    /**
+     * @cfg {Number} leadTime How many seconds we play music before the first element appears
+     */
+    leadTime : 0,
+
+    /**
+     * @cfg {Number} coolingTime  How many seconds empty we have after the last element before the credits
+     */
+    coolingTime : 0,
+
+    /**
+     * @cfg {Number} steppingTime How many seconds empty we have between show objects
+     */
+    steppingTime : 0,
 
     /**
      * @cfg {Object} Effect parameter overrides for this show.
@@ -233,7 +264,7 @@ krusovice.Timeliner.prototype = {
 
         var plan = [];
 
-        var clock = 0.0;
+        var clock = this.leadTime;
 
         var transitionIn = this.settings.transitionIn;
         var transitionOut = this.settings.transitionOut;
@@ -272,10 +303,15 @@ krusovice.Timeliner.prototype = {
 
             // Advance clock to the start of the next show item based on how
             // long it took to show this item
+            if(i == this.showElements.length-1) {
+                out.spacingTime = this.coolingTime;
+            } else {
+                out.spacingTime = this.steppingTime;
+            }
 
-            clock += out.animations[0].duration +
-                     out.animations[1].duration +
-                     out.animations[2].duration;
+            var duration = krusovice.Timeliner.getElementDuration(out, true);
+
+            clock += duration;
 
             if(!clock) {
                 console.error("Latest input element");
@@ -569,6 +605,45 @@ krusovice.Timeliner.createSimpleTimeliner = function(elements, rhythmData, trans
     };
 
     return new krusovice.Timeliner(input);
+};
+
+/**
+ * How long the object stays on the screen (without stepping time)
+ *
+ * @param {Object} elem krusovice.TimelineElement
+ *
+ * @param {Boolean} spacing True to include the spacing time
+ */
+krusovice.Timeliner.getElementDuration = function(elem, spacing) {
+
+    var duration = 0;
+    for(var i=0; i<elem.animations.length-1; i++) {
+        duration += elem.animations[i].duration;
+    }
+
+    if(spacing) {
+        duration += elem.spacingTime;
+    }
+
+    return duration;
+};
+
+/**
+ * Get the total length of the show.
+ */
+krusovice.Timeliner.getTotalDuration = function(plan) {
+
+    var stopPoint;
+
+    if(plan && plan.length >= 1) {
+        var lastElem = plan[plan.length - 1];
+        var duration = krusovice.Timeliner.getElementDuration(lastElem, true);
+        stopPoint = lastElem.wakeUpTime + duration;
+    } else {
+        stopPoint = 0;
+    }
+
+    return stopPoint;
 };
 
 /**

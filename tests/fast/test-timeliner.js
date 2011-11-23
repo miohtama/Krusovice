@@ -190,6 +190,90 @@ TimelinerTest.prototype.testShowElementEase2sec = function() {
     assertEquals("gone", val.animation);
 };
 
+
+/**
+ * Test show length calculation with lead and cooling times.
+ *
+ * Check that the lead at the beginning of the show is properly handled.s
+ */
+TimelinerTest.prototype.testLeadTime = function() {
+
+    var krusovice = this.krusovice;
+
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+
+    timeliner.leadTime = 3.0;
+
+    var plan = timeliner.createPlan();
+
+    assertEquals(3.0, plan[0].wakeUpTime);
+    // 2 seconds on screen, 2 * 2 seconds on transitions
+    assertEquals(9.0, plan[1].wakeUpTime);
+
+};
+
+
+/**
+ * Test show length calculation with lead and cooling times.
+ *
+ * Check that the lead at the end of the show is properly handled.
+ */
+TimelinerTest.prototype.testCoolingTime = function() {
+
+    var krusovice = this.krusovice;
+
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+
+    timeliner.coolingTime = 3.0;
+
+    var plan = timeliner.createPlan();
+
+    assertEquals(0, plan[0].wakeUpTime);
+    // 2 seconds on screen, 2 * 2 seconds on transitions
+    assertEquals(6, plan[1].wakeUpTime);
+    // 2 seconds on screen, 2 * 2 seconds on transitions
+
+    // 3 seconds cooling time
+
+    var end = krusovice.Timeliner.getTotalDuration(plan);
+
+    assertEquals(15, end);
+
+};
+
+/**
+ * Check that the objects are spaced out evenly using stepping
+ * time and the first object does not have stepping time.
+ *
+ */
+TimelinerTest.prototype.testSteppingTime = function() {
+
+    var krusovice = this.krusovice;
+
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+
+    timeliner.leadTime = 3.0;
+    timeliner.coolingTime = 3.0;
+    timeliner.steppingTime = 5.0;
+
+
+    var plan = timeliner.createPlan();
+
+    assertEquals(3, plan[0].wakeUpTime);
+    // 2 seconds on screen, 2 * 2 seconds on transitions
+    // 5 seconds step
+    assertEquals(14, plan[1].wakeUpTime);
+    // 2 seconds on screen, 2 * 2 seconds on transitions
+
+    // 3 seconds cooling time
+
+    var end = krusovice.Timeliner.getTotalDuration(plan);
+
+    assertEquals(23, end);
+
+};
+
+
 finalizeTestCase("Timeliner", TimelinerTest);
 
 

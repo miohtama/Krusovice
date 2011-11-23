@@ -520,28 +520,8 @@ krusovice.Show.prototype = {
      */
     getDuration : function() {
 
-        var stopPoint;
+        return krusovice.Timeliner.getTotalDuration(this.plan);
 
-        if(this.animatedObjects && this.animatedObjects.length >= 1) {
-            var lastElem = this.animatedObjects[this.animatedObjects.length - 1];
-
-            // TimelineElement of last animated object
-            var tl = lastElem.data;
-
-            var duration = 0;
-
-            for(var i=0; i<tl.animations.length-1; i++) {
-                duration += tl.animations[i].duration;
-            }
-
-            stopPoint = tl.wakeUpTime + duration;
-
-        } else {
-            stopPoint = 0;
-        }
-
-
-        return stopPoint;
     },
 
     /**
