@@ -33,6 +33,9 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
                 }
             },
 
+            // Background image name (if used)
+            imageName : null,
+
             // Allow to move text around
             position : true,
 
@@ -42,8 +45,44 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             // Render frame border
             border : false,
 
+            textBorder : true,
+
             width : 1,
             height : 1
+        },
+
+        {
+            id : "notepad",
+
+            imageName :  "notepad.png",
+
+            name : dummytext("Notepad"),
+
+            labels : {
+
+                text : {
+                    name : dummytext("Text"),
+                    x : 0,
+                    y : 0.1,
+                    w : 1,
+                    h : 0.6,
+                    fontSizeAdjust : 1
+                },
+
+                secondary : {
+                    name : dummytext("Footnote"),
+                    x : 0,
+                    y : 0.6,
+                    w : 1,
+                    h : 1,
+                    fontSizeAdjust : 0.5
+                }
+            },
+
+            width : 1,
+
+            height : 1
+
         },
 
         {

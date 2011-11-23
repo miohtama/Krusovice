@@ -39,6 +39,16 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
         lines : [],
 
         /**
+         * Text bounding box relative to the back buffer
+         */
+        box : {
+            x : 0,
+            y : 0,
+            w : 1,
+            h : 1
+        },
+
+        /**
          * Some pseudo-CSS styling
          *
          */
@@ -58,6 +68,9 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
 
             // Font height of <canvas> height
             "font-size-percents" : 10,
+
+            // 0...1 multiplier for font size
+            "font-size-adjust" : 1,
 
             "padding-percents" : 10,
 
@@ -113,10 +126,9 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
                 pixels = this.getHeightAsPixels(this.css["font-size-percents"]);
             }
 
+            this.fontHeight =  pixels * this.css["font-size-adjust"];
 
-            this.fontHeight =  pixels;
-
-            var font = pixels + "px " + this.css["font-family"];
+            var font = this.fontHeight + "px " + this.css["font-family"];
             console.log("Using font definition:" + font);
             this.ctx.font = font;
         },
@@ -126,31 +138,31 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
          * Return x and y which is the start of the text drawing position
          */
         positionText : function(dim) {
-
-            var w = this.canvas.width;
-            var h = this.canvas.height;
+            var box = this.box;
+            var w = this.canvas.width * box.w;
+            var h = this.canvas.height * box.h;
 
             var paddingX = this.getWidthAsPixels(this.css["padding-percents"]);
             var paddingY = this.getHeightAsPixels(this.css["padding-percents"]);
 
-            var x = 0, y= 0;
+            var x = this.canvas.width * box.x, y=this.canvas.height*box.y;
             var v = this.css["vertical-align"];
             var a = this.css["text-align"];
 
             if(v == "top") {
-                y = paddingY;
+                y = y+paddingY;
             }
 
             if(v == "middle") {
-                y = h / 2 - dim.height / 2;
+                y = box.y + (h / 2 - dim.height / 2);
             }
 
             if(v == "bottom") {
-                y = h - paddingY - dim.height;
+                y = box.y + (h - paddingY - dim.height);
             }
 
             // Use native canvas text align API for real X
-            x = paddingX;
+            x = x+paddingX;
 
             if(a == "center") {
                 x = w /2;
@@ -160,7 +172,16 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
                 x = w - paddingX;
             }
 
-            return { x : x, y : y, width : w - paddingX * 2, height : h - paddingY * 2};
+
+            var data = { x : x, y : y, width : w - paddingX * 2, height : h - paddingY * 2};
+
+            if(data.width < 0) {
+                console.error(data);
+                console.error(box);
+                throw "Width calculation failed big time";
+            }
+
+            return data;
 
         },
 
@@ -170,6 +191,9 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
          * Cleverly delegate heavy lifting to jQuery.
          */
         renderText : function(text) {
+
+            console.log("renderText()");
+            console.log(this.css);
 
             var ctx;
             this.ctx = ctx = this.canvas.getContext("2d");
@@ -191,8 +215,13 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
             ctx.textBaseline = "top";
             ctx.fillStyle = this.css.color;
 
-            ctx.strokeStyle = this.css["border-color"];
-            ctx.lineWidth = this.getHeightAsPixels(this.css["border-size-percents"]);
+            if(this.css["border-color"] !== null) {
+                ctx.strokeStyle = this.css["border-color"];
+                ctx.lineWidth = this.getHeightAsPixels(this.css["border-size-percents"]);
+            } else {
+                ctx.lineWidth = 0;
+            }
+
             ctx.shadowBlur = 3;
             ctx.shadowColor = this.css["border-color"];
             /*

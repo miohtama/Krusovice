@@ -1,11 +1,19 @@
+/**
+ *
+ * Text slideshow object management.
+ *
+ */
+
+/*global window,$,console,define*/
+
 define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle",
     "krusovice/core",
     'krusovice/showobjects/textdefinitions',
-    "krusovice/tools/text2canvas"], function($, krusovice, textdefinitions, text2canvas) {
+    "krusovice/tools/text2canvas",
+    "krusovice/tools/url"], function($, krusovice, textdefinitions, text2canvas, urltools) {
 
 "use strict";
 
-/*global window,$,console*/
 
 /**
  * Text with a monocolor background frame
@@ -50,6 +58,8 @@ $.extend(krusovice.showobjects.Text.prototype, {
     foregroundColor : null,
 
     backgroundColor : null,
+
+    backgroundImage : null,
 
     /**
      * 3D object used
@@ -106,14 +116,21 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         }
 
-         function imageloaded(image) {
-            self.backgroundImage = image;
-            done(true);
-         }
+        function imageloaded(image) {
 
+           // Use 1:1 mapping with the image if not in high quality mode
+           // XXX: Make resize here for 2d <canvas> backend
 
-        if(this.shape.backgroundImage) {
-             loader.loadImage(this.shape.backgroundImage, imageloaded);
+           self.width = image.naturalWidth;
+           self.height = image.naturalHeight;
+
+           self.image = image;
+           done(true);
+        }
+
+        if(this.shape.imageName) {
+            var url = krusovice.texts.Registry.getImageURL(this.shape);
+            loader.loadImage(url, imageloaded);
         } else {
             done(true);
         }
@@ -158,9 +175,17 @@ $.extend(krusovice.showobjects.Text.prototype, {
         var color = "#000000";
 
         renderer.css.color = color;
-        renderer.css["border-color"] = krusovice.utils.calculateShadowColor(color);
 
-        console.log("Text border color:" + renderer.css["border-color"]);
+        if(this.shape.textBorder) {
+            renderer.css["border-color"] = krusovice.utils.calculateShadowColor(color);
+        } else {
+            renderer.css["border-color"] = null;
+        }
+
+        renderer.css["font-size-adjust"] = labelData.fontSizeAdjust || 1.0;
+
+        // Set x, y, w, h parameters
+        renderer.box = labelData;
 
         renderer.renderText(text);
     },
@@ -285,10 +310,8 @@ krusovice.texts = krusovice.texts || {};
  */
 krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
-    init : function() {
-        console.log("Got defs");
-        console.log(textdefinitions);
-        this.loadData(textdefinitions.getDefinitions());
+    init : function(mediaURL) {
+        this.loadData(mediaURL);
     },
 
     /**
@@ -296,11 +319,53 @@ krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
      *
      * @param {Array} data List of krusove.texts.Shape definitions
      */
-    loadData : function(data) {
+    loadData : function(mediaURL) {
         var self = this;
+
+        this.mediaURL = mediaURL;
+
+        var data = textdefinitions.getDefinitions();
+
         data.forEach(function(obj) {
             self.register(obj);
         });
+    },
+
+    getImageURL : function(data) {
+
+        if(!this.mediaURL) {
+            throw "Text registry not properly initialized";
+        }
+
+        var url = krusovice.tools.url.joinRelativePath(this.mediaURL, data.imageName);
+        return url;
+    },
+
+    /**
+     * Loads the background image for a chosen background if not available yet.
+     * Calls callback(success, msg, img)
+     */
+    xxx_loadDataImage : function(data, callback) {
+        if(!data.image) {
+
+            var url = urltools.joinRelativePath(this.mediaURL, data.imageName);
+
+            var img = new Image();
+
+            img.onload = function() {
+                data.image = img;
+                callback(true, null, img);
+            };
+
+            img.onerror = function() {
+                callback(false, url, null);
+            };
+
+            img.src = url;
+
+        } else {
+            callback(true, null, data.image);
+        }
     }
 
 });
