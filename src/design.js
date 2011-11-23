@@ -110,34 +110,21 @@ krusovice.Design.prototype = {
      */
     musicStart : 0,
 
-
     /**
-     * @type Number
-     *
-     * How many seconds delay between photos. Can be negative.
-     */
-    nextDelay : 0,
-
-    /**
-     * @type Number
-     *
-     * How many seconds before the first animation appears
+     * @cfg {Number} leadTime How many seconds we play music before the first element appears
      */
     leadTime : 0,
 
     /**
-     * @type Number
-     *
-     * How many seconds empty after the last animation
+     * @cfg {Number} coolingTime  How many seconds empty we have after the last element before the credits
      */
     coolingTime : 0,
 
     /**
-     * @type Number
-     *
-     * How long render the credits frames (last frame)
+     * @cfg {Number} steppingTime How many seconds empty we have between show objects
      */
-    creditsTime : 0,
+    steppingTime : 0,
+
 
     /**
      * Default transition settings.

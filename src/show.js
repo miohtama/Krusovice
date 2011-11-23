@@ -179,7 +179,17 @@ krusovice.Show.prototype = {
          *
          * Fired after both on load error or on load sucesss.
          */
-        "loaddone"
+        "loaddone",
+
+        /**
+         * @event
+         *
+         * Fired when the show reached the end.
+         *
+         * Player must react to this event and drop playing -> stopped state.
+         *
+         */
+        "showfinished"
     ],
 
     /**
@@ -551,9 +561,16 @@ krusovice.Show.prototype = {
             self.loopAnimation();
         }
 
-
         if(this.playing) {
             this.render();
+
+            // End of life reached
+            if(this.clock > this.getDuration()) {
+                this.playing = false;
+                var $this = $(this);
+                $this.trigger("showfinished", this);
+            }
+
             krusovice.utils.requestAnimationFrame(loop);
         }
     },
@@ -584,7 +601,6 @@ krusovice.Show.prototype = {
         this.currentFrame += 1;
 
         var renderClock = this.getEstimatedClock();
-
 
         this.renderAnimateObjects(renderClock);
 
