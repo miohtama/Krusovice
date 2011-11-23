@@ -358,10 +358,10 @@ effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
     transitions : ["onscreen"],
 
     init : function() {
-        this.parameters.source.angle = 0;
-        this.parameters.target.angle = 0;
-        this.parameters.sourceVariation.angle = 0.3;
-        this.parameters.targetVariation.angle = 0.3;
+        this.parameters.source.angle = +Math.PI/16;
+        this.parameters.target.angle = -Math.PI/16;
+        this.parameters.sourceVariation.angle = Math.PI/32;
+        this.parameters.targetVariation.angle = Math.PI/32;
     },
 
     prepareParameters : function(parametersSlot, obj, config, source) {
@@ -372,12 +372,12 @@ effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
 
         var z = new THREE.Vector3(0, 0, 1);
 
-        r = this.randomizeParameter("angle", "source", config, source);
+        r = this.randomizeParameter("angle", parametersSlot, config, source);
         q = (new THREE.Quaternion()).setFromAxisAngle(z, r);
 
         obj.rotation = krusovice.utils.grabQuaternionData(q);
-    }
 
+    }
 
 });
 

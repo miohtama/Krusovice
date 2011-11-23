@@ -342,7 +342,13 @@ krusovice.effects.Base = {
      * The purpose is to set animation parameters for "current" animation
      * and optionally hint previous or next animations.
      *
-     * @param {Object} config Global effect configuration
+     * @param {String} parametersSlot "source" or "target"
+     *
+     * @param {Object} obj Object receiving calculated values
+     *
+     * @param {Object} config Show per-effect overrides
+     *
+     * @param {Object} source Input element effects overrides
      */
     prepareParameters : function(parametersSlot, obj, config, source) {
         this.initParameters(parametersSlot, obj, config, source);
