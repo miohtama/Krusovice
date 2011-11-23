@@ -92,6 +92,8 @@ define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", "krusovice
      */
     krusovice.tools.fadeOut = function(audio, rampTime, targetVolume, tick) {
 
+        var orignalVolume = audio.volume;
+
         //
         if(!targetVolume) {
             targetVolume = 0;
@@ -125,6 +127,9 @@ define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", "krusovice
                 setTimeout(ramp, tick);
             } else {
                 audio.pause();
+
+                // Reset audio volume so audio can be played again
+                audio.volume = orignalVolume;
             }
         }
 
