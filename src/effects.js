@@ -219,6 +219,7 @@ krusovice.effects.Base = {
      *
      * Useful to tune parameters for the effect.
      *
+     *
      */
     init : function() {
     },
@@ -295,12 +296,15 @@ krusovice.effects.Base = {
     },
 
 
+    /**
+     * Initialize a single parameter based on input ranges.s
+     */
     initParameter : function(obj, slot, name, config, source) {
         obj[name] = this.randomizeParameter(name, source, config, source);
     },
 
     /**
-     * Initialize animation source and target parameters and store then on an obeject.
+     * Initialize animation source and target parameters and store then on an object.
      *
      * Generate animation parameters based on object config, show config and global config
      * (in this order). The animation parameter data is in format
@@ -346,7 +350,7 @@ krusovice.effects.Base = {
 
 
     /**
-     *
+     * Generate value for one parameter based on variation definitions in inputs.
      */
     randomizeParameter : function(name, slot, config, source) {
 
@@ -407,6 +411,12 @@ krusovice.effects.Base = {
     },
 
     render : function() {
+    },
+
+    /**
+     * Hook to be called which sets commonn parameters for source and target animation.
+     */
+    postProcessParameters : function(source, target) {
     }
 };
 

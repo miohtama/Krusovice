@@ -114,8 +114,17 @@ krusovice.InputElement.prototype = {
      *
      * Potentially different photo shapes in the future.
      */
-    shape : null
+    shape : null,
 
+
+    /**
+     * @type Object
+     *
+     * Animation id -> transition defition overrides for this item.
+     *
+     * For examples see textdefinitions.js.
+     */
+    transitions : null
 
 };
 

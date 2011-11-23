@@ -76,7 +76,7 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
 
             "border-size-percents" : 1,
 
-            "font-family" : "Helvetica"
+            "font-family" : "'Gloria Hallelujah'"
 
         },
 

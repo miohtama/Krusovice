@@ -234,7 +234,7 @@ effects.Hold = $.extend(true, {}, effects.Interpolate, {
 
     available : true,
 
-    transitions : ["onscreen"],
+    transitions : ["onscreen"]
 
 });
 
@@ -344,6 +344,8 @@ effects.Manager.register(effects.SlightMoveLeftRight);
 
 /**
  * Randomically rotate object around its Z axis
+ *
+ * XXX: Don't use as an example - made before QuaternionEffect base class
  */
 effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
 
@@ -381,6 +383,51 @@ effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
 
 
 effects.Manager.register(effects.SlightRotateZ);
+
+
+/**
+ * Hold object on the center of the screen slighty rotated around one of its axis.
+ *
+ * XXX: Must finish
+ */
+effects.StaticRotateZ = $.extend(true, {}, effects.QuaternionRotate, {
+
+    id : "staticrotatez",
+
+    name : "Static Rotate Z",
+
+    available : true,
+
+    transitions : ["onscreen"],
+
+    // XXX: Does not really matter
+    easing : "easeInOutSine",
+
+    init : function() {
+        var p = this.parameters;
+        p.source.axis = p.target.axis = [0,0,1];
+        p.source.angle = p.target.angle = 0;
+    },
+
+    /**
+     * Note: we need to post process the parameters because the tilt angle
+     * is not the same for each pobject, but we still need to vary it between
+     * objects.
+     */
+    postProcessParameters : function(source, target) {
+        console.log(source);
+        console.log(target);
+
+        var z = new THREE.Vector3(0, 0, 1);
+        var r = Math.PI/2;
+        var q = (new THREE.Quaternion()).setFromAxisAngle(z, r);
+        source.rotatoin = target.rotation = krusovice.utils.grabQuaternionData(q);
+    }
+
+});
+
+
+effects.Manager.register(effects.StaticRotateZ);
 
 /**
  * Flip photo 90 degrees around random XY-axis.
@@ -441,7 +488,7 @@ effects.RotoZoomFar = $.extend(true, {}, effects.QuaternionRotate, {
         p.targetVariation.axis = [0,0,0];
         p.target.angle = 0;
         p.target.opacity = 1;
-    },
+    }
 
 });
 
@@ -477,7 +524,7 @@ effects.SpinLeft = $.extend(true, {}, effects.QuaternionRotate, {
         p.targetVariation.axis = [0,0,0];
         p.target.angle = 0;
         p.target.opacity = 1;
-    },
+    }
 
 });
 
@@ -513,10 +560,66 @@ effects.SpinRight = $.extend(true, {}, effects.QuaternionRotate, {
         p.targetVariation.axis = [0,0,0];
         p.target.angle = 0;
         p.target.opacity = 1;
-    },
+    }
 
 });
 
 effects.Manager.register(effects.SpinRight);
+
+
+effects.FallTop = $.extend(true, {}, effects.QuaternionRotate, {
+
+    id : "falltop",
+
+    name : "Fall Top",
+
+    transitions : ["transitionin", "transitionout"],
+
+    easing : 'easeOutBounce',
+
+    init : function() {
+        var p = this.parameters;
+
+
+        p.source.axis = p.target.axis = [0,1,0];
+        p.source.angle = p.target.angle = 0;
+
+
+        p.source.position = [0,
+                             effects.ON_SCREEN_MAX_Y*2,
+                             effects.ON_SCREEN_Z];
+
+    }
+
+});
+
+effects.Manager.register(effects.FallTop);
+
+effects.FallBottom = $.extend(true, {}, effects.QuaternionRotate, {
+
+    id : "fallbottom",
+
+    name : "Fall Bottom",
+
+    transitions : ["transitionin", "transitionout"],
+
+    easing : 'easeOutCubic',
+
+    init : function() {
+        var p = this.parameters;
+
+        p.source.axis = p.target.axis = [0,1,0];
+        p.source.angle = p.target.angle = 0;
+
+        p.source.position = [0,
+                             -effects.ON_SCREEN_MAX_Y*2,
+                             effects.ON_SCREEN_Z];
+
+    }
+
+});
+
+effects.Manager.register(effects.FallBottom);
+
 
 });

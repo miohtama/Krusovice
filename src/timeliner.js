@@ -443,8 +443,11 @@ krusovice.Timeliner.prototype = {
         // On screen animation may decide it's start and stop places on the screen
         if(animationType == "onscreen") {
             // Set initial parameters
+
             effect.prepareParameters("source", currentAnimation, this.effectConfig, source);
             effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
+            effect.postProcessParameters(currentAnimation, nextAnimation);
+
             console.log("Got target:");
             console.log(nextAnimation);
         }
@@ -501,12 +504,19 @@ krusovice.Timeliner.prototype = {
 
         var animationType = animation.type;
 
+        // This element overrides transitions
+        var inputTransitions = input.transitions || {};
+        var transitionIn = inputTransitions.transitionIn || settings.transitionIn;
+        var transitionOut = inputTransitions.transitionOut || settings.transitionOut;
+        var onScreen = inputTransitions.onScreen || settings.onScreen;
+
+
         if(animationType == "transitionin") {
-            effectType = settings.transitionIn.type;
+            effectType = transitionIn.type;
         } else if(animationType == "onscreen") {
-            effectType = settings.onScreen.type;
+            effectType = onScreen.type;
         } else if(animationType == "transitionout") {
-            effectType = settings.transitionOut.type;
+            effectType = transitionOut.type;
         } else {
             throw "Unknown animation type:" + animationType;
         }

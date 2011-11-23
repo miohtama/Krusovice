@@ -48,7 +48,22 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             textBorder : true,
 
             width : 1,
-            height : 1
+            height : 1,
+
+            // Transitions for this particular text style
+            transitions : {
+                transitionIn : {
+                    type : "fade",
+                    duration : 1
+                },
+                transitionOut : {
+                    type : "fade",
+                    duration : 1
+                },
+                onScreen : {
+                    type : "hold"
+                }
+            }
         },
 
         {
@@ -81,7 +96,22 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
 
             width : 1,
 
-            height : 1
+            height : 1,
+
+            // Transitions for this particular text style
+            transitions : {
+                transitionIn : {
+                    type : "falltop",
+                    duration : 3
+                },
+                transitionOut : {
+                    type : "fallbottom",
+                    duration : 3
+                },
+                onScreen : {
+                    type : "slightrotatez"
+                }
+            }
 
         },
 
