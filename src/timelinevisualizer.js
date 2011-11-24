@@ -204,7 +204,7 @@ krusovice.TimelineVisualizer.prototype = {
 
             this.drawBars(canvas, context);
 
-            context.strokeStyle = "#ff0000";
+            context.strokeStyle = "#00ff00";
             context.lineWidth = 1;
 
             var beats = this.rhythmData.beats;
