@@ -416,8 +416,8 @@ krusovice.TimelineVisualizer.prototype = {
 
         var poffset = parent.offset();
 
-        console.log("Parent position");
-        console.log(poffset);
+        //console.log("Parent position");
+        //console.log(poffset);
 
         // Calcualte visible area
         var cx = parent.scrollLeft();
@@ -581,5 +581,5 @@ krusovice.attachSimpleLoadingNote = function(show) {
     });
 
 
-}
+};
 });
