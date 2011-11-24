@@ -9,6 +9,11 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
 
    // Visualization without music
     var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+
+    timeliner.leadTime = 3;
+    timeliner.steppingTime = 1.5;
+
+
     var plan = timeliner.createPlan();
     var visualizer = new krusovice.TimelineVisualizer({plan:plan});
     var div = document.getElementById("visualizer-no-rhythm");
@@ -19,7 +24,12 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
     if(!sampleSongData) {
             throw "No music";
     }
+
     timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, sampleSongData);
+    timeliner.leadTime = 3;
+    timeliner.steppingTime = 1.5;
+
+
     plan = timeliner.createPlan();
 
     visualizer = new krusovice.TimelineVisualizer({plan:plan, rhythmData:sampleSongData});

@@ -49,7 +49,7 @@ krusovice.RhythmAnalysis.prototype = {
             this.minBeatConfidence = 0;
         } else {
            // Use beats by arbitary value
-           this.m = 0.5;
+           this.minBeatConfidence = 0.5;
         }
 
         console.log("Using default beat confidence threshold of " + this.minBeatConfidence);
@@ -59,7 +59,7 @@ krusovice.RhythmAnalysis.prototype = {
     /**
      * Find next beat from the array of all beats.
      *
-     * @param clock Clock position
+     * @param clock Song position in seconds
      *
      * @param skip Skip rate. 1= every beat, 2 = every second beat
      *
@@ -70,6 +70,8 @@ krusovice.RhythmAnalysis.prototype = {
         var beat = 0;
 
 		var i = 0;
+
+		clock *= 1000;
 
 		var confidenceThreshold = this.minBeatConfidence;
 

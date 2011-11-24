@@ -247,7 +247,7 @@ krusovice.Timeliner.prototype = {
      */
     createMusicAnalysis : function() {
         if(this.rhythmData) {
-            var analysis = krusovice.RhythmAnalysis(this.rhythmData);
+            var analysis = new krusovice.RhythmAnalysis(this.rhythmData);
             analysis.initBeats();
             return analysis;
         } else {
@@ -354,6 +354,7 @@ krusovice.Timeliner.prototype = {
         var hitsOut = this.findNextBeat(hitsScreen + musicStartTime + onScreenDuration) - musicStartTime;
 
         if(!hitsScreen || hitsScreen < 0) {
+            console.error("Screen:" + hitsScreen + " clock:" + clock + " music start time:" + musicStartTime + "transition in:" + transitionIn.duration);
             throw "Failed to calculate hits to screen time";
         }
 
@@ -506,6 +507,7 @@ krusovice.Timeliner.prototype = {
 
     /**
      *
+     * @param window Seek window in seconds
      *
      * @param clock Clock in song time
      *
@@ -513,21 +515,24 @@ krusovice.Timeliner.prototype = {
      */
     findNextBeat : function(clock, window) {
 
+        // No rhytm data available
         if(!this.analysis) {
             return clock;
         }
 
         if(!window) {
-            window = 1500;
+            window = 1.5;
         }
 
         var beat = this.analysis.findNextBeat(clock);
 
-        if(beat.start - clock > window) {
-            return null;
+        var start = beat.start / 1000;
+
+        if(start - clock > window) {
+            return clock;
         }
 
-        return beat;
+        return start;
     },
 
 
