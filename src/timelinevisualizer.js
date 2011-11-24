@@ -488,7 +488,7 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
 
     $(this.audio).bind("load", function() {
         if(musicStartTime) {
-            self.audio.currentTime = musicStartTime;
+            audio.currentTime = musicStartTime;
         }
         console.log("Loaded:" + src);
     });
@@ -499,11 +499,14 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
     });
 
     $(this.audio).bind("canplaythrough", function() {
+
         if(musicStartTime) {
             console.log("Setting start time:" + musicStartTime);
             //console.log(audio.seekable.start());
             //console.log(audio.seekable.end());
-            audio.currentTime = musicStartTime;
+            if(audio.currentTime < musicStartTime) {
+                audio.currentTime = musicStartTime;
+            }
         }
         console.log("canplay:" + src);
     });
