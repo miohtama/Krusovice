@@ -11,38 +11,50 @@
 define("krusovice/rhythmanalysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";
 
-krusovice.RhythmAnalysis = function(json) {
+/**
+ * A proxy object which helper functions to deal with rhytm data.
+ *
+ * @param data EchoNest rhytm data
+ */
+krusovice.RhythmAnalysis = function(data) {
 
-	if(!json) {
-		throw "Rhythm data missing";
+	if(!data) {
+		throw "Rhythm data must be given";
 	}
 
-	this.data = json;
+	this.data = data;
 
-	// Search max confidence in beats
-    var maxBeatConfidence = 0;
-
-	this.data.beats.forEach(function(b) {
-		if(b.confidence > maxBeatConfidence) {
-			maxBeatConfidence = b.confidence;
-		}
-	});
-
-	// How sure we must be about the beat to accept it
-
-	if(maxBeatConfidence == 0) {
-		// Echo Nest could not analyze confidence, but we still got beat list
-		this.minBeatConfidence = 0;
-	} else {
-	   // Use beats by arbitary value
-	   this.m = 0.5;
-	}
-
-	console.log("Using default beat confidence threshold of " + this.minBeatConfidence);
-
-}
+};
 
 krusovice.RhythmAnalysis.prototype = {
+
+    /**
+     * Scan through all beats and initialize boundaries.
+     */
+    initBeats : function() {
+
+        // Search max confidence in beats
+        var maxBeatConfidence = 0;
+
+        this.data.beats.forEach(function(b) {
+            if(b.confidence > maxBeatConfidence) {
+                maxBeatConfidence = b.confidence;
+            }
+        });
+
+        // How sure we must be about the beat to accept it
+
+        if(maxBeatConfidence === 0) {
+            // Echo Nest could not analyze confidence, but we still got beat list
+            this.minBeatConfidence = 0;
+        } else {
+           // Use beats by arbitary value
+           this.m = 0.5;
+        }
+
+        console.log("Using default beat confidence threshold of " + this.minBeatConfidence);
+
+    },
 
     /**
      * Find next beat from the array of all beats.
@@ -178,7 +190,33 @@ krusovice.RhythmAnalysis.prototype = {
 
         return normalized;
 
-    }
+    },
+
+
+    /**
+     * Return bar at a chosen moment.
+     *
+     * @param {Number} clock Time in seconds
+     *
+     * @return bar index or -1 if no hit
+     */
+    findBarAtClock : function(clock) {
+        var i;
+        var bars = this.data.bars;
+
+        // Convert to ms
+        clock *= 1000;
+
+        for(i=0; i<bars.length; i++) {
+            var b = bars[i];
+
+            if(clock >= b.start && clock < b.start+b.duration) {
+                return i;
+            }
+        }
+
+        return -1;
+    },
 
 }
 

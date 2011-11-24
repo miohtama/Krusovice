@@ -247,7 +247,9 @@ krusovice.Timeliner.prototype = {
      */
     createMusicAnalysis : function() {
         if(this.rhythmData) {
-            return krusovice.RhythmAnalysis(this.rhythmData);
+            var analysis = krusovice.RhythmAnalysis(this.rhythmData);
+            analysis.initBeats();
+            return analysis;
         } else {
             return null;
         }

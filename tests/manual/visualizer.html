@@ -16,75 +16,20 @@
 
         <link href=../../media/visualizer.css rel=stylesheet></link>
 
-        <script type="text/javascript">
-
-            require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
-
-    			function setupVisualizer(visualizer) {
-                    visualizer.secondsPerPixel = 0.02;
-                    visualizer.lineLength = 2000;
-    			}
-
-        	   // Visualization without music
-		        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-		        var plan = timeliner.createPlan();
-		        var visualizer = new krusovice.TimelineVisualizer({plan:plan});
-		        var div = document.getElementById("visualizer-no-rhythm");
-		        setupVisualizer(visualizer);
-		        visualizer.render(div);
-
-                // Visualization with music
-                if(!sampleSongData) {
-                        throw "No music";
-                }
-                var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, sampleSongData);
-                var plan = timeliner.createPlan();
-
-                var visualizer = new krusovice.TimelineVisualizer({plan:plan, rhythmData:sampleSongData});
-                var div = document.getElementById("visualizer-rhythm");
-                setupVisualizer(visualizer);
-                visualizer.render(div);
-
-                var songURL = "../../testdata/sample-song.mp3";
-                var player = new krusovice.TimelinePlayer(visualizer, songURL);
-                $("#player").append(player.audio);
-
-
-                var cfg = {
-                        rhythmData : sampleSongData,
-                        songURL : "../../testdata/sample-song.mp3",
-                        timeline : plan,
-                        backgroundType : "plain",
-                        plainColor : "#ffffff",
-                        controls : false,
-                        elem : $("#show")
-                };
-
-                var show = new krusovice.Show(cfg);
-                show.bindToAudio(player.audio);
-
-                krusovice.attachSimpleLoadingNote(show);
-                show.prepare();
-
-            });
-
-        </script>
+        <script type="text/javascript" src="visualizer.js"></script>
    	</head>
 
 	<body>
 		<h1>No rhythm</h1>
 		<div id="visualizer-no-rhythm">
-
 		</div>
 
-                <div id=show></div>
+        <div id=show></div>
 
-                <h1>Rhythm</h1>
-                <div id="player"></div>
-                <div id="visualizer-rhythm">
-
-                </div>
-
+        <h1>Rhythm</h1>
+        <div id="player"></div>
+        <div id="visualizer-rhythm">
+        </div>
 
 	</body>
 </html>
