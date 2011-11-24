@@ -47,13 +47,17 @@ Start Google Chrome from command line, Ubuntu/Linux::
 
 	chromium-browser --disable-web-security
 
+Alternative run with SimpleHTTPServer in port 8000::
+
+    python -m SimpleHTTPServer
+
 Unit tests
 ------------
 
 Fast tests::
 
-    java -jar JsTestDriver-1.3.2.jar --port 9876  &
-    java -jar JsTestDriver-1.3.2.jar --config jsTestDriver.conf --tests all --reset
+    java -jar JsTestDriver-1.3.3d.jar --port 9876  &
+    java -jar JsTestDriver-1.3.3d.jar --config jsTestDriver.conf --tests all --reset
 
 Slow tests::
 
