@@ -196,7 +196,7 @@ krusovice.RhythmAnalysis.prototype = {
 
 
     /**
-     * Return bar at a chosen moment.
+     * Return the next bar following a chosen moment.
      *
      * @param {Number} clock Time in seconds
      *
@@ -220,6 +220,26 @@ krusovice.RhythmAnalysis.prototype = {
         return -1;
     },
 
-}
+
+
+    /**
+     * Return the bar being played at certain moment.
+     *
+     * @param {Number} clock Time in seconds
+     *
+     * @return bar index or -1 if no hit
+     */
+    findNextBar : function(clock) {
+        var bari = this.findBarAtClock(clock);
+
+        bari += 1;
+
+        if(bari >= this.data.bars.length) {
+            return -1;
+        }
+        return bari;
+    }
+
+};
 
 });

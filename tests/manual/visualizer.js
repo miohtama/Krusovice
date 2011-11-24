@@ -29,6 +29,8 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
     timeliner.leadTime = 3;
     timeliner.steppingTime = 1.5;
 
+    // Start playing in 5 seconds
+    timeliner.musicStartTime = 0;
 
     plan = timeliner.createPlan();
 
@@ -37,19 +39,33 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
     setupVisualizer(visualizer);
     visualizer.render(div);
 
-    var songURL = "../../testdata/sample-song.mp3";
-    var player = new krusovice.TimelinePlayer(visualizer, songURL);
+    var songURL;
+
+    // XXX: Firefox support hax
+    var audio = document.createElement("audio");
+    var canMP3 = audio.canPlayType('audio/mpeg') !== "";
+
+    if(canMP3) {
+        songURL = "../../testdata/sample-song.mp3";
+    } else {
+        songURL = "../../testdata/sample-song.ogg";
+    }
+
+    console.log("Loading song:" + songURL);
+
+    var player = new krusovice.TimelinePlayer(visualizer, songURL, timeliner.musicStartTime);
     $("#player").append(player.audio);
 
 
     var cfg = {
             rhythmData : sampleSongData,
-            songURL : "../../testdata/sample-song.mp3",
+            songURL : songURL,
             timeline : plan,
             backgroundType : "plain",
             plainColor : "#ffffff",
             controls : false,
-            elem : $("#show")
+            elem : $("#show"),
+            musicStartTime : timeliner.musicStartTime
     };
 
     var show = new krusovice.Show(cfg);

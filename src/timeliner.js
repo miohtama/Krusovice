@@ -219,6 +219,17 @@ krusovice.Timeliner.prototype = {
     steppingTime : 0,
 
     /**
+     * How big tolerance % in transition duration / bar duration is allowed to that
+     * transition is fitted perfectly into a bar.
+     */
+    barMatchFactor : 0.5, // 50%
+
+    /**
+     * How many seconds we can spend try to find a matching bar/beat
+     */
+    seekWindow : 1.5,
+
+    /**
      * @cfg {Object} Effect parameter overrides for this show.
      */
     effectConfig : null,
@@ -340,20 +351,26 @@ krusovice.Timeliner.prototype = {
     timeAnimations : function(out, source, clock, onScreenDuration) {
 
         var transitionIn = this.settings.transitionIn;
+        var tid = transitionIn.duration;
         var transitionOut = this.settings.transitionOut;
         var onScreen = this.settings.onScreen;
+        var tod = transitionOut.duration;
 
+        var testDelta = 0.1; // seconds
         var musicStartTime = this.musicStartTime;
 
         console.log("Input data: " + clock + " start time:" + musicStartTime +  " in duration:" + transitionIn.duration + " on screen:" + onScreen.duration);
 
-        // on screen effect starts time
-        var hitsScreen = this.findNextBeat(clock + musicStartTime + transitionIn.duration) - musicStartTime;
+        // We operate in song clock time to make rhytm matching calcs easier
+        var songClock = clock + musicStartTime;
+
+        // on screen effect starts time in song time
+        var hitsScreen = this.findNextBar(songClock + transitionIn.duration);
 
         // on screen effect stops time
-        var hitsOut = this.findNextBeat(hitsScreen + musicStartTime + onScreenDuration) - musicStartTime;
+        var hitsOut = this.findNextBar(hitsScreen + onScreenDuration);
 
-        if(!hitsScreen || hitsScreen < 0) {
+        if(!hitsScreen || hitsScreen <= 0) {
             console.error("Screen:" + hitsScreen + " clock:" + clock + " music start time:" + musicStartTime + "transition in:" + transitionIn.duration);
             throw "Failed to calculate hits to screen time";
         }
@@ -362,14 +379,37 @@ krusovice.Timeliner.prototype = {
             throw "Failed to calculate leaves the screen time";
         }
 
+        // Try time transition in animation to a bar
+        var inBarStart = this.findCurrentBarStart(songClock + transitionIn.duration - testDelta);
+        var inBarDuration = hitsScreen - inBarStart;
+        var transitionInDuration;
 
-        out.wakeUpTime = hitsScreen - transitionIn.duration;
+        // We are confident transition in duration matches almost the bar duration
+        if(Math.abs(inBarDuration - tid) / tid < this.barMatchFactor) {
+            transitionInDuration = inBarDuration;
+        } else {
+            transitionInDuration = tid;
+        }
+
+        var outBarEnd = this.findNextBar(hitsOut + testDelta);
+        var outBarDuration = outBarEnd - hitsOut;
+        var transitionOutDuration;
+
+        // We are confident transition out duration matches almost the bar duration
+        if(Math.abs(outBarDuration - tod) / tod < this.barMatchFactor) {
+            transitionOutDuration = outBarDuration;
+        } else {
+            transitionOutDuration = tod;
+        }
+
+        // Set the first animation appearing time in show clock
+        out.wakeUpTime = hitsScreen - musicStartTime;
 
         out.animations = [
              // transition in
              new krusovice.TimelineAnimation({
                     type : "transitionin",
-                    duration : hitsScreen - clock
+                    duration : transitionInDuration
              }),
 
              // on screen
@@ -381,7 +421,7 @@ krusovice.Timeliner.prototype = {
              // transition out
              new krusovice.TimelineAnimation({
                      type : "transitionout",
-                    duration : transitionOut.duration
+                    duration : transitionOutDuration
              }),
 
 
@@ -520,9 +560,7 @@ krusovice.Timeliner.prototype = {
             return clock;
         }
 
-        if(!window) {
-            window = 1.5;
-        }
+        window = window || this.seekWindow;
 
         var beat = this.analysis.findNextBeat(clock);
 
@@ -534,6 +572,56 @@ krusovice.Timeliner.prototype = {
 
         return start;
     },
+
+
+    findNextBar : function(clock, window) {
+
+        // No rhytm data available
+        if(!this.analysis) {
+            return clock;
+        }
+
+        window = window || this.seekWindow;
+
+        var bari = this.analysis.findNextBar(clock);
+        var bar = this.rhythmData.bars[bari];
+
+        var start = bar.start / 1000;
+
+        if(start - clock > window) {
+            return clock;
+        }
+
+        return start;
+    },
+
+
+    findCurrentBarStart : function(clock, window) {
+
+        // No rhytm data available
+        if(!this.analysis) {
+            return clock;
+        }
+
+        window = window || this.seekWindow;
+
+        var bari = this.analysis.findBarAtClock(clock);
+
+        if(bari < 0) {
+            return clock;
+        }
+
+        var bar = this.rhythmData.bars[bari];
+
+        var start = bar.start / 1000;
+
+        if(Math.abs(start - clock) > window) {
+            return clock;
+        }
+
+        return start;
+    },
+
 
 
     /**

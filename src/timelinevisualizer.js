@@ -461,7 +461,9 @@ krusovice.TimelineVisualizer.prototype = {
  *
  *  @param {String|HTMLAudio} src URL to a music or <audio> elem
  */
-krusovice.TimelinePlayer = function(visualization, src) {
+krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
+
+    var self = this;
 
     this.visualization = visualization;
 
@@ -482,8 +484,28 @@ krusovice.TimelinePlayer = function(visualization, src) {
         throw "Who silenced the stereo?";
     }
 
+    var audio = this.audio;
+
     $(this.audio).bind("load", function() {
+        if(musicStartTime) {
+            self.audio.currentTime = musicStartTime;
+        }
         console.log("Loaded:" + src);
+    });
+
+    $(this.audio).bind("play", function() {
+        console.log("Trying to set start time:" + musicStartTime);
+        audio.currentTime = musicStartTime;
+    });
+
+    $(this.audio).bind("canplaythrough", function() {
+        if(musicStartTime) {
+            console.log("Setting start time:" + musicStartTime);
+            //console.log(audio.seekable.start());
+            //console.log(audio.seekable.end());
+            audio.currentTime = musicStartTime;
+        }
+        console.log("canplay:" + src);
     });
 
     $(this.audio).bind("Error", function() {
