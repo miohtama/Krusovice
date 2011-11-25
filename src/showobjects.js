@@ -206,8 +206,8 @@ krusovice.showobjects.Base.prototype = {
 
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
-        console.log("Got rotation");
-        console.log(animationData.rotation);
+        //console.log("Got rotation");
+        //console.log(animationData.rotation);
 
         if(this.effectObject) {
             this.animateMesh(this.effectObject, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
