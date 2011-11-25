@@ -222,7 +222,7 @@ krusovice.Timeliner.prototype = {
      * How big tolerance % in transition duration / bar duration is allowed to that
      * transition is fitted perfectly into a bar.
      */
-    barMatchFactor : 0.2, // 50%
+    barMatchFactor : 1, // Actual duration can be 100% + 100% from the suggested duration
 
     /**
      * How many seconds we can spend try to find a matching bar/beat
@@ -353,11 +353,15 @@ krusovice.Timeliner.prototype = {
      */
     timeAnimations : function(out, source, clock, onScreenDuration) {
 
+        var settings = this.settings;
         var transitionIn = this.settings.transitionIn;
-        var tid = transitionIn.duration;
         var transitionOut = this.settings.transitionOut;
-        var onScreen = this.settings.onScreen;
-        var tod = transitionOut.duration;
+
+        var sourceTransitions = source.transitions || { transitionIn : {}, transitionOut : {}, onScreen : {} };
+
+        var tid = sourceTransitions.transitionIn.duration || settings.transitionIn.duration;
+        var tod = sourceTransitions.transitionOut.duration || settings.transitionOut.duration;
+        var onScreen = sourceTransitions.onScreen.duration || settings.onScreen.duration;
 
         var testDelta = 0.1; // seconds
         var musicStartTime = this.musicStartTime;
@@ -466,6 +470,11 @@ krusovice.Timeliner.prototype = {
             percents = 0;
             duration = 0;
 
+            if(!suggestedDuration || isNaN(suggestedDuration)) {
+                console.error(a);
+                throw "The animation has not proper duration set";
+            }
+
             hitsOutSeek = hitsIn + suggestedDuration;
             bar = this.seekBar(hitsOutSeek);
 
@@ -511,6 +520,11 @@ krusovice.Timeliner.prototype = {
 
                 // This will fall back to current clock if not beat avail
                 hitsOut = this.findNextBeat(hitsOutSeek);
+
+                if(hitsOut < 0 || isNaN(hitsOut)) {
+                    throw "Bad beat timing:" + hitsOut;
+                }
+
                 if(hitsIn == hitsInSeek) {
                     matchMode  = "none";
                 } else {
@@ -524,6 +538,10 @@ krusovice.Timeliner.prototype = {
             console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration + " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode + " bar match duration:" + duration + " percents:" + percents);
 
             a.duration = actualDuration;
+
+            if(actualDuration === 0 || isNaN(actualDuration)) {
+                throw "Failed to calculate a proper duration for an element";
+            }
 
             // Where the next anim shall begin
             hardStart = a.start + a.duration;
@@ -664,6 +682,10 @@ krusovice.Timeliner.prototype = {
         window = window || this.seekWindow;
 
         var beat = this.analysis.findNextBeat(clock);
+
+        if(!beat) {
+            return clock;
+        }
 
         var start = beat.start / 1000;
 

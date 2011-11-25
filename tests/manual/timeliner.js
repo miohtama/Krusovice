@@ -15,7 +15,7 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
                 type : "image",
                 id : 0,
                 label : null,
-                duration : 6.0,
+                duration : 10,
                 imageURL : "../../testdata/kakku.png"
             },
 
@@ -26,7 +26,7 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
                 texts : {
                      text : "long long long long long text"
                 },
-                duration : 6.0
+                duration : 10
             },
 
             {
@@ -40,6 +40,23 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
             }
     ];
 
+
+
+   simpleElements.forEach(function(e) {
+        e.transitions = {
+            transitionIn : {
+                type : "zoomfar",
+                duration : 1
+            },
+            transitionOut : {
+                type : "zoomin",
+                duration : 1
+            },
+            onScreen : {
+                type : "slightrotatez"
+            }
+        };
+   });
 
 
   /**
