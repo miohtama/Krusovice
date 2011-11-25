@@ -29,6 +29,13 @@ krusovice.RhythmAnalysis = function(data) {
 krusovice.RhythmAnalysis.prototype = {
 
     /**
+     * @type Number
+     *
+     * What's the max beat confidense value in the whole song
+     */
+    maxBeatConfidence : 0,
+
+    /**
      * Scan through all beats and initialize boundaries.
      */
     initBeats : function() {
@@ -41,6 +48,8 @@ krusovice.RhythmAnalysis.prototype = {
                 maxBeatConfidence = b.confidence;
             }
         });
+
+        this.maxBeatConfidence = maxBeatConfidence;
 
         // How sure we must be about the beat to accept it
 
@@ -57,7 +66,7 @@ krusovice.RhythmAnalysis.prototype = {
     },
 
     /**
-     * Find next beat from the array of all beats.
+     * Find the next starting beat from the certain position
      *
      * @param clock Song position in seconds
      *
@@ -92,40 +101,34 @@ krusovice.RhythmAnalysis.prototype = {
     },
 
     /**
-     * Find last beat from the array of all beats.
-     *
-     * @param clock Clock position
-     *
-     * @param skip Skip rate. 1= every beat, 2 = every second beat
-     *
-     * @return AudioQuantum object
+     * @param clock Song position in seconds
      */
-    findLastBeat :function(clock, skip, confidence) {
+    findBeatAtClock : function(clock) {
 
-        var beat = null;
+        var beat = 0;
 
-        var beats = this.data.beats;
+        var i = 0;
 
-		var confidenceThreshold = confidence || this.minBeatConfidence;
+        clock *= 1000;
 
-        var i;
-        for(i=0; i<beats.length;i++) {
-            var t = beats[i];
+        var confidenceThreshold = this.minBeatConfidence;
 
+        for(i=0; i<this.data.beats.length; i++) {
+            var t = this.data.beats[i];
             if(t.confidence < confidenceThreshold) {
                 continue;
             }
 
-            if(t.start > clock) {
+            if(clock >= t.start && clock < t.start + t.duration) {
+                beat = t;
                 break;
             }
 
-            beat = t;
         }
 
         return beat;
-    },
 
+    },
 
     /**
      * Generic AudioQuantum array search
@@ -159,40 +162,6 @@ krusovice.RhythmAnalysis.prototype = {
         return item;
     },
 
-
-
-    /**
-     * Extrapolate beat intensivity as linear function.
-     *
-     *  Like this:
-     *
-     *  |\
-     *  |  \
-     *  |    \
-     *  |     \.........[window]
-     *
-     *
-     * @param {Object} clock animation time in ms
-     * @param {Object} window 0.... 100% beat intensivity in ms
-     */
-     extrapolateBeatIntensivity : function(clock, window, skip) {
-
-        var beat = this.findLastBeat(clock, skip);
-
-		if(!beat) {
-			return 0;
-		}
-
-        var distance = clock - beat.start;
-
-        // -1 ... 1 intensivity within beat window
-        var normalized = (window-distance) / window;
-
-        // console.log("Clock:" + clock + " beat:" + beat + " window:" + window + " skip:" + skip + " distance:" + distance);
-
-        return normalized;
-
-    },
 
 
     /**

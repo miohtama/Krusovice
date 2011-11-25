@@ -151,6 +151,11 @@ krusovice.Show.prototype = {
      */
     renderer : null,
 
+    /**
+     * Rhythm analysis used for post-processing effects
+     */
+    analysis : null,
+
     events :[
         /**
          * @event
@@ -250,8 +255,6 @@ krusovice.Show.prototype = {
     realtime : true,
 
 
-
-
     /**
      * Control individual render layers.
      *
@@ -281,6 +284,7 @@ krusovice.Show.prototype = {
         this.prepareTimeline();
         this.prepareBackground();
         this.preparePreviewWarning();
+        this.prepareEffects();
         this.loadResources();
     },
 
@@ -484,6 +488,17 @@ krusovice.Show.prototype = {
                     throw "Preview warning message cannot be found";
                 }
             }
+        }
+    },
+
+    /**
+     * Make sure we input data for drawing post-processing kind effects.
+     */
+    prepareEffects : function() {
+        if(this.rhythmData) {
+            this.analysis = new krusovice.RhythmAnalysis(this.rhythmData);
+        } else {
+            this.analysis = null;
         }
     },
 
@@ -715,9 +730,11 @@ krusovice.Show.prototype = {
             return;
         }
 
+        var vu = this.getVUEffectStrength();
+
         this.animatedObjects.forEach(function(obj) {
             var state = obj.animate(renderClock);
-            obj.render();
+            obj.render(vu);
             // console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);
         });
     },
@@ -758,6 +775,34 @@ krusovice.Show.prototype = {
         ctx.fillText(this.previewWarningMessage, x, y + h);
         ctx.restore();
 
+    },
+
+
+    /**
+     * Beats / VU sensitive strength for a certain time.
+     *
+     * We use this value to make photos more lively.
+     */
+    getVUEffectStrength : function(clock) {
+        // We don't actual have real VU, so we take beat and calculate a fade off based on it
+
+        if(!this.rhythmData) {
+            return 0;
+        }
+
+        var beat = this.analysis.findBeatAtClock(clock);
+
+        // How fast beats fall off (seconds)
+        var beatCutOff = 60 / this.rhythmData.tempo;
+        var beatStart = beat.start * 1000;
+        var f;
+
+        if(beat) {
+            f = (beatStart-clock) / beatCutOff;
+            return f * beat.confidence / this.analysis.maxBeatConfidence;
+        }
+
+        return 0;
     },
 
     /**

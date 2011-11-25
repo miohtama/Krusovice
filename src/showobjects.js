@@ -50,6 +50,11 @@ krusovice.showobjects.Base.prototype = {
     object : null,
 
     /**
+     * Additional object to render effects
+     */
+    effectObject : null,
+
+    /**
      * @cfg {Function} Function which is called when async prepare() is ready.
      *
      * prepareCallback(success, msg). If success is false delegate the error message.
@@ -167,7 +172,6 @@ krusovice.showobjects.Base.prototype = {
 
         this.animateEffect(target, source, statedata.value);
 
-        var mesh = this.object;
         return statedata;
 
     },
@@ -191,14 +195,50 @@ krusovice.showobjects.Base.prototype = {
             throw "Animation had unknown effect:" + effectId;
         }
 
-        effect.animate(this.object, target, source, value);
+        console.log("animateEffect()");
+        console.log(target);
+        console.log(source);
+        console.log(value);
+
+        var baseScale = this.object.baseScale;
+
+        var animationData = effect.animate(target, source, value, baseScale);
+
+        this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
+
+        if(this.effectObject) {
+            this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
+        }
+    },
+
+    /**
+     * Apply animation parameters to a scene object.
+     */
+    animateMesh : function(mesh, position, rotation, scale, opacity) {
+        mesh.position = position;
+        mesh.scale = scale;
+        mesh.rotation = rotation;
+        mesh.opacity = opacity;
+        this.setOpacity(mesh, opacity);
+        mesh.updateMatrixWorld();
+    },
+
+    /**
+     * Handle apply opacity
+     */
+    setOpacity : function(mesh, opacity) {
+
+        var materials = mesh.geometry.materials;
+        materials.forEach(function(m) {
+           m.opacity =  opacity;
+        });
     },
 
     wakeUp : function() {
         // Bring object to the 3d scene
         console.log("Waking up:" + this.data.id);
         if(this.object) {
-            this.renderer.wakeUp(this.object);
+            this.renderer.wakeUp(this.object, this.effectObject);
         }
         this.alive = true;
     },
@@ -213,9 +253,13 @@ krusovice.showobjects.Base.prototype = {
     },
 
     /**
-     * Dummy for now - scene rendering internal to Three.js
+     * Do some post-processing effects
      */
-    render : function() {
+    render : function(vuStrenght) {
+    },
+
+    createEffectObject : function() {
+        return null;
     }
 
 };

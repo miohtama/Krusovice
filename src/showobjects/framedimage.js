@@ -64,6 +64,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             self.framed = self.createFramedImage(self.image, width, height);
             //self.framed = self.image;
             self.object = self.createRendererObject();
+            self.effect = self.createEffectObject();
             if(self.prepareCallback) {
                 self.prepareCallback(true);
             }
@@ -195,7 +196,23 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     createRendererObject : function() {
         var borderColor = this.data.borderColor || "#eeEEee";
         return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
+    },
+
+    createEffectObject : function() {
+        var borderColor = this.data.borderColor || "#eeEEee";
+        return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
+    },
+
+    render : function(vuStrenght) {
+
+        var lineMesh = this.effectObject;
+
+        if(lineMesh) {
+            console.log("Line mesh");
+            console.log(lineMesh);
+        }
     }
+
 
 });
 });

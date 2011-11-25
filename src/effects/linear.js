@@ -43,7 +43,7 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         },
 
         targetVariation : {
-        },
+        }
 
     },
 
@@ -63,10 +63,11 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
      * @param {Number} value current intermediate state 0...1, easing applied
      */
 
-    animate : function(object, target, source, value) {
+    animate : function(target, source, value, baseScale) {
 
         if(!krusovice.utils.isNumber(value)) {
-            throw "Interpolation step undefined";
+            console.error(value);
+            throw "animate(): Bad interpolation value:" + value;
         }
 
         //console.log("Got target");
@@ -86,51 +87,32 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
             throw "Serious fail";
         }
 
-        var mesh = object;
-
         // Some custom adjustments to make photos came close enough to camera in 16:9
-        var baseScale = mesh.baseScale;
         if(!baseScale) {
             throw "effects.Interpolate: baseScale missing";
         }
 
+        // Outputted animation values
+        var output = {};
+
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
         scale = [ scale[0] * baseScale, scale[1] * baseScale, scale[2] * baseScale];
 
-        var opacity = source.opacity + (target.opacity-source.opacity)*value;
-        this.setOpacity(mesh, opacity);
-        //console.log(mesh);
-        mesh.position = new THREE.Vector3(position[0], position[1], position[2]);
-        mesh.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
+        output.position = new THREE.Vector3(position[0], position[1], position[2]);
+        output.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
 
         // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
         var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
         var qb = new THREE.Quaternion(target.rotation[0], target.rotation[1], target.rotation[2], target.rotation[3]);
 
-        THREE.Quaternion.slerp(qa, qb, mesh.quaternion, value);
+        output.rotation = new THREE.Quaternion(0, 0, 0, 1);
 
-        //mesh.updateMatrix();
-        //console.log("Position:" + position);
-        //console.log("Scale:" + scale + " base scale:" + baseScale);
-        //console.log("Rotation:" + mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
-        //console.log(mesh);
+        THREE.Quaternion.slerp(qa, qb, output.rotation, value);
 
-        mesh.updateMatrixWorld();
+        output.opacity = source.opacity + (target.opacity-source.opacity)*value;
 
-        //console.log(mesh.matrix);
-    },
+        return output;
 
-
-    setOpacity : function(mesh, opacity) {
-
-
-        //var material = mesh.material;
-        //material.opacity = opacity;
-
-        var materials = mesh.geometry.materials;
-        materials.forEach(function(m) {
-           m.opacity =  opacity;
-        });
     }
 
 

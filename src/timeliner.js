@@ -222,7 +222,7 @@ krusovice.Timeliner.prototype = {
      * How big tolerance % in transition duration / bar duration is allowed to that
      * transition is fitted perfectly into a bar.
      */
-    barMatchFactor : 1, // Actual duration can be 100% + 100% from the suggested duration
+    barMatchFactor : 1.1, // Actual duration can be 100% + 100% from the suggested duration
 
     /**
      * How many seconds we can spend try to find a matching bar/beat
@@ -489,6 +489,8 @@ krusovice.Timeliner.prototype = {
                     actualDuration = duration;
                     match = true;
                     matchMode = "next-bar";
+                } else {
+                    console.log("Next bar fail, percents:" + percents + " factor:" + this.barMatchFactor);
                 }
 
                 // Then try match to previous bar if not matched
@@ -508,6 +510,8 @@ krusovice.Timeliner.prototype = {
                             actualDuration = duration;
                             match = true;
                             matchMode = "previous-bar";
+                        } else {
+                            console.log("Previous bar fail, percents:" + percents);
                         }
 
                     }

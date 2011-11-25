@@ -222,10 +222,35 @@ krusovice.renderers.Three.prototype = {
         return mesh;
     },
 
+
+    /**
+     * http://superfad.com/missioncontrol/js/superglobe.js
+     */
+    createBorderLines : function(srcWidth, srcHeight, color) {
+
+        var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
+
+        var plane = new THREE.LinePlaneGeometry(dimensions.width + 32, dimensions.height + 32);
+
+        var material = new THREE.LineBasicMaterial( {
+                opacity: 0.8,
+                linewidth: 1,
+                depthTest: false,
+                blending:
+                THREE.AdditiveBlending,
+                transparent : true } );
+
+        material.color = cssToOpenGLColor(color);
+
+        var mesh = new THREE.Line(plane, material);
+
+        return mesh;
+    },
+
     /**
      * Make object alive
      */
-    wakeUp : function(mesh) {
+    wakeUp : function(mesh, effectObject) {
 
         if(!mesh) {
             throw "Oh mama, can we call this a null pointer exception?";
@@ -233,6 +258,11 @@ krusovice.renderers.Three.prototype = {
 
         if(!mesh.added) {
             this.scene.addObject(mesh);
+
+            if(effectObject) {
+                 this.scene.addObject(effectObject);
+            }
+
             mesh.added = true;
         } else {
             mesh.visible = true;
@@ -408,14 +438,42 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
 
 THREE.FramedPlaneGeometry.prototype = new THREE.Geometry();
 
-THREE.FramedPlaneGeometry.prototype.setBorderMaterial = function(material) {
-
-}
-
 THREE.FramedPlaneGeometry.prototype.constructor = THREE.FramedPlaneGeometry;
 
-THREE.fixTexture = function(img) {
 
-}
+// http://data-arts.appspot.com/globe/globe.js
+
+// http://superfad.com/missioncontrol/js/superglobe.js
+
+THREE.LinePlaneGeometry = function(width, height) {
+    THREE.Geometry.call( this );
+
+    var ix, iy;
+    var width_half = width / 2,
+    height_half = height / 2,
+    gridY = 1,
+    gridX = 1,
+    normal = new THREE.Vector3( 0, 0, -1 ),
+    normal2 = new THREE.Vector3( 0, 0, 1 );
+
+    // Add UV coordinates for back fill material
+    this.faceVertexUvs.push([]);
+
+    // Body vertices
+
+    var x = width_half;
+    var y = height_half;
+
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, -y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, y, 0 ) ) );
+
+};
+
+THREE.LinePlaneGeometry.prototype = new THREE.Geometry();
+
+THREE.LinePlaneGeometry.prototype.constructor = THREE.LinePlaneGeometry;
+
 
 });
