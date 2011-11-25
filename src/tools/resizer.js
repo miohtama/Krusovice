@@ -398,6 +398,7 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
             stats.startedCount++;
 
             if(!this.isResizeSupported()) {
+                // Pass through the image as is
                 this.processNoResize();
             } else {
                 // Start reading image off-the-disk
