@@ -51,6 +51,8 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
         songURL = "../../testdata/sample-song.ogg";
     }
 
+    songURL = "../../../olvi/music/russian.mp3";
+
     console.log("Loading song:" + songURL);
 
     var player = new krusovice.TimelinePlayer(visualizer, songURL, timeliner.musicStartTime);

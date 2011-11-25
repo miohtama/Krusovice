@@ -1,0 +1,41 @@
+<html>
+	<!-- Manual inspect how timelining of various songs goes -->
+	<head>
+        <script src=../../src/thirdparty/require.js></script>
+
+        <script type="text/javascript">
+            require.config({
+                paths : {
+                    krusovice : "../../src"
+                }
+            });
+        </script>
+
+        <link href=../../media/visualizer.css rel=stylesheet></link>
+
+        <script type="text/javascript" src="timeliner.js"></script>
+
+        <style>
+            textarea {
+                width: 600px;
+                height: 200px;
+            }
+        </style>
+   	</head>
+
+	<body>
+
+	    <h1>Visualize bar & beat data</h1>
+
+        <form>
+            <p>Song data URLS</p>
+            <textarea id="songs">
+            </textarea>
+
+            <button type="button">Analyze</button>
+        </form>
+
+        <div id="results"><!-- --></div>
+
+	</body>
+</html>
