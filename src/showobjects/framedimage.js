@@ -64,7 +64,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             self.framed = self.createFramedImage(self.image, width, height);
             //self.framed = self.image;
             self.object = self.createRendererObject();
-            self.effect = self.createEffectObject();
+            self.effectObject = self.createEffectObject();
             if(self.prepareCallback) {
                 self.prepareCallback(true);
             }
@@ -200,7 +200,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
     createEffectObject : function() {
         var borderColor = this.data.borderColor || "#eeEEee";
-        return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
+        return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, "#ff00ff");
+        //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
     render : function(vuStrenght) {
@@ -208,8 +209,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         var lineMesh = this.effectObject;
 
         if(lineMesh) {
-            console.log("Line mesh");
-            console.log(lineMesh);
+            // console.log(lineMesh);
         }
     }
 

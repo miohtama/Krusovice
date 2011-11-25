@@ -234,10 +234,9 @@ krusovice.renderers.Three.prototype = {
 
         var material = new THREE.LineBasicMaterial( {
                 opacity: 0.8,
-                linewidth: 1,
+                linewidth: 10,
                 depthTest: false,
-                blending:
-                THREE.AdditiveBlending,
+                blending: THREE.AdditiveBlending,
                 transparent : true } );
 
         material.color = cssToOpenGLColor(color);
@@ -465,9 +464,9 @@ THREE.LinePlaneGeometry = function(width, height) {
     var y = height_half;
 
     this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, -y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, 0 ) ) );
     this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) ) );
 
 };
 

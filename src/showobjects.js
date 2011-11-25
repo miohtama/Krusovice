@@ -195,10 +195,10 @@ krusovice.showobjects.Base.prototype = {
             throw "Animation had unknown effect:" + effectId;
         }
 
-        console.log("animateEffect()");
-        console.log(target);
-        console.log(source);
-        console.log(value);
+        //console.log("animateEffect()");
+        //console.log(target);
+        //console.log(source);
+        //console.log(value);
 
         var baseScale = this.object.baseScale;
 
@@ -207,7 +207,7 @@ krusovice.showobjects.Base.prototype = {
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
         if(this.effectObject) {
-            this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
+            this.animateMesh(this.effectObject, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
         }
     },
 
