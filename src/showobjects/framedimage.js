@@ -209,6 +209,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         var lineMesh = this.effectObject;
 
         if(lineMesh) {
+            lineMesh.material.color.setRGB(1, 0, 1);
             // console.log(lineMesh);
         }
     }

@@ -236,12 +236,14 @@ krusovice.renderers.Three.prototype = {
                 opacity: 0.8,
                 linewidth: 10,
                 depthTest: false,
-                blending: THREE.AdditiveBlending,
+                //blending: THREE.AdditiveBlending,
                 transparent : true } );
 
-        material.color = cssToOpenGLColor(color);
+        material.color.setRGB(1, 0, 1);
 
         var mesh = new THREE.Line(plane, material);
+
+        mesh.useQuaternion = true;
 
         return mesh;
     },
@@ -455,9 +457,6 @@ THREE.LinePlaneGeometry = function(width, height) {
     normal = new THREE.Vector3( 0, 0, -1 ),
     normal2 = new THREE.Vector3( 0, 0, 1 );
 
-    // Add UV coordinates for back fill material
-    this.faceVertexUvs.push([]);
-
     // Body vertices
 
     var x = width_half;
@@ -467,6 +466,8 @@ THREE.LinePlaneGeometry = function(width, height) {
     this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, y, 0 ) ) );
     this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, 0 ) ) );
     this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) ) );
+    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, -y, 0 ) ) );
+
 
 };
 

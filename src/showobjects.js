@@ -206,6 +206,9 @@ krusovice.showobjects.Base.prototype = {
 
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
+        console.log("Got rotation");
+        console.log(animationData.rotation);
+
         if(this.effectObject) {
             this.animateMesh(this.effectObject, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
         }
@@ -217,7 +220,7 @@ krusovice.showobjects.Base.prototype = {
     animateMesh : function(mesh, position, rotation, scale, opacity) {
         mesh.position = position;
         mesh.scale = scale;
-        mesh.rotation = rotation;
+        mesh.quaternion = rotation;
         mesh.opacity = opacity;
         this.setOpacity(mesh, opacity);
         mesh.updateMatrixWorld();
@@ -247,6 +250,10 @@ krusovice.showobjects.Base.prototype = {
         console.log("Object is gone:" + this.data.id);
         if(this.object) {
             this.renderer.farewell(this.object);
+        }
+
+        if(this.effectObject) {
+            this.renderer.farewell(this.effectObject);
         }
         this.alive = false;
 
