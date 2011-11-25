@@ -339,6 +339,13 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
                 return false;
             }
 
+            // FileReader is available only in Safari nightly builds currently
+            // https://developer.mozilla.org/en/DOM/FileReader
+
+            if(!window.FileReader) {
+                return false;
+            }
+
             return !!BlobBuilder;
         },
 
@@ -392,9 +399,10 @@ define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",
 
             if(!this.isResizeSupported()) {
                 this.processNoResize();
+            } else {
+                // Start reading image off-the-disk
+                this.read();
             }
-
-            this.read();
 
         },
 
