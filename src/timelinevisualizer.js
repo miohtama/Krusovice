@@ -286,18 +286,23 @@ krusovice.TimelineVisualizer.prototype = {
 
             var startX = elem.wakeUpTime / this.secondsPerPixel;
 
+            var endClock = elem.wakeUpTime + krusovice.Timeliner.getElementDuration(elem, true);
+
+            var endX = (endClock) / this.secondsPerPixel;
+
             if(elem.animations.length != 4) {
                 throw "This visualization code can handle animations only with three states: in, screen and out + gone state";
             }
 
-            var totalDuration = elem.animations[0].duration + elem.animations[1].duration + elem.animations[2].duration;
+            var totalDuration = elem.animations[0].duration + elem.animations[1].duration + elem.animations[2].duration + elem.spacingTime;
 
             // span length in pixels
             var length = totalDuration / this.secondsPerPixel;
 
-            console.log("Rendering element:" + elem + " x:" + startX + " duration:" + totalDuration + " length:" + length + " color:" + acolor);
+            console.log("Rendering element:" + elem + " wake up time:" + elem.wakeUpTime + " end clock:" + endClock + " x:" + startX + " end x:" + endX + " duration:" + totalDuration + " length:" + length + " color:" + acolor);
 
             context.save();
+
             for(var l=0; l<length; l++) {
                 var clock = l*this.secondsPerPixel;
 

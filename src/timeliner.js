@@ -222,12 +222,12 @@ krusovice.Timeliner.prototype = {
      * How big tolerance % in transition duration / bar duration is allowed to that
      * transition is fitted perfectly into a bar.
      */
-    barMatchFactor : 0.5, // 50%
+    barMatchFactor : 0.2, // 50%
 
     /**
      * How many seconds we can spend try to find a matching bar/beat
      */
-    seekWindow : 1.5,
+    seekWindow : 3,
 
     /**
      * @cfg {Object} Effect parameter overrides for this show.
@@ -304,12 +304,10 @@ krusovice.Timeliner.prototype = {
                 elem.duration = this.duration || 8.0;
             }
 
-
             // Place element on the timeine based on our current clock
             this.timeAnimations(out, elem, clock, elem.duration);
 
             this.prepareAnimations(out, elem);
-
 
             console.log("Got out");
             console.log(out);
@@ -324,10 +322,15 @@ krusovice.Timeliner.prototype = {
 
             var duration = krusovice.Timeliner.getElementDuration(out, true);
 
-            clock += duration;
+            console.log("Total duration:" + duration);
+
+            //clock += duration;
+
+            // Match clock to the wake up time + duration adjustment
+            clock = out.wakeUpTime + duration;
 
             if(!clock) {
-                console.error("Latest input element");
+                console.error("Bad clock value after adding an input element: clock:" + clock + " duration:" + duration);
                 console.error(elem);
                 throw "Bad presentation input element";
             }
@@ -359,80 +362,178 @@ krusovice.Timeliner.prototype = {
         var testDelta = 0.1; // seconds
         var musicStartTime = this.musicStartTime;
 
-        console.log("Input data: " + clock + " start time:" + musicStartTime +  " in duration:" + transitionIn.duration + " on screen:" + onScreen.duration);
-
         // We operate in song clock time to make rhytm matching calcs easier
         var songClock = clock + musicStartTime;
 
         // on screen effect starts time in song time
-        var hitsScreen = this.findNextBar(songClock + transitionIn.duration);
 
-        // on screen effect stops time
-        var hitsOut = this.findNextBar(hitsScreen + onScreenDuration);
-
-        if(!hitsScreen || hitsScreen <= 0) {
-            console.error("Screen:" + hitsScreen + " clock:" + clock + " music start time:" + musicStartTime + "transition in:" + transitionIn.duration);
-            throw "Failed to calculate hits to screen time";
-        }
-
-        if(!hitsOut ||hitsOut <  0) {
-            throw "Failed to calculate leaves the screen time";
-        }
-
-        // Try time transition in animation to a bar
-        var inBarStart = this.findCurrentBarStart(songClock + transitionIn.duration - testDelta);
-        var inBarDuration = hitsScreen - inBarStart;
+        var hitsIn = 0;
+        var hitsScreenSeek = songClock + transitionIn.duration;
+        var hitsScreen;
+        var matchMode = "none";
+        var percents = 0;
+        var inBarDuration;
         var transitionInDuration;
-
-        // We are confident transition in duration matches almost the bar duration
-        if(Math.abs(inBarDuration - tid) / tid < this.barMatchFactor) {
-            transitionInDuration = inBarDuration;
-        } else {
-            transitionInDuration = tid;
-        }
-
-        var outBarEnd = this.findNextBar(hitsOut + testDelta);
-        var outBarDuration = outBarEnd - hitsOut;
-        var transitionOutDuration;
-
-        // We are confident transition out duration matches almost the bar duration
-        if(Math.abs(outBarDuration - tod) / tod < this.barMatchFactor) {
-            transitionOutDuration = outBarDuration;
-        } else {
-            transitionOutDuration = tod;
-        }
-
-        // Set the first animation appearing time in show clock
-        out.wakeUpTime = hitsScreen - musicStartTime;
+        var match;
 
         out.animations = [
              // transition in
              new krusovice.TimelineAnimation({
                     type : "transitionin",
-                    duration : transitionInDuration
+                    duration : tid
              }),
 
              // on screen
              new krusovice.TimelineAnimation({
                     type : "onscreen",
-                    duration : hitsOut - hitsScreen
+                    duration : onScreenDuration
              }),
 
              // transition out
              new krusovice.TimelineAnimation({
                      type : "transitionout",
-                    duration : transitionOutDuration
+                    duration : tod
              }),
 
 
              // gone
              new krusovice.TimelineAnimation({
-                     type : "gone",
+                    type : "gone",
                     duration : 0
              })
 
 
         ];
+
+        var hitsInSeek = songClock, hitsOutSeek, hitsOut;
+        var hardStart = -1;
+        var i;
+        var suggestedDuration, actualDuration;
+        var a;
+        var bar;
+        var duration;
+
+        // First match animation start with bar start, beat start or none
+        // Then match animation end with bar start, beat start or none
+
+        for(i=0; i<out.animations.length; i++) {
+
+            a = out.animations[i];
+
+            // Terminator or otherwise invalid animation
+            if(a.duration === 0) {
+                continue;
+            }
+
+            // This animation start is set by the previous cycle
+            if(hardStart >= 0) {
+                hitsIn = hardStart;
+                matchMode = "hard-set";
+            } else {
+
+                // First try match bar, then beat
+                bar = this.seekBar(hitsInSeek);
+
+                if(bar) {
+                    hitsIn = bar.start / 1000;
+                    matchMode  = "bar";
+                    console.log(bar);
+                } else {
+                    // This will fall back to current clock if not beat avail
+                    hitsIn = this.findNextBeat(hitsInSeek);
+                    if(hitsIn == hitsInSeek) {
+                        matchMode  = "none";
+                    } else {
+                        matchMode  = "beat";
+                    }
+                }
+
+            }
+
+            console.log("Matching anim start: " + a.type + " hits in seek:" + hitsInSeek + " hits in:" + hitsIn + " match mode:" + matchMode);
+
+            a.start = hitsIn;
+
+            // Then match end
+
+            // Use default transition in duration
+            suggestedDuration = a.duration;
+            actualDuration = suggestedDuration;
+
+            // Check if we can fit the transition in to a bar
+            match = false;
+            matchMode = "none";
+            percents = 0;
+            duration = 0;
+
+            hitsOutSeek = hitsIn + suggestedDuration;
+            bar = this.seekBar(hitsOutSeek);
+
+            if(bar) {
+
+                hitsOut = bar.start / 1000;
+
+                duration = (hitsOut - hitsIn);
+                percents = Math.abs(duration - suggestedDuration) / suggestedDuration;
+
+                if(percents < this.barMatchFactor) {
+                    actualDuration = duration;
+                    match = true;
+                    matchMode = "next-bar";
+                }
+
+                // Then try match to previous bar if not matched
+                if(!match && bar.previousBar) {
+
+                    bar = bar.previousBar;
+
+                    hitsOut = bar.start / 1000;
+
+                    duration = (hitsOut - hitsIn);
+
+                    if(duration > 0) {
+
+                        percents = Math.abs(duration - suggestedDuration) / suggestedDuration;
+
+                        if(percents < this.barMatchFactor) {
+                            actualDuration = duration;
+                            match = true;
+                            matchMode = "previous-bar";
+                        }
+
+                    }
+                }
+
+            }
+
+            if(!match) {
+                // Try beat
+
+                // This will fall back to current clock if not beat avail
+                hitsOut = this.findNextBeat(hitsOutSeek);
+                if(hitsIn == hitsInSeek) {
+                    matchMode  = "none";
+                } else {
+                    matchMode  = "beat";
+                }
+
+                actualDuration = hitsOut - hitsIn;
+
+            }
+
+            console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration + " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode + " bar match duration:" + duration + " percents:" + percents);
+
+            a.duration = actualDuration;
+
+            // Where the next anim shall begin
+            hardStart = a.start + a.duration;
+
+        }
+
+        // Set the first animation appearing time in show clock
+        out.wakeUpTime = out.animations[0].start;
+
+        return out;
 
     },
 
@@ -574,19 +675,47 @@ krusovice.Timeliner.prototype = {
     },
 
 
-    findNextBar : function(clock, window) {
+    /**
+     * Find a matching bar next bar index, starting from the clock
+     */
+    seekBar : function(clock, window) {
 
         // No rhytm data available
         if(!this.analysis) {
-            return clock;
+            return null;
         }
 
         window = window || this.seekWindow;
 
         var bari = this.analysis.findNextBar(clock);
+
+        if(bari < 0) {
+            return null;
+        }
+
         var bar = this.rhythmData.bars[bari];
+        if(bari >= 1) {
+            bar.previousBar = this.rhythmData.bars[bari-1];
+        }
+
+        return bar;
+
+    },
+
+    /**
+     * Find matching clock for a bar start position
+     */
+    findNextBar : function(clock, window) {
+
+        var bar = this.seekBar(clock, window);
+
+        if(!bar) {
+            return clock;
+        }
 
         var start = bar.start / 1000;
+
+        console.log("Bar match start:" + start +  " clock:" + clock + " bar start:" + bar.start);
 
         if(start - clock > window) {
             return clock;
@@ -713,11 +842,13 @@ krusovice.Timeliner.getElementDuration = function(elem, spacing) {
 
     var duration = 0;
     for(var i=0; i<elem.animations.length-1; i++) {
+        //console.log("Duration:" + elem.animations[i].duration);
         duration += elem.animations[i].duration;
     }
 
     if(spacing) {
         duration += elem.spacingTime;
+        //console.log("Spacing:" + elem.spacingTime);
     }
 
     return duration;

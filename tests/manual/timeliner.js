@@ -13,20 +13,30 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
     var simpleElements = [
             {
                 type : "image",
-                id : "mikko-image-0",
+                id : 0,
                 label : null,
-                duration : 8.0,
+                duration : 6.0,
                 imageURL : "../../testdata/kakku.png"
             },
 
             {
                 type : "text",
-                id : 0,
+                id : 1,
                 shape : "clear",
                 texts : {
                      text : "long long long long long text"
                 },
-                duration : 8.0
+                duration : 6.0
+            },
+
+            {
+                type : "text",
+                id : 3,
+                shape : "clear",
+                texts : {
+                     text : "Third elem"
+                },
+                duration : 6.0
             }
     ];
 

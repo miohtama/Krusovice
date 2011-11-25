@@ -13,7 +13,6 @@ require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice)
     timeliner.leadTime = 3;
     timeliner.steppingTime = 1.5;
 
-
     var plan = timeliner.createPlan();
     var visualizer = new krusovice.TimelineVisualizer({plan:plan});
     var div = document.getElementById("visualizer-no-rhythm");
