@@ -249,12 +249,9 @@ krusovice.showobjects.Base.prototype = {
     farewell : function() {
         console.log("Object is gone:" + this.data.id);
         if(this.object) {
-            this.renderer.farewell(this.object);
+            this.renderer.farewell(this.object, this.effectObject);
         }
 
-        if(this.effectObject) {
-            this.renderer.farewell(this.effectObject);
-        }
         this.alive = false;
 
     },

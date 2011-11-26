@@ -56,6 +56,11 @@ krusovice.renderers.Three.prototype = {
     scene : null,
 
     /**
+     * Scene drawing stencil mask objects
+     */
+    maskScene : null,
+
+    /**
      * Use WebGL backend
      */
     webGL : false,
@@ -137,7 +142,11 @@ krusovice.renderers.Three.prototype = {
 
         this.renderer = renderer;
         this.scene = scene;
+        this.maskScene = new THREE.Scene();
         this.camera = camera;
+
+        var halfWidth = this.width/2, halfHeight=this.height/2;
+        this.maskCamera = new THREE.OrthographicCamera( -halfWidth, halfWidth, halfHeight, -halfHeight, -10000, 10000 );
 
         var directionalLight = new THREE.DirectionalLight( 0xffffff );
         directionalLight.position.x = 0;
@@ -150,6 +159,63 @@ krusovice.renderers.Three.prototype = {
         var ambient = new THREE.AmbientLight( 0x333333 );
         scene.add( ambient );
 
+        this.setupComposer();
+
+    },
+
+    setupComposer : function() {
+
+        THREE.EffectComposer.setup(this.width, this.height);
+
+        var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat};
+
+        var target = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
+
+        var bloomBuffer = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
+
+        this.renderer.autoClear = false;
+        this.renderer.setClearColorHex( 0x000000, 1 );
+
+        var composer = new THREE.EffectComposer(this.renderer, target);
+
+        var renderModel = new THREE.RenderPass(this.scene, this.camera);
+        var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
+        var textureModel = new THREE.TexturePass(this.scene, this.camera);
+        var renderScene = new THREE.TexturePass(composer.renderTarget2);
+
+        //var renderModel = new THREE.RenderPass(this.maskScene, this.maskCamera);
+        var maskModel = new THREE.MaskPass(this.maskScene, this.camera);
+        var effectBloom = new THREE.BloomPass( 1 );
+        var clearMask = new THREE.ClearMaskPass();
+        var dotScreen = new THREE.DotScreenPass( new THREE.Vector2( 0, 0 ), 0.5, 0.6 );
+        //var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
+        //effectFilm.renderToScreen = true;
+
+        this.renderModel = renderModel;
+        this.maskModel = maskModel;
+        this.clearMask = clearMask;
+        this.copyPass = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
+        this.effectBloom = effectBloom;
+
+        //renderModel.clear = false;
+        maskModel.clear = false;
+        clearMask.clear = false;
+        renderModel.clear = false;
+        renderModel2.clear = false;
+        renderScene.clear = false;
+        this.copyPass.clear = false;
+
+        this.composer = composer;
+
+        /*
+        var quadMask;
+
+        var plane = new THREE.PlaneGeometry( 1, 1 );
+        quadMask = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0xffaa00 } )  );
+        quadMask.position.z = -300;
+        quadMask.scale.set(this.width / 2, this.height/2, 1 );
+        this.maskScene.add( quadMask );
+        */
     },
 
 
@@ -162,7 +228,7 @@ krusovice.renderers.Three.prototype = {
      *
      * @param srcHeight Natural height
      */
-    createQuad : function(src, srcWidth, srcHeight, borderColor) {
+    createQuad : function(src, srcWidth, srcHeight, borderColor, hasNoBody) {
 
         // http://mrdoob.github.com/three.js/examples/canvas_materials_video.html
 
@@ -190,7 +256,7 @@ krusovice.renderers.Three.prototype = {
             borderWidth = 0;
         }
 
-        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth);
+        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody);
 
         var filler = new THREE.MeshBasicMaterial( {  map: texture } );
 
@@ -261,7 +327,7 @@ krusovice.renderers.Three.prototype = {
             this.scene.addObject(mesh);
 
             if(effectObject) {
-                 this.scene.addObject(effectObject);
+                 this.maskScene.addObject(effectObject);
             }
 
             mesh.added = true;
@@ -276,26 +342,117 @@ krusovice.renderers.Three.prototype = {
     /**
      * Make sure this object is no longer visible
      */
-    farewell : function(mesh) {
+    farewell : function(mesh, effectObject) {
         // this.scene.removeObject(mesh);
         //console.log("Farewell for object");
         mesh.visible = false;
+        effectObject.visible = false;
     },
 
 
     render : function(frontBuffer) {
 
         // Let Three.js do its magic
-        this.renderer.render(this.scene, this.camera);
+        var scene = this.scene;
+        var camere = this.camera;
 
+
+        if(this.composer) {
+
+            //this.renderer.autoClear = false;
+            //this.renderer.clear();
+
+            //this.renderer.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
+
+
+            /*
+            var context = this.renderer.context;
+
+            context.colorMask( true, true, true, true );
+            context.depthMask( false );
+
+            // set up stencil
+
+            context.enable( context.STENCIL_TEST );
+            context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
+            context.stencilFunc( context.ALWAYS, 1, 0xffffffff );
+
+            // draw into the stencil buffer
+
+            this.renderer.render(this.maskScene, this.maskCamera, this.composer.readBuffer, false);
+
+            //this.renderer.render(this.maskScene, this.maskCamera);
+
+            // re-enable update of color and depth
+            context.colorMask( true, true, true, true );
+            context.depthMask( true );
+            // only render where stencil is set to 1
+
+            context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
+            context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
+
+
+            this.renderer.render(this.scene, this.camera, this.composer.readBuffer, false);
+
+             //this.renderer.render(this.scene, this.camera);
+
+            context.disable( context.STENCIL_TEST );
+            */
+
+            //this.composer.render( 0.05 );
+
+            this.renderer.autoClear = false;
+            this.renderer.clear();
+
+            var context = this.renderer.context;
+
+
+            var r = this.renderer;
+            var read = this.composer.readBuffer;
+            var write = this.composer.writeBuffer;
+            var bloomBuffer  = this.bloomBuffer;
+            //r.clearTarget(read);
+
+            r.clearTarget(read);
+            r.clearTarget(write);
+
+            this.renderModel.render(r, write, read, 0);
+
+            this.maskModel.render(r, write, read, 0);
+
+            //context.stencilFunc(context.NOTEQUAL, 1, 0xffffffff );
+            //context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
+
+            // XXX: WTF... whyyy?
+            this.copyPass.render(r, write, read, 0);
+            this.copyPass.render(r, read, write, 0);
+            //this.renderer.render(this.scene, this.camera);
+            this.clearMask.render(r, write, read, 0);
+
+            // Now have bloomable content in read buffer
+            this.copyPass.render(r, this.bloomBuffer, read, 0);
+
+            this.effectBloom.render(r, read, write, 0);
+
+            //context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+
+            this.renderer.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
+
+
+
+        } else {
+            this.renderer.render(this.scene, this.camera);
+        }
+
+        //composer.addPass( effectFilm );
         //console.log("Got three");
         //console.log(this.renderer);
         /*
         console.log("Got buffer");
         console.log(frontBuffer);*/
 
-        // blit to actual image output from THREE <canvas> renderer internal buffer
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
+        // blit to actual image output from THREE <canvas> renderer internal buffer
     },
 
     /**
@@ -310,7 +467,7 @@ krusovice.renderers.Three.prototype = {
 /**
  * Create a plane mesh with fill and border material, optionally different for both sides
  */
-THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight ) {
+THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight, noBody) {
 
     THREE.Geometry.call( this );
 
@@ -326,6 +483,13 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     normal = new THREE.Vector3( 0, 0, -1 ),
     normal2 = new THREE.Vector3( 0, 0, 1 );
 
+    if(noBody) {
+        width -= 16;
+        height -= 16;
+        frameWidth += 48;
+        frameHeight += 48;
+    }
+
     // Add UV coordinates for back fill material
     this.faceVertexUvs.push([]);
 
@@ -338,45 +502,49 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         }
     }
 
-    for ( iy = 0; iy < gridY; iy++ ) {
+    if(!noBody) {
 
-        for ( ix = 0; ix < gridX; ix++ ) {
+        for ( iy = 0; iy < gridY; iy++ ) {
 
-            var a = ix + gridX1 * iy;
-            var b = ix + gridX1 * ( iy + 1 );
-            var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-            var d = ( ix + 1 ) + gridX1 * iy;
+            for ( ix = 0; ix < gridX; ix++ ) {
 
-            var face = new THREE.Face4( a, b, c, d );
-            face.normal.copy( normal );
-            face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
+                var a = ix + gridX1 * iy;
+                var b = ix + gridX1 * ( iy + 1 );
+                var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                var d = ( ix + 1 ) + gridX1 * iy;
 
-            face.materialIndex = 0;
+                var face = new THREE.Face4( a, b, c, d );
+                face.normal.copy( normal );
+                face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
 
-            this.faces.push( face );
-            this.faceVertexUvs[ 0 ].push( [
-                        new THREE.UV( ix / gridX, iy / gridY ),
-                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
-                    ] );
+                face.materialIndex = 0;
 
-            // Back side
+                this.faces.push( face );
+                this.faceVertexUvs[ 0 ].push( [
+                            new THREE.UV( ix / gridX, iy / gridY ),
+                            new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
+                            new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                            new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
+                        ] );
 
-            face = new THREE.Face4( a, d, c, b );
-            face.normal.copy( normal2 );
-            face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
+                // Back side
 
-            face.materialIndex = 1;
+                face = new THREE.Face4( a, d, c, b );
+                face.normal.copy( normal2 );
+                face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
 
-            this.faces.push( face );
-            this.faceVertexUvs[0].push( [
-                        new THREE.UV( ix / gridX, iy / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
-                    ] );
+                face.materialIndex = 1;
 
+                this.faces.push( face );
+                this.faceVertexUvs[0].push( [
+                            new THREE.UV( ix / gridX, iy / gridY ),
+                            new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
+                            new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                            new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
+                        ] );
+
+
+            }
 
         }
 

@@ -34,9 +34,13 @@ define("krusovice/api", [
     "krusovice/tools/fade",
     "krusovice/tools/url",
     "krusovice/tools/resizer",
-    "krusovice/tools/text2canvas"
+    "krusovice/tools/text2canvas",
     // XXX: Unsupported in browsers
     //"krusovice/tools/html2svg2canvas"
+
+    "krusovice/thirdparty/three-extra"
+    //"krusovice/thirdparty/three-extra/BloomPass"
+
 ], function(require, $, THREE, krusovice) {
     console.log("Krusovice API init");
     window.krusovice = krusovice;

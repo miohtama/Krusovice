@@ -200,18 +200,22 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
     createEffectObject : function() {
         var borderColor = this.data.borderColor || "#eeEEee";
-        return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, "#ff00ff");
+        var mesh = this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor, true);
+
+        //mesh.baseScale = new THREE.Vector3(0.2, 0.2, 0.2);
+
+        // This object should be used as stencil mask drawing only
+        var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
+        mesh.geometry.materials = [mat,mat,mat,mat];
+
+        return mesh;
+
+        //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, "#ff00ff");
         //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
     render : function(vuStrenght) {
 
-        var lineMesh = this.effectObject;
-
-        if(lineMesh) {
-            lineMesh.material.color.setRGB(1, 0, 1);
-            // console.log(lineMesh);
-        }
     }
 
 
