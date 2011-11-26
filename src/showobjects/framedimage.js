@@ -201,9 +201,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
     createEffectObject : function() {
         var borderColor = this.data.borderColor || "#eeEEee";
 
-        console.log("******");
-        console.log("Got border color:" + borderColor);
-
         var mesh = this.renderer.createQuad(this.framed,
             this.framed.naturalWidth,
             this.framed.naturalHeight,
@@ -223,8 +220,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
           uniforms: uniforms,
           vertexShader: shader.vertexShader,
           fragmentShader: shader.fragmentShader,
-          //blending: THREE.MultiplyBlending
-          transparent : true
+          //blending: THREE.NormalBlending,
+          //transparent : true,
+          //opacity : 0.5
         });
 
         this.effectUniforms = uniforms;
@@ -235,8 +233,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
         return mesh;
 
-        //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, "#ff00ff");
-        //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
     render : function(vuStrength) {
@@ -245,11 +241,13 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
             var v = $.easing.easeOutQuad(null, vuStrength, 0, 1, 1);
 
-            if(v > 0.8) {
-                v = 0.8;
-            }
-
             this.effectUniforms.intensity.value = v;
+
+            // Clamp
+            /*
+            if(v > 0.5) {
+                v = 0.5;
+            }*/
 
             //console.log(this.effectUniforms.color.value);
             /*

@@ -497,6 +497,7 @@ krusovice.Show.prototype = {
     prepareEffects : function() {
         if(this.rhythmData) {
             this.analysis = new krusovice.RhythmAnalysis(this.rhythmData);
+            this.analysis.initBeats();
         } else {
             this.analysis = null;
         }
@@ -667,14 +668,14 @@ krusovice.Show.prototype = {
 
     },
 
-    renderScene : function() {
+    renderScene : function(clock) {
 
         if(!this.renderFlags.scene) {
             return;
         }
 
-        var vu = this.getVUEffectStrength();
-
+        //var vu = this.getVUEffectStrength(clock);
+        var vu = 0;
         this.renderer.postProcessStrength = vu;
 
         this.renderer.render(this.ctx);
@@ -795,16 +796,36 @@ krusovice.Show.prototype = {
             return 1 - (clock - intClock);
         }
 
-        var beat = this.analysis.findBeatAtClock(clock);
+        var beat = this.analysis.findBeatAtClock(clock, 0);
+
+        if(!beat) {
+            console.log("No beat for clock:" + clock);
+            return 0;
+        }
 
         // How fast beats fall off (seconds)
-        var beatCutOff = 60 / this.rhythmData.tempo;
-        var beatStart = beat.start * 1000;
-        var f;
+        //console.log("Got rhytm data");
+        //console.log(this.rhythmData);
+        var tempo;
+        try {
+            tempo = this.rhytmData.tempo.value;
+        } catch(e) {
+            tempo = 120;
+        }
+
+        // How fast the beat will fade (seconds)
+        var beatCutOff = 60 / tempo;
+        var beatStart = beat.start / 1000;
+        var f, v;
 
         if(beat) {
-            f = (beatStart-clock) / beatCutOff;
-            return f * beat.confidence / this.analysis.maxBeatConfidence;
+            f = (clock - beatStart) / beatCutOff;
+
+            //v = f * beat.confidence / this.analysis.maxBeatConfidence;
+            console.log(beat);
+            console.log(f);
+            return 1 - f;
+            // return f * beat.confidence / this.analysis.maxBeatConfidence;
         }
 
         return 0;

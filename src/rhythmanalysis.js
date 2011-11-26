@@ -101,26 +101,37 @@ krusovice.RhythmAnalysis.prototype = {
     },
 
     /**
+     * Find the latest beat for a clock position.
+     *
+     * Note: beat is not at the clock, but has happened some time ago.
+     *
      * @param clock Song position in seconds
+     *
+     * @return beat object
      */
-    findBeatAtClock : function(clock) {
+    findBeatAtClock : function(clock, confidenceTreshold) {
 
-        var beat = 0;
+        var beat = null;
 
         var i = 0;
 
         clock *= 1000;
 
-        var confidenceThreshold = this.minBeatConfidence;
+        var confidenceThreshold = (confidenceTreshold !== undefined) ? confidenceThreshold : this.minBeatConfidence;
 
         for(i=0; i<this.data.beats.length; i++) {
             var t = this.data.beats[i];
+
             if(t.confidence < confidenceThreshold) {
                 continue;
             }
 
-            if(clock >= t.start && clock < t.start + t.duration) {
+            if(t.start <= clock) {
                 beat = t;
+            }
+
+            if(t.start > clock) {
+                // Beats coming after clock
                 break;
             }
 
@@ -129,6 +140,7 @@ krusovice.RhythmAnalysis.prototype = {
         return beat;
 
     },
+
 
     /**
      * Generic AudioQuantum array search
