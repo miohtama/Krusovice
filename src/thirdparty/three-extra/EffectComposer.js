@@ -132,12 +132,20 @@ THREE.EffectComposer.prototype = {
 THREE.EffectComposer.setup = function(width, height) {
     THREE.EffectComposer.geometry = new THREE.PlaneGeometry( 1, 1 );
 
+    //var tex = new THREE.Texture("http://localhost:8000/demos/test-texture-transparent.png", THREE.UVMapping);
+    //tex.needsUpdate = true;
 
     THREE.EffectComposer.quad = new THREE.Mesh( THREE.EffectComposer.geometry, null );
     THREE.EffectComposer.quad.position.z = -100;
     THREE.EffectComposer.quad.scale.set(width, height, 1 );
     THREE.EffectComposer.quad.updateMatrixWorld();
-    THREE.EffectComposer.quad.material = new THREE.MeshBasicMaterial({color : 0xff00ff});
+    THREE.EffectComposer.quad.material = new THREE.MeshBasicMaterial(
+        {
+        //color : 0x008800,
+        transparent : true,
+        //blending: THREE.AdditiveBlending,
+        map: THREE.ImageUtils.loadTexture("/olvi/test-texture-transparent.png")
+        });
 
     THREE.EffectComposer.scene = new THREE.Scene();
     THREE.EffectComposer.scene.addObject( THREE.EffectComposer.quad );

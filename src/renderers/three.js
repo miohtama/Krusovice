@@ -135,7 +135,7 @@ krusovice.renderers.Three.prototype = {
 
 
         // Camera is always in fixed position
-        camera.position.z = 550;
+        camera.position.z = 850;
 
         // start the renderer
         renderer.setSize(this.width, this.height);
@@ -169,23 +169,19 @@ krusovice.renderers.Three.prototype = {
 
         var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat};
 
-        var target = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
-
-        var bloomBuffer = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
-
-        this.renderer.autoClear = false;
-        this.renderer.setClearColorHex( 0x000000, 1 );
-
-        var composer = new THREE.EffectComposer(this.renderer, target);
+        this.target = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
+        this.target2 = this.target.clone();
+        this.bloomBuffer = this.target.clone();
+        this.bloomBuffer2 = this.target.clone();
+        //var composer = new THREE.EffectComposer(this.renderer, target);
 
         var renderModel = new THREE.RenderPass(this.scene, this.camera);
         var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
-        var textureModel = new THREE.TexturePass(this.scene, this.camera);
-        var renderScene = new THREE.TexturePass(composer.renderTarget2);
+        this.maskObject = new THREE.RenderPass(this.maskScene, this.camera);
+        //var renderScene = new THREE.TexturePass(composer.renderTarget2);
 
         //var renderModel = new THREE.RenderPass(this.maskScene, this.maskCamera);
         var maskModel = new THREE.MaskPass(this.maskScene, this.camera);
-        var effectBloom = new THREE.BloomPass( 1 );
         var clearMask = new THREE.ClearMaskPass();
         var dotScreen = new THREE.DotScreenPass( new THREE.Vector2( 0, 0 ), 0.5, 0.6 );
         //var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
@@ -195,17 +191,18 @@ krusovice.renderers.Three.prototype = {
         this.maskModel = maskModel;
         this.clearMask = clearMask;
         this.copyPass = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
-        this.effectBloom = effectBloom;
 
         //renderModel.clear = false;
         maskModel.clear = false;
         clearMask.clear = false;
         renderModel.clear = false;
         renderModel2.clear = false;
-        renderScene.clear = false;
+        this.maskObject.clear = false;
+        //renderScene.clear = false;
+
         this.copyPass.clear = false;
 
-        this.composer = composer;
+        this.composer = true;
 
         /*
         var quadMask;
@@ -252,11 +249,17 @@ krusovice.renderers.Three.prototype = {
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
         var borderWidth = 16;
-        if(borderColor === null) {
-            borderWidth = 0;
+        var x= 0;
+        var y= 0;
+        if(hasNoBody) {
+            dimensions.width += 28;
+            dimensions.height += 28;
+            borderWidth = 12;
+            x = 0;
+            y = 0;
         }
 
-        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody);
+        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody, x, y);
 
         var filler = new THREE.MeshBasicMaterial( {  map: texture } );
 
@@ -350,6 +353,11 @@ krusovice.renderers.Three.prototype = {
     },
 
 
+    setupBloom : function() {
+        this.effectBloom = new THREE.BloomPass(this.postProcessingStrength);
+    },
+
+
     render : function(frontBuffer) {
 
         // Let Three.js do its magic
@@ -357,13 +365,47 @@ krusovice.renderers.Three.prototype = {
         var camere = this.camera;
 
 
-        if(this.composer) {
+        function copy(renderer, target, src, width, height) {
+            var geometry = new THREE.PlaneGeometry( 1, 1 );
+
+            //var tex = new THREE.Texture("http://localhost:8000/demos/test-texture-transparent.png", THREE.UVMapping);
+            //tex.needsUpdate = true;
+
+            var quad = new THREE.Mesh(geometry);
+            quad.position.z = -100;
+            quad.scale.set(width, height, 1 );
+            quad.updateMatrixWorld();
+            quad.material = new THREE.MeshBasicMaterial(
+                {
+                color : 0x008800,
+                transparent : true,
+                //blending: THREE.AdditiveBlending,
+                map: src
+                });
+
+            var scene = new THREE.Scene();
+            scene.addObject(quad );
+
+            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
+            camera.updateMatrixWorld();
+
+            var color = new THREE.Color(0);
+            renderer.setClearColor(color, 0);
+
+            renderer.clearTarget(target);
+            renderer.render(scene, camera, target, false);
+            //renderer.render(scene, camera);
+        }
+
+
+        if(true) {
+
+            //this.setupBloom();
 
             //this.renderer.autoClear = false;
             //this.renderer.clear();
 
             //this.renderer.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
-
 
             /*
             var context = this.renderer.context;
@@ -401,44 +443,94 @@ krusovice.renderers.Three.prototype = {
 
             //this.composer.render( 0.05 );
 
-            this.renderer.autoClear = false;
-            this.renderer.clear();
 
-            var context = this.renderer.context;
-
+            var gl = this.renderer.context;
 
             var r = this.renderer;
-            var read = this.composer.readBuffer;
-            var write = this.composer.writeBuffer;
+            var read = this.target;
+            var write = this.target2;
             var bloomBuffer  = this.bloomBuffer;
+            var bloomBuffer2  = this.bloomBuffer2;
+
             //r.clearTarget(read);
 
+            // Clear target to 100% alpha
+            r.autoClear = false;
+            var color = new THREE.Color(0);
+            r.setClearColor(color, 0);
+            r.clear();
+
+            //gl.blendEquation(gl.FUNC_ADD );
+            //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            //gl.enable(gl.BLEND);
+
+            //context.clearColor(0xff00ff);
+
+            r.clearTarget(bloomBuffer);
             r.clearTarget(read);
             r.clearTarget(write);
+            r.clearTarget(bloomBuffer2);
 
-            this.renderModel.render(r, write, read, 0);
+            //r.setClearColor(0xffFFff, 0);
+            //r.autoClear = false;
+            //r.clear();
 
-            this.maskModel.render(r, write, read, 0);
 
-            //context.stencilFunc(context.NOTEQUAL, 1, 0xffffffff );
-            //context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
+            //r.render(this.maskScene);
+            //r.render(this.scene);
 
-            // XXX: WTF... whyyy?
-            this.copyPass.render(r, write, read, 0);
-            this.copyPass.render(r, read, write, 0);
-            //this.renderer.render(this.scene, this.camera);
-            this.clearMask.render(r, write, read, 0);
 
-            // Now have bloomable content in read buffer
+            // Make copy of the orignal rendering
+            //r.clearTarget(bloomBuffer, true, true, true);
+
+            /*
             this.copyPass.render(r, this.bloomBuffer, read, 0);
 
-            this.effectBloom.render(r, read, write, 0);
+            // Clear depth buffer so that mask object will not Z conflict with real obj
+            r.clearTarget(read, false, true, true);
+            //r.clearTarget(read);
+            //r.clearTarget(write, true, true, true);
 
+            this.maskModel.render(r, bloomBuffer2, read, 0);
+            // XXX: WTF... whyyy? Can't understand.
+            // Haapala will spank me.
+            this.copyPass.render(r, bloomBuffer2, read, 0);
+            //this.renderer.render(this.scene, this.camera);
+            this.clearMask.render(r);
+
+            // Now have bloomable content in read buffer
+            //r.clearTarget(this.bloomBuffer);
+            //this.copyPass.render(r, write, this.bloomBuffer, 0);
+
+            //this.effectBloom.render(r, write, this.bloomBuffer, 0);
+
+            // Place actual image
+            //this.copyPass.render(r, write, bloomBuffer, 0);
+            this.copyPass.render(r, write, bloomBuffer, 0);
+            //this.copyPass.render(r, write, bloomBuffer2, 0);
+            */
+            // Place bloom overlay
+            //this.copyPass.render(r, write, this.bloomBuffer, 0);
+
+            //r.clearTarget(write, true, true, true);
+            //r.clearTarget(read, true, true, true);
+
+            //this.copyPass.render(r, read, this.bloomBuffer, 0);
+            //this.copyPass.render(r, write, this.bloomBuffer, 0);
             //context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+            //this.copyPass.render(r, write, read, 0);
 
-            this.renderer.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
+            //copy(r, write, read, this.width, this.height);
 
+            //this.renderer.render(this.scene, this.camera);
+            //r.clear(false, true, true);
+            //THREE.EffectComposer.quad.material = new THREE.MeshBasicMaterial({map:write});
+            //r.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
+            //
 
+            this.maskObject.render(r, undefined, undefined, 0);
+            r.clear(false, true, true);
+            this.renderModel.render(r, undefined, undefined, 0);
 
         } else {
             this.renderer.render(this.scene, this.camera);
@@ -467,9 +559,12 @@ krusovice.renderers.Three.prototype = {
 /**
  * Create a plane mesh with fill and border material, optionally different for both sides
  */
-THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight, noBody) {
+THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight, noBody, ax, ay) {
 
     THREE.Geometry.call( this );
+
+
+    console.log("nobody:" + noBody);
 
     var ix, iy,
     width_half = width / 2,
@@ -482,13 +577,6 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     segment_height = height / gridY,
     normal = new THREE.Vector3( 0, 0, -1 ),
     normal2 = new THREE.Vector3( 0, 0, 1 );
-
-    if(noBody) {
-        width -= 16;
-        height -= 16;
-        frameWidth += 48;
-        frameHeight += 48;
-    }
 
     // Add UV coordinates for back fill material
     this.faceVertexUvs.push([]);
@@ -553,21 +641,32 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     this.borderFaces = [];
     var self = this;
 
-    function addBorderFace(left, top, right, bottom, clockwise) {
+    function addBorderFace(left, top, right, bottom, v1, v2, v3, v4) {
+
+        if(v4 === undefined) {
+            throw "Ooops.";
+        }
 
         var vi = self.vertices.length;
+
+        var uv = [
+            new THREE.UV( 0, 0 ),
+            new THREE.UV( 0, 1 ),
+            new THREE.UV(1, 1),
+            new THREE.UV(1, 0 )
+        ];
 
         left -= width_half;
         top -= height_half;
         right -= width_half;
         bottom -= height_half;
 
-        console.log("face " + left + " " + top + " " + right + " " + bottom);
+        console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
 
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(left, top,  0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(right, top, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(right, bottom, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(left, bottom, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + left, ay + top,  0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + right, ay + top, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + right, ay + bottom, 0)));
+        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + left, ay + bottom, 0)));
 
         // Create faces for both sides
 
@@ -578,6 +677,10 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         self.faces.push( face );
         self.borderFaces.push(face);
 
+        self.faceVertexUvs[0].push( [
+                    uv[v1], uv[v2], uv[v3], uv[v4]
+                ] );
+
         face = new THREE.Face4(vi, vi+3, vi+2, vi+1);
         face.normal.copy(normal2);
         face.vertexNormals.push(normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone());
@@ -585,13 +688,44 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         self.faces.push(face);
         self.borderFaces.push(face);
 
+        self.faceVertexUvs[0].push( [
+                    uv[v1], uv[v3], uv[v2], uv[v1]
+                ] );
+
+
     }
 
     if(frameWidth > 0 && frameHeight > 0) {
-        addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0);
-        addBorderFace(-frameWidth, 0, 0, height);
-        addBorderFace(width, 0, width+frameWidth, height);
-        addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight);
+
+        // bl
+        addBorderFace(-frameWidth, -frameHeight, 0, 0,     0, 0, 2, 0);
+
+        // bottom
+        addBorderFace(0, -frameHeight, width, 0, 0,     0, 2, 2, 0);
+
+        // br
+        addBorderFace(width, -frameHeight, width+frameWidth, 0,    0, 0, 0, 2);
+
+        // ml
+        addBorderFace(-frameWidth, 0, 0, height,    0, 2, 2, 0);
+
+        // tl
+        addBorderFace(-frameWidth, height, 0, height+frameHeight,    0, 2, 0, 0);
+
+        // top
+        addBorderFace(0, height, width, height+frameHeight,    2, 2, 0, 0);
+
+        // tr
+        addBorderFace(width+frameWidth, height+frameHeight, width, height,    0, 0, 2, 0);
+
+        // mr
+        addBorderFace(width, 0, width+frameWidth, height,    2, 0, 0, 2);
+
+
+        //addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0, 0, 1, 2, 3);
+        //addBorderFace(-frameWidth, 0, 0, height, 0, 1, 2, 3);
+        //addBorderFace(width, 0, width+frameWidth, height, 0, 1, 2, 3);
+        //addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight, 0, 1, 2, 3);
     }
 
 
@@ -643,5 +777,37 @@ THREE.LinePlaneGeometry.prototype = new THREE.Geometry();
 
 THREE.LinePlaneGeometry.prototype.constructor = THREE.LinePlaneGeometry;
 
+
+THREE.CustomShaders = {
+    'alphaedge' : {
+      uniforms: {
+            "color" : { type: "v3", value: new THREE.Vector3(1, 0, 1) },
+            "intensity" : { type: "f", value: 0 }
+      },
+      vertexShader: [
+        'varying vec2 vUv;',
+        'varying vec3 vNormal;',
+        'void main() {',
+          'vNormal = normalize( normalMatrix * normal );',
+          'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+          'vUv = uv;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'varying vec2 vUv;',
+        'varying vec3 vNormal;',
+        "uniform vec3 color;",
+        "uniform float intensity;",
+         'void main() {',
+          'float distance = dot(vUv, vUv);',
+          'float e = intensity * distance;',
+          'vec4 add = vec4(e*color.x, e*color.y, e*color.z, e);',
+          //'vec4 mix = vec4(gl_FragColor.r + color.x /2.0, 0.5, 0.5, 1);',
+          //'vec4 clamped = vec4(clamp(add.x, add.y, add.z, e));',
+          'gl_FragColor = add;',
+        '}'
+      ].join('\n')
+    }
+  };
 
 });

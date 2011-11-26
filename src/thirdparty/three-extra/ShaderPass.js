@@ -10,11 +10,16 @@ THREE.ShaderPass = function( shader, textureID ) {
 
 	this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
+    this.uniforms[ "opacity" ].value = 0.5;
+    //this.uniforms[ "tDiffuse" ].value = 0;
+
 	this.material = new THREE.ShaderMaterial( {
 
 		uniforms: this.uniforms,
 		vertexShader: shader.vertexShader,
-		fragmentShader: shader.fragmentShader
+		fragmentShader: shader.fragmentShader,
+        //blending: THREE.NormalBlending,
+        //transparent: true
 
 	} );
 

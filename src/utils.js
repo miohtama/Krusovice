@@ -492,7 +492,18 @@ krusovice.utils = {
 
         return hex;
 
+    },
+
+    /**
+     */
+    getCSSColorAsThreeVector : function(cssColor) {
+        var r = parseInt(cssColor.substring(1, 3), 16);
+        var g = parseInt(cssColor.substring(3, 5), 16);
+        var b = parseInt(cssColor.substring(5, 7), 16);
+
+        return new THREE.Vector3(r/255, g/255, b/255);
     }
+
 
 };
 

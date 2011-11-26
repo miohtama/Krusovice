@@ -56,7 +56,14 @@ THREE.ShaderExtras = {
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-				"gl_FragColor = opacity * texel;",
+		        "vec4 c = opacity*texel;",
+				//"gl_FragColor = opacity * texel;",
+               "gl_FragColor.r = 0.2;",
+               "gl_FragColor.g = texel.a;",
+               "gl_FragColor.b = texel.a;",
+               "gl_FragColor.a = 0.5;",
+
+               //"gl_FragColor = vec4(c.r, c.g, c.b, 0.5);",
 
 			"}"
 

@@ -642,6 +642,7 @@ krusovice.Show.prototype = {
 
         //console.log("Slicing frame " + this.currentFrame + " clock:" + renderClock);
         this.renderBackground(renderClock);
+
         this.renderScene(renderClock);
 
         if(this.renderFlags.frameLabel) {
@@ -671,6 +672,10 @@ krusovice.Show.prototype = {
         if(!this.renderFlags.scene) {
             return;
         }
+
+        var vu = this.getVUEffectStrength();
+
+        this.renderer.postProcessStrength = vu;
 
         this.renderer.render(this.ctx);
     },
@@ -729,9 +734,7 @@ krusovice.Show.prototype = {
         if(!this.animatedObjects) {
             return;
         }
-
-        var vu = this.getVUEffectStrength();
-
+        var vu = this.getVUEffectStrength(renderClock);
         this.animatedObjects.forEach(function(obj) {
             var state = obj.animate(renderClock);
             obj.render(vu);
@@ -786,8 +789,10 @@ krusovice.Show.prototype = {
     getVUEffectStrength : function(clock) {
         // We don't actual have real VU, so we take beat and calculate a fade off based on it
 
+        // Pulse every second if no music
         if(!this.rhythmData) {
-            return 0;
+            var intClock = Math.floor(clock);
+            return 1 - (clock - intClock);
         }
 
         var beat = this.analysis.findBeatAtClock(clock);

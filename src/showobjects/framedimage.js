@@ -5,7 +5,7 @@ define("krusovice/showobjects/framedimage", ["krusovice/thirdparty/jquery-bundle
 
 "use strict";
 
-/*global krusovice,window,$,console*/
+/*global krusovice,window,$,console,THREE*/
 
 /**
  *
@@ -200,12 +200,37 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
     createEffectObject : function() {
         var borderColor = this.data.borderColor || "#eeEEee";
-        var mesh = this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor, true);
+
+        console.log("******");
+        console.log("Got border color:" + borderColor);
+
+        var mesh = this.renderer.createQuad(this.framed,
+            this.framed.naturalWidth,
+            this.framed.naturalHeight,
+            borderColor, true);
 
         //mesh.baseScale = new THREE.Vector3(0.2, 0.2, 0.2);
 
         // This object should be used as stencil mask drawing only
-        var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
+        //var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
+
+        var shader = THREE.CustomShaders.alphaedge;
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+
+        uniforms.color.value = krusovice.utils.getCSSColorAsThreeVector(borderColor);
+
+        var mat = new THREE.ShaderMaterial({
+          uniforms: uniforms,
+          vertexShader: shader.vertexShader,
+          fragmentShader: shader.fragmentShader,
+          //blending: THREE.MultiplyBlending
+          transparent : true
+        });
+
+        this.effectUniforms = uniforms;
+
+        //var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
+
         mesh.geometry.materials = [mat,mat,mat,mat];
 
         return mesh;
@@ -214,8 +239,24 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         //return this.renderer.createBorderLines(this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
-    render : function(vuStrenght) {
+    render : function(vuStrength) {
+        if(this.effectObject) {
+            //this.effectUniforms.intensity.value = vuStrength;
 
+            var v = $.easing.easeOutQuad(null, vuStrength, 0, 1, 1);
+
+            if(v > 0.8) {
+                v = 0.8;
+            }
+
+            this.effectUniforms.intensity.value = v;
+
+            //console.log(this.effectUniforms.color.value);
+            /*
+            console.log("Got vu:" + vuStrength);
+            console.log("Got color:");
+            console.log(this.effectUniforms.color.value);*/
+        }
     }
 
 
