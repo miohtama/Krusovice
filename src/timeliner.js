@@ -818,6 +818,17 @@ krusovice.Timeliner.prototype = {
         }
 
         return effectType;
+    },
+
+
+    /**
+     * Copy krusovice.Design timeliner created variables to this instance.
+     */
+    updateFromDesign : function(design) {
+        // Adjust timing parameters
+        this.leadTime = design.leadTime;
+        this.coolingTime = design.coolingTime;
+        this.steppingTime = design.steppingTime;
     }
 
 };
