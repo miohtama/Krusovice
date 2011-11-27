@@ -822,8 +822,8 @@ krusovice.Show.prototype = {
             f = (clock - beatStart) / beatCutOff;
 
             //v = f * beat.confidence / this.analysis.maxBeatConfidence;
-            console.log(beat);
-            console.log(f);
+            //console.log(beat);
+            //console.log(f);
             return 1 - f;
             // return f * beat.confidence / this.analysis.maxBeatConfidence;
         }
