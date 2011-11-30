@@ -400,12 +400,17 @@ krusovice.utils = {
 
         //return krusovice.utils.resizeAspectRatio(srcWidth, srcHeight, maxWidth, maxHeight);
 
-
+        /*
         if(srcWidth > srcHeight) {
             return { width : maxWidth, height : maxHeight * srcHeight/srcWidth };
         }  else {
             return { width : maxWidth * srcWidth/srcHeight, height : maxHeight };
-        }
+        }*/
+
+        var ratio = [maxWidth / srcWidth, maxHeight / srcHeight ];
+        ratio = Math.min(ratio[0], ratio[1]);
+
+        return { width:srcWidth*ratio, height:srcHeight*ratio };
      },
 
 
