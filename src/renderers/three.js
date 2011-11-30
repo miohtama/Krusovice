@@ -135,7 +135,7 @@ krusovice.renderers.Three.prototype = {
 
 
         // Camera is always in fixed position
-        camera.position.z = 850;
+        camera.position.z = 650;
 
         // start the renderer
         renderer.setSize(this.width, this.height);
