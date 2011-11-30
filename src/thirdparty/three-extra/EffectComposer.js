@@ -141,10 +141,10 @@ THREE.EffectComposer.setup = function(width, height) {
     THREE.EffectComposer.quad.updateMatrixWorld();
     THREE.EffectComposer.quad.material = new THREE.MeshBasicMaterial(
         {
-        //color : 0x008800,
-        transparent : true,
+        color : 0x008800,
+        transparent : true
         //blending: THREE.AdditiveBlending,
-        map: THREE.ImageUtils.loadTexture("/olvi/test-texture-transparent.png")
+        //map: THREE.ImageUtils.loadTexture("/olvi/test-texture-transparent.png")
         });
 
     THREE.EffectComposer.scene = new THREE.Scene();
