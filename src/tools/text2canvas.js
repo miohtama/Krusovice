@@ -49,7 +49,11 @@ define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function(
         },
 
         /**
-         * Some pseudo-CSS styling
+         * Some pseudo-CSS styling.
+         *
+         * Note that used font-family MUST be preloaded somehow,
+         * or the first call of draw string will draw nothing
+         * on Chrome 15.
          *
          */
         css : {
