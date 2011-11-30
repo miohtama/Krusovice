@@ -103,6 +103,32 @@ krusovice.Design.prototype = {
     songId : null,
 
     /**
+     * @type Object
+     *
+     * Custom uploaded song data.
+     *
+     * Song data resolution rules
+     *
+     * * If songData && songData.url set use it
+     *
+     * * else if songId set use it
+     *
+     * * else use silence
+     *
+     */
+    songData : {
+
+        // String
+        id : null,
+
+        // String
+        name : null,
+
+        // MP3 URL
+        url : null
+    },
+
+    /**
      * @type Number
      *
      * Adjust music start. Positive value skips music to this moment. Negative value plays music X seconds before the show begins.

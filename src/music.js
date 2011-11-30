@@ -15,6 +15,14 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
     noAudioClip : null,
 
     /**
+     * Rhytm URL -> associated rhytm data object mappings.
+     *
+     * XXX: Never released. Figure out smarter way to
+     * carry this data around.
+     */
+    rhythms : {},
+
+    /**
      * Load music data from JSON file
      *
      * @param {String} url URL to songs.json
@@ -69,53 +77,36 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
     },
 
     /**
-     * Load a song from the repository for the show purposes.
+     * Load a song into audio element and load related rhytm data too.
      *
-     * @param {String} id Song id or null for no music
+     * Song URL must be preprocessed to be platform compatible.
      *
      * @param {Object} audio HTMLAudio element used for music playback, or null
      *
-     * @param {Function} callback called when all done
+     * @param {Function} callback(songURL, rhytmhURL, rhytmData) called when all done
      *
      * @param {boolean} prelisten Load low quality audio version
      *
      */
-    loadSong : function(id, audio, callback, prelisten) {
+    loadSong : function(songURL, rhythmURL, audio, callback, prelisten) {
 
-        var songURL, rhythmURL;
         var rhythmDone = false;
         var songDone = false;
         var song;
+        var self = this;
+        var rhythmData = null;
 
-        if(id) {
-            // Assuming has music
-
-            song = this.get(id);
-            songURL = this.getAudioURL(id, prelisten);
-
-            if(!song) {
-                throw "Unknown song:" + id;
-            }
-
-            var mp3 = song.mp3;
-            rhythmURL = mp3.replace(".mp3", ".json");
-
-        } else {
-            songURL = this.noAudioClip;
-        }
-
-        console.log("Loading song URL " + songURL + " for audio element:" + audio);
-
+        console.log("Loading song URL " + songURL + " for audio element:" + audio + " with rhythm data:" + rhythmURL);
 
         function allDone() {
             if(rhythmDone && songDone) {
-                callback(song);
+                callback(songURL, rhythmURL, rhythmData);
             }
         }
 
         function onRhythmData(data) {
-            song.rhythmData = data;
             rhythmDone = true;
+            rhythmData = data;
             allDone();
         }
 
@@ -124,7 +115,15 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
             allDone();
         }
 
-        $.getJSON(rhythmURL, onRhythmData);
+        var xhr = $.getJSON(rhythmURL, onRhythmData);
+
+        // Did not get rhytm data - proceed still
+        xhr.fail(function() {
+            console.error("Could not load rhythm data:" + rhythmURL);
+            rhythmDone = true;
+            rhythmData = null;
+            allDone();
+        });
 
         if(audio) {
             $(audio).one("canplay", onMusicBuffered);
@@ -132,6 +131,34 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         } else {
             songDone = true;
         }
+
+    },
+
+    /**
+     * Load a song based on krusovice.Design object.
+     *
+     * Song can be id (stock) or custom URL.
+     */
+    loadSongFromDesign : function(design, audio, callback, prelisten) {
+
+        var songURL;
+
+        if(design.songData && design.songData.url) {
+            songURL = design.songData.url;
+        } else if(design.songId) {
+            songURL = this.getAudioURL(design.songId);
+        } else {
+            console.error(design);
+            throw "Cannot load song - no song defined";
+        }
+
+        var rhythmURL = songURL.replace(".mp3", ".json");
+
+        if(prelisten) {
+            songURL = this.convertToPrelistenURL(songURL);
+        }
+
+        return this.loadSong(songURL, rhythmURL, audio, callback, prelisten);
 
     },
 
