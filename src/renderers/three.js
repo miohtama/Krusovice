@@ -30,6 +30,7 @@ function cssToOpenGLColor(cssColor) {
  */
 krusovice.renderers.Three = function(cfg) {
     $.extend(this, cfg);
+
 };
 
 krusovice.renderers.Three.prototype = {
@@ -72,7 +73,47 @@ krusovice.renderers.Three.prototype = {
 
     PLANE_HEIGHT : 512,
 
+
+    /**
+     * Do (heavy) creation of WebGL context so we don't need to repeat this operation if not necessary
+     */
+    setupContext : function() {
+
+       console.log("Creating renderer backend");
+
+        var renderer;
+
+        if(this.webGL) {
+            // https://github.com/mrdoob/three.js/blob/master/src/renderers/WebGLRenderer.js
+
+            var settings  ={
+                antialias : true,
+                //clearColor : 0x00ff00,
+                //clearAlpha : 1,
+                autoClear : false
+            };
+
+            renderer = new THREE.WebGLRenderer(settings);
+        } else {
+            renderer = new THREE.CanvasRenderer();
+        }
+
+        // start the renderer
+        renderer.setSize(this.width, this.height);
+
+        this.renderer = renderer;
+
+    },
+
     setup : function() {
+
+        var renderer;
+
+        if(!this.renderer) {
+            this.setupContext();
+        }
+
+        renderer = this.renderer;
 
         // Let's assume that we have Field of View of 90 degrees
         // on 16:9 canvas
@@ -106,24 +147,6 @@ krusovice.renderers.Three.prototype = {
             fov = krusovice.utils.calculateFOV(baseAspect, aspect, baseFOV);
         }
 
-        var renderer;
-
-
-        if(this.webGL) {
-            // https://github.com/mrdoob/three.js/blob/master/src/renderers/WebGLRenderer.js
-
-            var settings  ={
-                antialias : true,
-                //clearColor : 0x00ff00,
-                //clearAlpha : 1,
-                autoClear : false
-            };
-
-            renderer = new THREE.WebGLRenderer(settings);
-        } else {
-            renderer = new THREE.CanvasRenderer();
-        }
-
         // var renderer = new THREE.WebGLRenderer();
 
         var camera = new THREE.Camera(fov,
@@ -137,10 +160,6 @@ krusovice.renderers.Three.prototype = {
         // Camera is always in fixed position
         camera.position.z = 650;
 
-        // start the renderer
-        renderer.setSize(this.width, this.height);
-
-        this.renderer = renderer;
         this.scene = scene;
         this.maskScene = new THREE.Scene();
         this.camera = camera;

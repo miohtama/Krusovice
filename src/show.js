@@ -409,17 +409,23 @@ krusovice.Show.prototype = {
      */
     prepareCanvas : function() {
 
-        var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
+        if(!this.canvas) {
+           console.log("Creating show <canvas>");
+            var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
+            this.canvas = $canvas.get(0);
+        }
+
+        if(!this.ctx) {
+            this.ctx = this.canvas.getContext("2d");
+        }
 
         if(this.elem !== null) {
             this.elem.find("canvas").remove();
-            this.elem.append($canvas);
+            this.elem.append(this.canvas);
         }
 
-        $canvas.attr("id", "show-canvas");
-
-        this.canvas = $canvas.get(0);
-        this.ctx = this.canvas.getContext("2d");
+        // XXX: We support currently only one show per page
+        this.canvas.setAttribute("id", "show-canvas");
 
     },
 
@@ -469,12 +475,17 @@ krusovice.Show.prototype = {
     prepareRenderer : function() {
 
         // XXX: hardcoded for THREE.js now
-        this.renderer = new krusovice.renderers.Three({
-            width : this.width,
-            height : this.height,
-            elem : this.elem,
-            webGL : this.webGL
-        });
+
+        if(!this.renderer) {
+            console.log("Creating show renderer");
+            this.renderer = new krusovice.renderers.Three({
+                width : this.width,
+                height : this.height,
+                elem : this.elem,
+                webGL : this.webGL
+            });
+
+        }
 
         this.renderer.setup();
     },
