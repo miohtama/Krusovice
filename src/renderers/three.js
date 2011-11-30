@@ -259,6 +259,10 @@ krusovice.renderers.Three.prototype = {
             y = 0;
         }
 
+        if(borderColor === null) {
+            borderWidth = 0;
+        }
+
         var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody, x, y);
 
         var filler = new THREE.MeshBasicMaterial( {  map: texture } );
