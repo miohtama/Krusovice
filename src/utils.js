@@ -396,16 +396,24 @@ krusovice.utils = {
 
      },
 
+     /**
+      * Resize arbitary width x height region to fit inside another region.
+      *
+      * Conserve aspect ratio of the orignal region. Useful when shrinking/enlarging
+      * images to fit into a certain area.
+      *
+      * @param {Number} srcWidth Source area width
+      *
+      * @param {Number} srcHeight Source area height
+      *
+      * @param {Number} maxWidth Fittable area maximum available width
+      *
+      * @param {Number} srcWidth Fittable area maximum available height
+      *
+      * @return {Object} { width, heigth }
+      *
+      */
      calculateAspectRatioFit : function(srcWidth, srcHeight, maxWidth, maxHeight) {
-
-        //return krusovice.utils.resizeAspectRatio(srcWidth, srcHeight, maxWidth, maxHeight);
-
-        /*
-        if(srcWidth > srcHeight) {
-            return { width : maxWidth, height : maxHeight * srcHeight/srcWidth };
-        }  else {
-            return { width : maxWidth * srcWidth/srcHeight, height : maxHeight };
-        }*/
 
         var ratio = [maxWidth / srcWidth, maxHeight / srcHeight ];
         ratio = Math.min(ratio[0], ratio[1]);
