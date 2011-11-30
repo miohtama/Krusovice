@@ -10,6 +10,24 @@
 define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api"], function($, krusovice) {
     "use strict";
 
+
+    function setupFadeOut(show, audio, fadeOutThreshold) {
+
+        fadeOutThreshold = fadeOutThreshold || 3.0;
+        var duration = show.getDuration();
+
+        // Add audio fade out period to the show end
+        var fadingOut = false;
+
+        $(show).bind("showclock", function(e, clock) {
+            if(clock > fadeOutThreshold && !fadingOut) {
+                console.log("Starting fade out");
+                fadingOut = true;
+                krusovice.tools.fadeOut(audio, fadeOutThreshold*1000);
+            }
+        });
+    }
+
     /**
      * Create a krusoive show player.
      *
@@ -21,7 +39,7 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * @param {Object} showOptions Extra options for krusovice.Show
      */
-    function play(elementId, project, showOptions) {
+    function play(elementId, project, initOptions, showOptions) {
         var elem = $("#" + elementId);
 
         var design = project.design;
@@ -57,13 +75,19 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             show.bindToAudio(audio);
 
             // Auto-start
-            /*
+
             $(show).bind("loadend", function() {
                 console.log("Rendering the show");
                 audio.play();
-            });*/
+            });
+
+            setupFadeOut(show, audio);
 
             show.prepare();
+        }
+
+        if(initOptions.textMediaURL) {
+            krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
         audio = document.createElement("audio");

@@ -145,23 +145,27 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
         {
             id : "postit",
 
+            imageName :  "postit.png",
+
             name : dummytext("Post It"),
 
             labels : {
-                 text : {
-                    name : dummytext("Text"),
-                    x : 0.2,
-                    y : 0.2,
-                    w : 0.6,
-                    h : 0.4
+
+                text : {
+                    name : dummytext("Text")
                 }
+
             },
 
-            width : 4,
+            width : 1,
 
-            height : 4
+            height : 1,
+
+            baseScale : [0.5, 0.5, 0.5],
+
+            textBorder : false
+
         }
-
     ];
 };
 

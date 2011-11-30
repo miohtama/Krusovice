@@ -185,7 +185,10 @@ $.extend(krusovice.showobjects.Text.prototype, {
         renderer.css["font-size-adjust"] = labelData.fontSizeAdjust || 1.0;
 
         // Set x, y, w, h parameters
-        renderer.box = labelData;
+        renderer.box.x = labelData.x || 0;
+        renderer.box.y = labelData.y || 0;
+        renderer.box.w = labelData.w || 1;
+        renderer.box.h = labelData.h || 1;
 
         renderer.renderText(text);
     },

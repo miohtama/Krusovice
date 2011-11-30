@@ -132,7 +132,7 @@ krusovice.renderers.Three.prototype = {
 
         var fov;
 
-        this.baseScaleLandscape = 1.6;
+        this.baseScaleLandscape = 1.2;
         this.baseScalePortrait = 1;
 
         if(aspect == 16/9) {
@@ -689,7 +689,7 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         right -= width_half;
         bottom -= height_half;
 
-        console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
+        // console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
 
         self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + left, ay + top,  0)));
         self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + right, ay + top, 0)));
