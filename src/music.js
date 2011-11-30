@@ -135,25 +135,14 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
     },
 
-    /**
-     * @param {Boolean} prelisten Get low quality preview version
-     */
-    getAudioURL : function(songId, prelisten) {
-
-        // XXX: add <audio> API format detection here
+    convertToPrelistenURL : function(url) {
 
         var audio = document.createElement("audio");
 
         var needAAC = audio.canPlayType('audio/mp4; codecs="mp4a.40.5"') !== "";
         var needOGG = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
 
-        var song = this.get(songId);
-
-        var url = song.mp3;
-
-        if(prelisten) {
-            url = url.replace(".mp3", ".prelisten.mp3");
-        }
+        url = url.replace(".mp3", ".prelisten.mp3");
 
         if(needOGG) {
             url = url.replace(".mp3", ".ogg");
@@ -161,6 +150,22 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
             url = url.replace(".mp3", ".m4a");
         } else {
             console.error("Could not detect prelisten audio format support");
+        }
+
+        return url;
+    },
+
+    /**
+     * @param {Boolean} prelisten Get low quality preview version
+     */
+    getAudioURL : function(songId, prelisten) {
+
+        var song = this.get(songId);
+
+        var url = song.mp3;
+
+        if(prelisten) {
+            return this.convertToPrelistenURL(url);
         }
 
         return url;
