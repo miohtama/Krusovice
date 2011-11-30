@@ -799,7 +799,7 @@ krusovice.Show.prototype = {
         var beat = this.analysis.findBeatAtClock(clock, 0);
 
         if(!beat) {
-            console.log("No beat for clock:" + clock);
+            //console.log("No beat for clock:" + clock);
             return 0;
         }
 
@@ -808,8 +808,11 @@ krusovice.Show.prototype = {
         //console.log(this.rhythmData);
         var tempo;
         try {
-            tempo = this.rhytmData.tempo.value;
+            tempo = this.rhythmData.tempo.value;
         } catch(e) {
+            console.error("Song data lacked tempo");
+            console.error(this.rhythmData);
+            console.error(e);
             tempo = 120;
         }
 
