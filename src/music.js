@@ -81,7 +81,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      *
      * Song URL must be preprocessed to be platform compatible.
      *
-     * @param {Object} audio HTMLAudio element used for music playback, or null
+     * @param {Object} audio HTMLAudio element used for music playback, or null if only to load rhytm data
      *
      * @param {Function} callback(songURL, rhytmhURL, rhytmData) called when all done
      *
