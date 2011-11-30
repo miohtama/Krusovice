@@ -585,7 +585,7 @@ effects.FallBottom = $.extend(true, {}, effects.QuaternionRotate, {
 
     transitions : ["transitionin", "transitionout"],
 
-    easing : 'easeOutCubic',
+    easing : 'easeOutExpo',
 
     init : function() {
         var p = this.parameters;
