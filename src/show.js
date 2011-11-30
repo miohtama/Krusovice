@@ -542,6 +542,7 @@ krusovice.Show.prototype = {
             return;
         }
 
+        this.clock = 0;
         this.playing = true;
         this.stopped = false;
         this.loopAnimation();
