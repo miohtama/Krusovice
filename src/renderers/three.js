@@ -348,8 +348,13 @@ krusovice.renderers.Three.prototype = {
     farewell : function(mesh, effectObject) {
         // this.scene.removeObject(mesh);
         //console.log("Farewell for object");
-        mesh.visible = false;
-        effectObject.visible = false;
+        if(mesh) {
+            mesh.visible = false;
+        }
+
+        if(effectObject) {
+            effectObject.visible = false;
+        }
     },
 
 
