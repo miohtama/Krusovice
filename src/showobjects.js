@@ -221,8 +221,13 @@ krusovice.showobjects.Base.prototype = {
      * Apply animation parameters to a scene object.
      */
     animateMesh : function(mesh, position, rotation, scale, opacity) {
-        mesh.position = position;
+
+        if(position) {
+            mesh.position = position;
+        }
+
         mesh.scale = scale ;
+
         if(rotation) {
             mesh.quaternion = rotation;
         }

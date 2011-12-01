@@ -288,6 +288,7 @@ krusovice.Timeliner.prototype = {
         for(var i=0; i<this.showElements.length; i++) {
 
             var elem = this.showElements[i];
+            var prev = i > 0 ? this.showElements[i-1] : null;
 
             console.log("Element #" + i + " current clock:" + clock);
 
@@ -304,8 +305,10 @@ krusovice.Timeliner.prototype = {
                 elem.duration = this.duration || 8.0;
             }
 
+            var instant = (prev && prev.steppingTime === 0);
+
             // Place element on the timeine based on our current clock
-            this.timeAnimations(out, elem, clock, elem.duration);
+            this.timeAnimations(out, elem, clock, elem.duration, instant);
 
             this.prepareAnimations(out, elem);
 
@@ -317,7 +320,11 @@ krusovice.Timeliner.prototype = {
             if(i == this.showElements.length-1) {
                 out.spacingTime = this.coolingTime;
             } else {
-                out.spacingTime = this.steppingTime;
+                if(elem.steppingTime !== undefined) {
+                    out.spacingTime = elem.steppingTime;
+                } else {
+                    out.spacingTime = this.steppingTime;
+                }
             }
 
             var duration = krusovice.Timeliner.getElementDuration(out, true);
@@ -351,7 +358,7 @@ krusovice.Timeliner.prototype = {
      *
      * @param out Show element
      */
-    timeAnimations : function(out, source, clock, onScreenDuration) {
+    timeAnimations : function(out, source, clock, onScreenDuration, instant) {
 
         var settings = this.settings;
         var transitionIn = this.settings.transitionIn;
@@ -416,6 +423,12 @@ krusovice.Timeliner.prototype = {
         var a;
         var bar;
         var duration;
+
+        // Don't leave any spacing from the previous slide
+        if(instant) {
+            console.log("Got instant clock for:" + songClock);
+            hardStart = songClock;
+        }
 
         // First match animation start with bar start, beat start or none
         // Then match animation end with bar start, beat start or none

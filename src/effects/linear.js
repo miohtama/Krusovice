@@ -75,24 +75,31 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
         //console.log("Got source");
         //console.log(source);
 
-        var position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+        var position;
 
+        if(target.position !== null && source.position !== null) {
+            position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+        } else {
+            position = null;
+        }
         /*
         console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);
         console.log("Source:" + source.position);
         console.log("Target:" + target.position);
         console.log("Position:" + position);
         */
-        if(!krusovice.utils.isNumber(position[0])) {
-            throw "Serious fail";
-        }
 
         // Outputted animation values
         var output = {};
 
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
 
-        output.position = new THREE.Vector3(position[0], position[1], position[2]);
+        if(position !== null) {
+            output.position = new THREE.Vector3(position[0], position[1], position[2]);
+        } else {
+            output.position = null;
+        }
+
         output.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
 
         // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
@@ -272,6 +279,9 @@ effects.Fade = $.extend(true, {}, effects.Interpolate, {
         this.parameters.target.rotation = null;
         this.parameters.source.rotation = null;
 
+        this.parameters.target.position = null;
+        this.parameters.source.position = null;
+
     }
 
 });
@@ -412,6 +422,55 @@ effects.StaticRotateZ = $.extend(true, {}, effects.QuaternionRotate, {
 
 
 effects.Manager.register(effects.StaticRotateZ);
+
+/**
+ * Hold object lttle bit off the center of the screen slighty rotated around one of its axis.
+ *
+ */
+effects.SlightDisplacement = $.extend(true, {}, effects.QuaternionRotate, {
+
+    id : "slightdisplacement",
+
+    name : "Slight Displacement",
+
+    available : true,
+
+    transitions : ["onscreen"],
+
+    // XXX: Does not really matter
+    easing : "easeInOutSine",
+
+    init : function() {
+        var p = this.parameters;
+        p.source.axis = p.target.axis = [0,0,1];
+        p.source.angle = p.target.angle = 0;
+    },
+
+    /**
+     * Note: we need to post process the parameters because the tilt angle
+     * is not the same for each pobject, but we still need to vary it between
+     * objects.
+     */
+    postProcessParameters : function(source, target) {
+        console.log(source);
+        console.log(target);
+
+        var z = new THREE.Vector3(0, 0, 1);
+        var r = krusovice.utils.splitrnd(Math.PI/16);
+        var q = (new THREE.Quaternion()).setFromAxisAngle(z, r);
+        source.rotation = target.rotation = krusovice.utils.grabQuaternionData(q);
+
+        var x = krusovice.utils.splitrnd(effects.ON_SCREEN_MAX_X/3);
+        var y = krusovice.utils.splitrnd(effects.ON_SCREEN_MAX_Y/8);
+
+        source.position = target.position = [x, y, effects.ON_SCREEN_Z];
+
+    }
+
+});
+
+
+effects.Manager.register(effects.SlightDisplacement);
 
 /**
  * Flip photo 90 degrees around random XY-axis.
