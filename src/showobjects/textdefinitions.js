@@ -163,7 +163,7 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
 
             height : 1,
 
-            baseScale : [0.5, 0.5, 0.5],
+            baseScale : 0.8,
 
             textBorder : false,
 

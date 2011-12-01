@@ -200,9 +200,12 @@ krusovice.showobjects.Base.prototype = {
         //console.log(source);
         //console.log(value);
 
+        // Limit xxx.... what?
         var baseScale = this.object.baseScale;
 
-        var animationData = effect.animate(target, source, value, baseScale);
+        var animationData = effect.animate(target, source, value);
+
+        animationData.scale.multiplyScalar(baseScale);
 
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
@@ -219,8 +222,10 @@ krusovice.showobjects.Base.prototype = {
      */
     animateMesh : function(mesh, position, rotation, scale, opacity) {
         mesh.position = position;
-        mesh.scale = scale;
-        mesh.quaternion = rotation;
+        mesh.scale = scale ;
+        if(rotation) {
+            mesh.quaternion = rotation;
+        }
         mesh.opacity = opacity;
         this.setOpacity(mesh, opacity);
         mesh.updateMatrixWorld();

@@ -63,7 +63,7 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
      * @param {Number} value current intermediate state 0...1, easing applied
      */
 
-    animate : function(target, source, value, baseScale) {
+    animate : function(target, source, value) {
 
         if(!krusovice.utils.isNumber(value)) {
             console.error(value);
@@ -87,27 +87,23 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
             throw "Serious fail";
         }
 
-        // Some custom adjustments to make photos came close enough to camera in 16:9
-        if(!baseScale) {
-            throw "effects.Interpolate: baseScale missing";
-        }
-
         // Outputted animation values
         var output = {};
 
         var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
-        scale = [ scale[0] * baseScale, scale[1] * baseScale, scale[2] * baseScale];
 
         output.position = new THREE.Vector3(position[0], position[1], position[2]);
         output.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
 
         // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
-        var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
-        var qb = new THREE.Quaternion(target.rotation[0], target.rotation[1], target.rotation[2], target.rotation[3]);
-
-        output.rotation = new THREE.Quaternion(0, 0, 0, 1);
-
-        THREE.Quaternion.slerp(qa, qb, output.rotation, value);
+        if(source.rotation !== null && target.rotation !== null) {
+            var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
+            var qb = new THREE.Quaternion(target.rotation[0], target.rotation[1], target.rotation[2], target.rotation[3]);
+            output.rotation = new THREE.Quaternion(0, 0, 0, 1);
+            THREE.Quaternion.slerp(qa, qb, output.rotation, value);
+        } else {
+            output.rotation = null;
+        }
 
         output.opacity = source.opacity + (target.opacity-source.opacity)*value;
 
@@ -270,6 +266,12 @@ effects.Fade = $.extend(true, {}, effects.Interpolate, {
     init : function() {
         this.parameters.source.opacity = 0;
         this.parameters.target.opacity = 1;
+
+
+        // This effect should not change the rotation parameters
+        this.parameters.target.rotation = null;
+        this.parameters.source.rotation = null;
+
     }
 
 });
@@ -401,9 +403,9 @@ effects.StaticRotateZ = $.extend(true, {}, effects.QuaternionRotate, {
         console.log(target);
 
         var z = new THREE.Vector3(0, 0, 1);
-        var r = Math.PI/2;
+        var r = krusovice.utils.splitrnd(Math.PI/16);
         var q = (new THREE.Quaternion()).setFromAxisAngle(z, r);
-        source.rotatoin = target.rotation = krusovice.utils.grabQuaternionData(q);
+        source.rotation = target.rotation = krusovice.utils.grabQuaternionData(q);
     }
 
 });

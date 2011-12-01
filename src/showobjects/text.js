@@ -284,6 +284,8 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         this.object = this.renderer.createQuad(buffer, this.width, this.height, borderColor);
 
+        this.object.baseScale = this.shape.baseScale || this.object.baseScale;
+
         //console.log("Created object");
         //console.log(this.object);
 
