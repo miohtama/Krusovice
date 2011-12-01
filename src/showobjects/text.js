@@ -226,10 +226,12 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         //console.log(self.data);
 
+        var styles = self.data.textStyles ||self.shape.textStyles;
+
         $.each(this.data.texts, function(labelId, text) {
             var labelData = self.shape.labels[labelId];
             if(labelData) {
-                self.drawLabel(buffer, labelData, text, self.data.textStyles);
+                self.drawLabel(buffer, labelData, text, styles);
             }
 
             done();

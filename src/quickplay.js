@@ -15,12 +15,13 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
         fadeOutThreshold = fadeOutThreshold || 3.0;
         var duration = show.getDuration();
+        var nearEnd = duration - fadeOutThreshold;
 
         // Add audio fade out period to the show end
         var fadingOut = false;
 
         $(show).bind("showclock", function(e, clock) {
-            if(clock > fadeOutThreshold && !fadingOut) {
+            if(clock > nearEnd && !fadingOut) {
                 console.log("Starting fade out");
                 fadingOut = true;
                 krusovice.tools.fadeOut(audio, fadeOutThreshold*1000);
@@ -45,6 +46,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         var design = project.design;
 
         var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, null, design.transitions);
+
+        timeliner.updateFromDesign(design);
+
         var timeline = timeliner.createPlan();
         var audio;
 

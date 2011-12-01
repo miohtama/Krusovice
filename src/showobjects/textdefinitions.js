@@ -50,6 +50,7 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             width : 1,
             height : 1,
 
+
             // Transitions for this particular text style
             transitions : {
                 transitionIn : {
@@ -152,7 +153,8 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             labels : {
 
                 text : {
-                    name : dummytext("Text")
+                    name : dummytext("Text"),
+                    fontSizeAdjust : 0.9
                 }
 
             },
@@ -163,7 +165,12 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
 
             baseScale : [0.5, 0.5, 0.5],
 
-            textBorder : false
+            textBorder : false,
+
+            textStyles : {
+                "vertical-align" : "middle",
+                "text-align" : "center"
+            }
 
         }
     ];
