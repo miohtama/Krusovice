@@ -128,6 +128,14 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         // Create a copy of local project
         var submission = $.extend({}, project);
 
+        if(project.width % 8 !== 0) {
+            throw "Width must be divisible by 8";
+        }
+
+        if(project.height % 8 !== 0) {
+            throw "Height must be divisible by 8";
+        }
+
         // Prepare it by cleaning local object references from design
         // to make it JSON serializable
         submission.design = krusovice.Design.clean(project.design);
