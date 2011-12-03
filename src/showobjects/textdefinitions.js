@@ -157,7 +157,7 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
 
                 text : {
                     name : dummytext("Text"),
-                    fontSizeAdjust : 0.9
+                    fontSizeAdjust : 0.8
                 }
 
             },
