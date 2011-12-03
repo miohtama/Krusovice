@@ -455,6 +455,10 @@ krusovice.Show.prototype = {
             } else {
                 // Totally custom background
                 background = this.background;
+
+                if(!background.type) {
+                    throw "Neither background id or type was given";
+                }
             }
 
         }
