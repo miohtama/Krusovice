@@ -146,7 +146,10 @@ krusovice.backgrounds.createBackgroundById = function(id, duration, timeline, rh
     var bgData = $.extend({}, krusovice.backgrounds.Registry.get(id), cfg);
     var type = bgData.type;
 
-    console.log(bgData);
+    if(!type) {
+        console.error("Background not available:" + id);
+        throw "Unknown background id:" + id;
+    }
 
     return krusovice.backgrounds.createBackground(type, duration, timeline, rhythmData, bgData);
 };
