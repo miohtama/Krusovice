@@ -67,6 +67,7 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             }
         },
 
+        // Scanned by Mikko - public domain
         {
             id : "notepad",
 
@@ -143,6 +144,8 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
         },
 
 
+        // CC-BY-SA
+        // http://commons.wikimedia.org/wiki/File:Post-it-note-transparent.png
         {
             id : "postit",
 
