@@ -115,12 +115,43 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             // SKip this step
             loadAudio();
         }
+    }
 
+    /**
+     *
+     * @param callback function(success, msg);
+     */
+    function submit(url, project, callback) {
 
+        url = "http://morko:6543/thousand_monkeys_and_a_typewriter/";
+
+        // Create a copy of local project
+        var submission = $.extend({}, project);
+
+        // Prepare it by cleaning local object references from design
+        // to make it JSON serializable
+        submission.design = krusovice.Design.clean(project.design);
+
+        console.log("Prepared project submission to:" + url);
+        console.log(submission);
+
+        var params = { project :JSON.stringify(submission) };
+
+        console.log($);
+
+        $.post(url, params, function(data, textStatus, jqXHR) {
+            console.log("Got response");
+            if(data.status == "ok") {
+                callback(true, data.status);
+            } else {
+                callback(false, textStatus);
+            }
+        }, "json");
     }
 
     return {
-        play : play
+        play : play,
+        submit : submit
     };
 
 });
