@@ -5,13 +5,34 @@
 
 /*global define*/
 
-define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
+define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle",
+"krusovice/core",
+"krusovice/utils",
+"krusovice/tools/url"], function($, krusovice, utils, urltools) {
 
 "use strict";
 
 krusovice.backgrounds = krusovice.backgrounds || {};
 
 krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
+
+    mediaURL : null,
+
+    /**
+     * @param url Pointer to the folder with backgrounds.json
+     */
+    init : function(url, callback) {
+
+        if(!url) {
+            throw "Base folder URL must be given";
+        }
+
+        var dbURL = urltools.joinRelativePath(url, "backgrounds.json");
+
+        this.mediaURL = url;
+
+        this.loadBackgroundData(dbURL, url, callback);
+    },
 
     /**
      * Load backgrounds from JSON file
@@ -61,15 +82,17 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
             throw "Using image-based backgrounds needs base media URL";
         }
 
+        /*
         if(mediaURL[mediaURL.length-1] != "/") {
             throw "Media URL must end with slash:" + mediaURL;
         }
+        */
 
         // We may also get Image objects directly feed in
         if(obj.image && typeof(obj.image) == "string") {
             if(!obj.image.match("^http")) {
                 // Convert background source url from relative to absolute
-                obj.image = mediaURL + obj.image;
+                obj.image = urltools.joinRelativePath(mediaURL, obj.image);
             }
         }
     },
@@ -80,9 +103,17 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
      * XXX: Hardcoded for now
      */
     fixThumbnails : function(obj, mediaURL) {
-        obj.thumbnail = mediaURL + "thumbnails/" + obj.id + ".png";
+        var u = urltools.joinRelativePath(mediaURL, "thumbnails");
+        obj.thumbnail = urltools.joinRelativePath(u, obj.id + ".png");
         //console.log("Got thumbnail URL:" + obj.thumbnail);
+    },
+
+    checkInit : function() {
+        if(!this.mediaURL) {
+            throw "Background registry not initalized - need to load background JSON database first";
+        }
     }
+
 
 });
 

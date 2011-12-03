@@ -377,9 +377,6 @@ krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
 
 });
 
-// Do now during load time
-krusovice.texts.Registry.init();
-
 /**
  * Define what kind of text shapes we have available
  */

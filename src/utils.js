@@ -569,9 +569,16 @@ krusovice.utils.Registry = {
     },
 
     /**
+     * Override to throw exception if not initialized
+     */
+    checkInit : function() {
+    },
+
+    /**
      * Get registered effect by its id
      */
     get : function(id) {
+        this.checkInit();
         return this.data[id];
     },
 
@@ -586,6 +593,8 @@ krusovice.utils.Registry = {
 
         var data = [];
 
+        this.checkInit();
+
         $.each(this.data, function(id, obj) {
             data.push({id:obj.id, name:obj.name});
         });
@@ -599,6 +608,9 @@ krusovice.utils.Registry = {
     getIds : function() {
         var data = this.getVocabulary();
         var d2 = [];
+
+        this.checkInit();
+
         data.forEach(function(e) {
             d2.push(e.id);
         });
@@ -618,6 +630,8 @@ krusovice.utils.Registry = {
 
         var categories = [];
         var idsDone = [];
+
+        this.checkInit();
 
         $.each(this.data, function(id, obj) {
 
@@ -645,6 +659,8 @@ krusovice.utils.Registry = {
      */
     getItemsInCategory : function(catId) {
         var songs = [];
+
+        this.checkInit();
 
         $.each(this.data, function(id, obj) {
 

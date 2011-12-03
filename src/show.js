@@ -451,7 +451,19 @@ krusovice.Show.prototype = {
                 // Use stock background
                 // Apply default backgroudn settings by id
                 // then custom settings
-                background = $.extend({}, krusovice.backgrounds.Registry.get(this.background.backgroundId), this.background);
+                var stock = krusovice.backgrounds.Registry.get(this.background.backgroundId);
+
+                if(!stock) {
+                    throw "Backgroud id does not exist:" + this.background.backgroundId;
+                }
+
+                if(!stock.type) {
+                    console.error(background);
+                    throw "Bad stock background:" + this.background.backgroundId;
+                }
+
+                background = $.extend({}, stock, this.background);
+
             } else {
                 // Totally custom background
                 background = this.background;

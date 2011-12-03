@@ -94,13 +94,28 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        audio = document.createElement("audio");
+        function loadAudio() {
+            audio = document.createElement("audio");
 
-        audio.controls = true;
+            audio.controls = true;
 
-        elem.append(audio);
+            elem.append(audio);
 
-        krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, true);
+            krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, true);
+
+        }
+
+        function onBackgroundData() {
+            loadAudio();
+        }
+
+        if(initOptions.backgroundMediaURL) {
+            krusovice.backgrounds.Registry.init(initOptions.backgroundMediaURL, onBackgroundData);
+        } else {
+            // SKip this step
+            loadAudio();
+        }
+
 
     }
 
