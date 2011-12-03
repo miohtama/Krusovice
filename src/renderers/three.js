@@ -289,7 +289,7 @@ krusovice.renderers.Three.prototype = {
         var border;
 
         var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
-        border = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.FlatShading });
+        border = new THREE.MeshPhongMaterial( { ambient: 0x999999, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.SmoothShading });
 
         var material = new THREE.MeshFaceMaterial();
 
