@@ -21,7 +21,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
     /**
      * @param url Pointer to the folder with backgrounds.json
      */
-    init : function(url, callback) {
+    init : function(url, callback, errorCallback) {
 
         if(!url) {
             throw "Base folder URL must be given";
@@ -41,7 +41,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
      *
      * @param {String} mediaURL Base URL to image and video data
      */
-    loadBackgroundData : function(url, mediaURL, callback) {
+    loadBackgroundData : function(url, mediaURL, callback, errorCallback) {
 
         var self = this;
 
@@ -50,10 +50,13 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
         }
 
         console.log("Loading background data:" + url);
-        $.getJSON(url, function(data) {
+
+        var dfd = $.getJSON(url, function(data) {
             self.processData(data, mediaURL);
             callback();
         });
+
+        dfd.fail(errorCallback);
     },
 
     /**

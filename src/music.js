@@ -29,15 +29,23 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      *
      * @param {String} mediaURL Base URL to image and video data
      */
-    loadData : function(url, mediaURL, callback) {
+    loadData : function(url, mediaURL, callback, errorCallback) {
         var self = this;
+
         console.log("Loading songs:" + url);
-        $.getJSON(url, function(data) {
+
+        var dfd = $.getJSON(url, function(data) {
             console.log("Got song data");
             console.log(data);
             self.processData(data, mediaURL);
             callback();
         });
+
+        dfd.error(function() {
+            console.error("Bad music db:" + url);
+            errorCallback();
+        });
+
     },
 
 

@@ -11,6 +11,7 @@ define("krusovice/api", [
     "krusovice/core",
 
     // Internal modules
+    "krusovice/startup",
     "krusovice/utils",
     "krusovice/design",
     "krusovice/inputelement",
