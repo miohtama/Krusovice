@@ -262,6 +262,7 @@ krusovice.renderers.Three.prototype = {
 
         } else {
             texture = new THREE.Texture(src);
+            texture.needsUpdate = true;
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
         }
@@ -291,17 +292,49 @@ krusovice.renderers.Three.prototype = {
         var border;
 
         var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
-        border = new THREE.MeshPhongMaterial( { ambient: 0x999999, color: borderColorHex, specular: 0xffFFff, shininess: 30, shading: THREE.SmoothShading });
+
+        if(this.webGL) {
+            // Phong shaded borders on webGL
+            border = new THREE.MeshPhongMaterial( {
+                ambient: 0x999999,
+                color: borderColorHex,
+                specular: 0xffFFff,
+                shininess: 30,
+                shading: THREE.SmoothShading
+             });
+        } else {
+
+            console.log("Border color:" + borderColorHex);
+
+            // XXX: White on white issue
+            if(borderColorHex == 0xffFFff) {
+                borderColorHex = 0x999999;
+            }
+
+            // Flat borders on <canvas>
+            border = new THREE.MeshLambertMaterial( {
+                color: borderColorHex,
+                shading : THREE.FlatShading });
+        }
 
         var material = new THREE.MeshFaceMaterial();
+
+
+        // Debug material
+        //var material = new THREE.MeshBasicMaterial({color : 0xff00ff, wireframe:true});
 
         plane.materials[0] = plane.materials[1] = filler;
         plane.materials[2] = plane.materials[3] = border;
 
         var mesh = new THREE.Mesh(plane, material);
 
-        // <canvas> 3d face gap elimimination
-        mesh.overdraw = true;
+        if(!this.webGL) {
+            // <canvas> 3d face gap elimimination
+            filler.overdraw = true;
+            material.overdraw = true;
+            mesh.overdraw = true;
+        }
+
         mesh.useQuaternion = true;
 
         // Add a special fix parameter to make landscape images closer to camera
@@ -318,6 +351,8 @@ krusovice.renderers.Three.prototype = {
 
 
     /**
+     * XXX: Not used
+     *
      * http://superfad.com/missioncontrol/js/superglobe.js
      */
     createBorderLines : function(srcWidth, srcHeight, color) {
@@ -352,7 +387,7 @@ krusovice.renderers.Three.prototype = {
         }
 
         if(!mesh.added) {
-            this.scene.addObject(mesh);
+            this.scene.add(mesh);
 
             if(effectObject) {
                  this.maskScene.addObject(effectObject);
