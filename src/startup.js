@@ -47,6 +47,7 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
                 throw "mediaDataURL must be given";
             }
 
+            // Match olvi data layout here
             if(!this.songMediaURL) {
                 this.songMediaURL = urltools.joinRelativePath(this.mediaURL, "music");
             }

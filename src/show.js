@@ -274,11 +274,7 @@ krusovice.Show.prototype = {
      */
     prepare : function() {
 
-        if(this.webGL == "auto") {
-            this.webGL = krusovice.utils.hasWebGL();
-            console.log("Initializing show. WebGL support:" + this.webGL);
-        }
-
+        this.webGL = krusovice.utils.useWebGL(this.webGL);
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();

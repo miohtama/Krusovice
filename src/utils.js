@@ -1,9 +1,7 @@
-define("krusovice/utils", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+/*global window,console,define*/
+
+define("krusovice/utils", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
 "use strict";
-
-/*global window,console*/
-
-var krusovice = krusovice || {};
 
 /**
  * @class krusovice.utils
@@ -450,10 +448,13 @@ krusovice.utils = {
         var canvas = document.createElement("canvas");
         try {
             var ctx = canvas.getContext("experimental-webgl");
-            return true;
+            if(ctx) {
+                return true;
+            }
         } catch(e) {
-            return false;
         }
+
+        return false;
     },
 
 
@@ -515,8 +516,20 @@ krusovice.utils = {
         var b = parseInt(cssColor.substring(5, 7), 16);
 
         return new THREE.Vector3(r/255, g/255, b/255);
-    }
+    },
 
+    /**
+     * Decode the state should we use webGL.
+     *
+     * From true, false, "auto" to true, false
+     */
+    useWebGL : function(webGL) {
+
+        if(webGL == "auto") {
+            webGL = krusovice.utils.hasWebGL();
+        }
+        return webGL;
+    }
 
 };
 
