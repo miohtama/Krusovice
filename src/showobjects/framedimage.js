@@ -131,6 +131,12 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
        var size = {width:naturalWidth, height:naturalHeight};
 
+       if(!this.renderer.webGL) {
+           // <canvas> renderer would be really really slow
+           // with huge images... make sure we downscale
+           size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, 320, 320);
+       }
+
        buffer.width = size.width;
        buffer.height = size.height;
        buffer.naturalWidth = naturalWidth;
@@ -198,7 +204,19 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
+    /**
+     * Create the mesh rendering fragment shader making the pulse effect by the beat.
+     *
+     *
+     */
     createEffectObject : function() {
+
+        // Enabled only on webGL
+        if(!this.renderer.webGL) {
+            return null;
+        }
+
+
         var borderColor = this.data.borderColor || "#eeEEee";
 
         var mesh = this.renderer.createQuad(this.framed,

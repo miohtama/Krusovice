@@ -304,8 +304,6 @@ krusovice.renderers.Three.prototype = {
              });
         } else {
 
-            console.log("Border color:" + borderColorHex);
-
             // XXX: White on white issue
             if(borderColorHex == 0xffFFff) {
                 borderColorHex = 0x999999;
@@ -330,6 +328,7 @@ krusovice.renderers.Three.prototype = {
 
         if(!this.webGL) {
             // <canvas> 3d face gap elimimination
+            // XXX: When fading out, set overdraw = false
             filler.overdraw = true;
             material.overdraw = true;
             mesh.overdraw = true;
