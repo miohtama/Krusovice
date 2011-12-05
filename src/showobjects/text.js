@@ -10,7 +10,8 @@ define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle",
     "krusovice/core",
     'krusovice/showobjects/textdefinitions',
     "krusovice/tools/text2canvas",
-    "krusovice/tools/url"], function($, krusovice, textdefinitions, text2canvas, urltools) {
+    "krusovice/utils",
+    "krusovice/tools/url"], function($, krusovice, textdefinitions, text2canvas, utils, urltools) {
 
 "use strict";
 
@@ -177,7 +178,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
         renderer.css.color = color;
 
         if(this.shape.textBorder) {
-            renderer.css["border-color"] = krusovice.utils.calculateShadowColor(color);
+            renderer.css["border-color"] = utils.calculateShadowColor(color);
         } else {
             renderer.css["border-color"] = null;
         }
@@ -315,7 +316,7 @@ krusovice.texts = krusovice.texts || {};
 /**
  * krusovice.texts.Registry manages different text styles that can be used in shows.
  */
-krusovice.texts.Registry = $.extend(true, {}, krusovice.utils.Registry, {
+krusovice.texts.Registry = $.extend(true, {}, utils.Registry, {
 
     init : function(mediaURL) {
         this.loadData(mediaURL);

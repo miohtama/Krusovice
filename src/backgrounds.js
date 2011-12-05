@@ -56,7 +56,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
             callback();
         });
 
-        dfd.fail(errorCallback);
+        dfd.error(errorCallback);
     },
 
     /**
