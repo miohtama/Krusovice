@@ -175,10 +175,12 @@ krusovice.renderers.Three.prototype = {
 
         scene.add( directionalLight );
 
-        var ambient = new THREE.AmbientLight( 0x333333 );
+        var ambient = new THREE.AmbientLight(0x888888);
         scene.add( ambient );
 
-        this.setupComposer();
+        if(this.webGL) {
+            this.setupComposer();
+        }
 
     },
 
@@ -209,7 +211,7 @@ krusovice.renderers.Three.prototype = {
         this.renderModel = renderModel;
         this.maskModel = maskModel;
         this.clearMask = clearMask;
-        this.copyPass = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
+        this.copyPass = new THREE.ShaderPass(THREE.ShaderExtras.screen);
 
         //renderModel.clear = false;
         maskModel.clear = false;
@@ -385,8 +387,23 @@ krusovice.renderers.Three.prototype = {
         this.effectBloom = new THREE.BloomPass(this.postProcessingStrength);
     },
 
-
     render : function(frontBuffer) {
+        if(this.webGL) {
+            this.renderGL(frontBuffer);
+        } else {
+            this.renderCanvas(frontBuffer);
+        }
+    },
+
+    renderCanvas : function(frontBuffer) {
+        var scene = this.scene;
+        var camere = this.camera;
+
+        this.renderer.render(this.scene, this.camera);
+        frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
+    },
+
+    renderGL : function(frontBuffer) {
 
         // Let Three.js do its magic
         var scene = this.scene;
