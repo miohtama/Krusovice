@@ -148,8 +148,10 @@ $.extend(krusovice.showobjects.Text.prototype, {
            throw "Bad width/height:" + width + " " + height;
        }
 
-       buffer.width = width;
-       buffer.height = height;
+       var size = krusovice.utils.calculateAspectRatioFit(width, height, 512, 512);
+
+       buffer.width = size.width;
+       buffer.height = size.height;
 
        console.log("Text buffer:" + buffer.width + " " + buffer.height);
 
