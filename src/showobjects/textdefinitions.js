@@ -67,7 +67,40 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
             }
         },
 
-        // Scanned by Mikko - public domain
+        // CC-BY-SA
+        // http://commons.wikimedia.org/wiki/File:Post-it-note-transparent.png
+        {
+            id : "postit",
+
+            imageName :  "postit.png",
+
+            name : dummytext("Post It"),
+
+            labels : {
+
+                text : {
+                    name : dummytext("Text"),
+                    fontSizeAdjust : 0.7
+                }
+
+            },
+
+            width : 1,
+
+            height : 1,
+
+            baseScale : 0.8,
+
+            textBorder : false,
+
+            textStyles : {
+                "vertical-align" : "middle",
+                "text-align" : "center"
+            }
+
+        },
+
+       // Scanned by Mikko - public domain
         {
             id : "notepad",
 
@@ -113,66 +146,6 @@ define("krusovice/showobjects/textdefinitions", ["krusovice/showobjects"], funct
                 onScreen : {
                     type : "slightrotatez"
                 }
-            }
-
-        },
-
-        {
-            id : "plain",
-
-            name : dummytext("Plain"),
-
-            labels : {},
-
-            width : 1,
-
-            height : 1
-
-        },
-
-        {
-            id : "postcard",
-
-            name : dummytext("Postcard"),
-
-            labels : {},
-
-            width : 0,
-
-            height : 0
-
-        },
-
-
-        // CC-BY-SA
-        // http://commons.wikimedia.org/wiki/File:Post-it-note-transparent.png
-        {
-            id : "postit",
-
-            imageName :  "postit.png",
-
-            name : dummytext("Post It"),
-
-            labels : {
-
-                text : {
-                    name : dummytext("Text"),
-                    fontSizeAdjust : 0.7
-                }
-
-            },
-
-            width : 1,
-
-            height : 1,
-
-            baseScale : 0.8,
-
-            textBorder : false,
-
-            textStyles : {
-                "vertical-align" : "middle",
-                "text-align" : "center"
             }
 
         }
