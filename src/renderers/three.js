@@ -258,6 +258,8 @@ krusovice.renderers.Three.prototype = {
             console.log(src);
 
             texture = new THREE.Texture(src, THREE.UVMapping);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearMipMapLinearFilter;
             texture.needsUpdate = true;
 
         } else {
@@ -880,7 +882,7 @@ THREE.CustomShaders = {
          'void main() {',
           'float distance = dot(vUv, vUv);',
           'float e = intensity * distance;',
-          'vec4 add = vec4(e*color.x, e*color.y, e*color.z, e*0.35);',
+          'vec4 add = vec4(color.x, color.y, color.z, e*0.8);',
           //'vec4 mix = vec4(gl_FragColor.r + color.x /2.0, 0.5, 0.5, 1);',
           //'vec4 clamped = vec4(clamp(add.x, add.y, add.z, e));',
           'gl_FragColor = add;',
