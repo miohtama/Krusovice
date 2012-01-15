@@ -124,7 +124,17 @@ krusovice.InputElement.prototype = {
      *
      * For examples see textdefinitions.js.
      */
-    transitions : null
+    transitions : null,
+
+
+    /**
+     * @type Object
+     *
+     * Extra data used during the editing, but has no relevant meaning for the show output and
+     * will be de-normalized to other InputElement variables during the show generation.
+     *
+     */
+    editData : {}
 
 };
 
