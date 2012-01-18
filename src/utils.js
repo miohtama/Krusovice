@@ -487,17 +487,27 @@ krusovice.utils = {
 
 
     /**
-     * Calculate text shadow color based on incoming text color.
+     * Calculate brightness of a color.
      *
-     * Take inverse grayscale.
+     * @param {String} cssColor #ffffff style color
      */
-    calculateShadowColor : function(cssColor) {
+    calculateBrightness : function(cssColor) {
         var r = parseInt(cssColor.substring(1, 3), 16);
         var g = parseInt(cssColor.substring(3, 5), 16);
         var b = parseInt(cssColor.substring(5, 7), 16);
 
         var brightness = (r+g+b) / 3;
+        return brightness;
+    },
 
+    /**
+     * Calculate text shadow color based on incoming text color.
+     *
+     * Take inverse grayscale.
+     */
+    calculateShadowColor : function(cssColor) {
+
+        var brightness = krusovice.utils.calculateBrightness(cssColor);
         var target = 255 - brightness;
 
         target = target.toString(16);
