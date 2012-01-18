@@ -8,7 +8,10 @@ define("krusovice/inputelement", ["krusovice/thirdparty/jquery-bundle", "krusovi
  * This is the the source object which the end user edits.
  */
 krusovice.InputElement = function() {
-
+    this.texts = {
+        text : null,
+        secondary : null
+    };
 };
 
 /**
@@ -49,13 +52,13 @@ krusovice.InputElement.prototype = {
     labelPosition : null,
 
     /**
-     * Label id -> text content mappings for shaped text labels
+     * @type Object
+     *
+     * Label id -> text content mappings for shaped text labels.
+     *
+     * XXX: Reset this on every creation.
      */
-    texts : {
-        text : null,
-        secondary : null
-    },
-
+    texts : null,
 
     /**
      * @type Number
@@ -134,7 +137,7 @@ krusovice.InputElement.prototype = {
      * will be de-normalized to other InputElement variables during the show generation.
      *
      */
-    editData : {}
+    editData : null
 
 };
 
