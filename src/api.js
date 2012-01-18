@@ -15,6 +15,7 @@ define("krusovice/api", [
     "krusovice/utils",
     "krusovice/design",
     "krusovice/inputelement",
+    "krusovice/editdata",
     "krusovice/project",
     "krusovice/loader",
     "krusovice/rhythmanalysis",
