@@ -65,11 +65,61 @@ krusovice.PhotoEditData = function() {
             onScreen : 8,
             transitionOut : 1.5,
             steppingTime : 1.0
+        },
+
+
+        // Photo label
+        texts : {
+            text : ""
         }
     });
 };
 
 $.extend(krusovice.PhotoEditData, krusovice.EditData.prototype, {});
+
+
+/**
+ * Text editor data.
+ */
+krusovice.TextEditData = function() {
+
+    // Apply default settings
+    $.extend(this, {
+
+        font : {
+            useDefault : true,
+            color : "#ffffaa",
+            size : 1.0 // Size multiplie
+        },
+
+        // Mixnap effect id (is NOT transition id, but more user friendly)
+        transitions : {
+            useDefault : true,
+            effectId : "slide"
+        },
+
+        // Transition timings
+        stepping : {
+            useDefault : true,
+            transitionIn : 1.5,
+            onScreen : 5,
+            transitionOut : 1.5,
+            steppingTime : 1.0
+        },
+
+        shape : {
+            useDefault : true,
+            shapeId : "clear"
+        },
+
+        labels : {
+            primary : "",
+            secondary : ""
+        }
+    });
+};
+
+$.extend(krusovice.TextEditData, krusovice.EditData.prototype, {});
 
 /**
  * UI data for setting the show timing.
@@ -89,7 +139,8 @@ $.extend(krusovice.TimingEditData, krusovice.EditData.prototype, {});
 
 return {
     TimingEditData : krusovice.TimingEditData,
-    PhotoEditData : krusovice.PhotoEditData
+    PhotoEditData : krusovice.PhotoEditData,
+    TextEditData : krusovice.TextEditData
 };
 
 });
