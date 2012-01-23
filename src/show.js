@@ -213,7 +213,14 @@ krusovice.Show.prototype = {
          *
          * Post time updates in show time (translated from music playback time)
          */
-        "showclock"
+        "showclock",
+
+        /**
+         * @event
+         *
+         * Triggered after each succesful frame renderation
+         */
+        "framerendered"
 
     ],
 
@@ -675,6 +682,9 @@ krusovice.Show.prototype = {
         }
 
         this.renderPreviewWarningMessage(renderClock);
+
+        // Notify listeners about succesful frame rendering
+        $(this).trigger("framerendered", [this.currentFrame, renderClock]);
     },
 
     /**
