@@ -277,7 +277,7 @@ krusovice.Timeliner.prototype = {
 
         var plan = [];
 
-        var clock = this.leadTime;
+        var clock = this.leadTime || 0;
 
         var transitionIn = this.settings.transitionIn;
         var transitionOut = this.settings.transitionOut;
@@ -897,7 +897,9 @@ krusovice.Timeliner.getElementDuration = function(elem, spacing) {
     }
 
     if(spacing) {
-        duration += elem.spacingTime;
+        if(elem.spacingTime) {
+            duration += elem.spacingTime;
+        }
         //console.log("Spacing:" + elem.spacingTime);
     }
 
