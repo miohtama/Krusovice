@@ -146,6 +146,8 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      * Load a song based on krusovice.Design object.
      *
      * Song can be id (stock) or custom URL.
+     *
+     * @param {Function} callback Will be called  callback(songURL, rhythmURL, rhythmData)
      */
     loadSongFromDesign : function(design, audio, callback, prelisten) {
 
@@ -156,8 +158,8 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         } else if(design.songId) {
             songURL = this.getAudioURL(design.songId);
         } else {
-            console.error(design);
-            throw "Cannot load song - no song defined";
+            // Mute design
+            return callback(null, null, null);
         }
 
         var rhythmURL = songURL.replace(".mp3", ".json");
