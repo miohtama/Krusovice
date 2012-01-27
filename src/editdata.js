@@ -42,7 +42,7 @@ krusovice.PhotoEditData = function() {
 
         font : {
             useDefault : true,
-            color : "#ffffff",
+            color : "#eeEEee",
             size : 1.0 // Size multiplie
         },
 
