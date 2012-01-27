@@ -1,3 +1,5 @@
+/*global define*/
+
 define("krusovice/project", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     'use strict';
 
