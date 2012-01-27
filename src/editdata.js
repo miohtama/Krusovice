@@ -46,10 +46,10 @@ krusovice.PhotoEditData = function() {
             size : 1.0 // Size multiplie
         },
 
+        // Photo label
         label : {
             useDefault : true,
-            position : "top-center",
-            text : null
+            position : "bottom-center"
         },
 
         // Mixnap effect id (is NOT transition id, but more user friendly)
@@ -67,11 +67,11 @@ krusovice.PhotoEditData = function() {
             steppingTime : 1.0
         },
 
-
-        // Photo label
         texts : {
+            useDefault : false,
             text : ""
         }
+
     });
 };
 
@@ -113,6 +113,7 @@ krusovice.TextEditData = function() {
         },
 
         labels : {
+            useDefault : false,
             primary : "",
             secondary : ""
         }
