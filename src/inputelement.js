@@ -108,6 +108,12 @@ krusovice.InputElement.prototype = {
      */
     textShadowColor : "#000000",
 
+    /**
+     * @type Number
+     *
+     * Size multiplier for fonts in this element.
+     */
+    fontSizeAdjust : 1.0,
 
     /**
      * @type String
