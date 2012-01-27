@@ -145,7 +145,7 @@ effects.QuaternionRotate = $.extend(true, {}, effects.Interpolate, {
         var axis = this.randomizeParameter("axis", parametersSlot, config, source);
         var angle = this.randomizeParameter("angle", parametersSlot, config, source);
 
-        console.log("Got axis/angle " + parametersSlot + " axis:" + axis + " angle:" + angle);
+        //console.log("Got axis/angle " + parametersSlot + " axis:" + axis + " angle:" + angle);
         var v = new THREE.Vector3(axis[0], axis[1], axis[2]);
 
         v = v.normalize();

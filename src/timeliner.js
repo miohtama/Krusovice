@@ -277,7 +277,7 @@ krusovice.Timeliner.prototype = {
 
         var plan = [];
 
-        var clock = this.leadTime;
+        var clock = this.leadTime || 0;
 
         var transitionIn = this.settings.transitionIn;
         var transitionOut = this.settings.transitionOut;
@@ -312,8 +312,8 @@ krusovice.Timeliner.prototype = {
 
             this.prepareAnimations(out, elem);
 
-            console.log("Got out");
-            console.log(out);
+            //console.log("Got out");
+            //console.log(out);
 
             // Advance clock to the start of the next show item based on how
             // long it took to show this item
@@ -646,9 +646,9 @@ krusovice.Timeliner.prototype = {
         currentAnimation.type = animationType;
         currentAnimation.effectType = effect.id;
 
-        console.log("effectConfig");
+        //console.log("effectConfig");
         currentAnimation.easing = effect.getEasing(this.effectConfig, source);
-        console.log("Got easing:"+ currentAnimation.easing);
+        //console.log("Got easing:"+ currentAnimation.easing);
 
         if(animationType == "transitionin") {
             // Set initial parameters
@@ -663,8 +663,8 @@ krusovice.Timeliner.prototype = {
             effect.prepareParameters("target", nextAnimation, this.effectConfig, target);
             effect.postProcessParameters(currentAnimation, nextAnimation);
 
-            console.log("Got target:");
-            console.log(nextAnimation);
+            //console.log("Got target:");
+            //console.log(nextAnimation);
         }
 
         if(animationType == "transitionout") {
@@ -897,7 +897,9 @@ krusovice.Timeliner.getElementDuration = function(elem, spacing) {
     }
 
     if(spacing) {
-        duration += elem.spacingTime;
+        if(elem.spacingTime) {
+            duration += elem.spacingTime;
+        }
         //console.log("Spacing:" + elem.spacingTime);
     }
 

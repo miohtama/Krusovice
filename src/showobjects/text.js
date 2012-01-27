@@ -187,6 +187,11 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         renderer.css["font-size-adjust"] = labelData.fontSizeAdjust || 1.0;
 
+        // User multiplier
+        if(textStyles.fontSizeAdjust) {
+            renderer.css["font-size-adjust"] *= textStyles.fontSizeAdjust;
+        }
+
         // Set x, y, w, h parameters
         renderer.box.x = labelData.x || 0;
         renderer.box.y = labelData.y || 0;
@@ -229,7 +234,11 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         //console.log(self.data);
 
-        var styles = self.data.textStyles ||self.shape.textStyles;
+        var styles = self.data.textStyles ||self.shape.textStyles || {};
+
+        if(self.data.fontSizeAdjust) {
+            styles.fontSizeAdjust = self.data.fontSizeAdjust;
+        }
 
         $.each(this.data.texts, function(labelId, text) {
             var labelData = self.shape.labels[labelId];
