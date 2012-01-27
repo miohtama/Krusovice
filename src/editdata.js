@@ -48,7 +48,7 @@ krusovice.PhotoEditData = function() {
 
         label : {
             useDefault : true,
-            position : "top-center",
+            position : "bottom-center",
             text : null
         },
 
