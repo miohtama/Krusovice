@@ -194,6 +194,9 @@ krusovice.RhythmAnalysis.prototype = {
             var b = bars[i];
 
             if(clock >= b.start && clock < b.start+b.duration) {
+                //console.log("Bar match:" + i);
+                //console.log(clock);
+                //console.log(b);
                 return i;
             }
         }
@@ -212,6 +215,11 @@ krusovice.RhythmAnalysis.prototype = {
      */
     findNextBar : function(clock) {
         var bari = this.findBarAtClock(clock);
+
+        // No more bars left in the song
+        if(bari < 0) {
+            return -1;
+        }
 
         bari += 1;
 

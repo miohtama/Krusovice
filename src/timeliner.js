@@ -329,9 +329,7 @@ krusovice.Timeliner.prototype = {
 
             var duration = krusovice.Timeliner.getElementDuration(out, true);
 
-            console.log("Total duration:" + duration);
-
-            //clock += duration;
+            // console.log("Total duration:" + duration);
 
             // Match clock to the wake up time + duration adjustment
             clock = out.wakeUpTime + duration;
@@ -454,7 +452,6 @@ krusovice.Timeliner.prototype = {
                 if(bar) {
                     hitsIn = bar.start / 1000;
                     matchMode  = "bar";
-                    console.log(bar);
                 } else {
                     // This will fall back to current clock if not beat avail
                     hitsIn = this.findNextBeat(hitsInSeek);
@@ -467,7 +464,7 @@ krusovice.Timeliner.prototype = {
 
             }
 
-            console.log("Matching anim start: " + a.type + " hits in seek:" + hitsInSeek + " hits in:" + hitsIn + " match mode:" + matchMode);
+            // console.log("Matching anim start: " + a.type + " hits in seek:" + hitsInSeek + " hits in:" + hitsIn + " match mode:" + matchMode);
 
             a.start = hitsIn;
 
@@ -552,7 +549,7 @@ krusovice.Timeliner.prototype = {
 
             }
 
-            console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration + " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode + " bar match duration:" + duration + " percents:" + percents);
+            // console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration + " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode + " bar match duration:" + duration + " percents:" + percents);
 
             a.duration = actualDuration;
 
@@ -567,6 +564,13 @@ krusovice.Timeliner.prototype = {
 
         // Set the first animation appearing time in show clock
         out.wakeUpTime = out.animations[0].start;
+
+        if(out.wakeUpTime < songClock) {
+            // This is to catch bad timing calculations
+            // and prevent e.g. situation where all elements would start on
+            // the same time
+            throw "Animation time failed - went to past";
+        }
 
         return out;
 
@@ -728,6 +732,8 @@ krusovice.Timeliner.prototype = {
 
         var bari = this.analysis.findNextBar(clock);
 
+        // console.log("Got bari:" + bari + " " + clock);
+
         if(bari < 0) {
             return null;
         }
@@ -754,7 +760,7 @@ krusovice.Timeliner.prototype = {
 
         var start = bar.start / 1000;
 
-        console.log("Bar match start:" + start +  " clock:" + clock + " bar start:" + bar.start);
+        // console.log("Bar match start:" + start +  " clock:" + clock + " bar start:" + bar.start);
 
         if(start - clock > window) {
             return clock;
