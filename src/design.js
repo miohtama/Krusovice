@@ -53,6 +53,13 @@ krusovice.Design.prototype = {
     /**
      * @type String
      *
+     * Version string identifying the format of serialized data.
+     */
+    version : "krusovice-design-version-1",
+
+    /**
+     * @type String
+     *
      * Show title as human readable name.
      */
     title : null,
@@ -172,7 +179,15 @@ krusovice.Design.prototype = {
             // Duration will come from the plan item itself
         }
 
-    }
+    },
+
+
+    /**
+     * @type Object
+     *
+     * Hold UI data of design data
+     */
+    editData : null
 
 };
 
