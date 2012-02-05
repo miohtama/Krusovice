@@ -96,7 +96,9 @@ $.extend(krusovice.showobjects.Text.prototype, {
         this.shape = krusovice.texts.Registry.get(this.data.shape);
 
         if(!this.shape) {
-            throw "Unknown text shape id:" + this.data.shape;
+            console.log("Text shape missing");
+            console.log(krusovice.texts.Registry);
+            throw new Error("Unknown text shape id:" + this.data.shape);
         }
 
         this.width = width;
@@ -296,7 +298,7 @@ $.extend(krusovice.showobjects.Text.prototype, {
 
         this.object = this.renderer.createQuad(buffer, this.width, this.height, borderColor);
 
-        this.object.baseScale = this.shape.baseScale || this.object.baseScale;
+        this.object.baseScale = this.shape.baseScale || this.object.baseScale;
 
         //console.log("Created object");
         //console.log(this.object);

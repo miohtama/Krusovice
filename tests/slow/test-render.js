@@ -1,4 +1,4 @@
-/*global window,finalizeAsyncTestCase,assertTrue,assertObject,assertEquals,assertNotEquals,assertException,assertString,assertFalse*/
+/*global window,finalizeAsyncTestCase,assertTrue,assertObject,assertEquals,assertNotEquals,assertException,assertString,assertFalse,renderCore*/
 
 'use strict';
 
@@ -113,96 +113,6 @@ RenderTest.prototype.testRenderBadResource = function(queue) {
 
 };
 
-
-/**
- * Tick through the show and see that no exceptions are risen,
- *
- * @param webGL use WebGL rendering
- */
-RenderTest.prototype.renderCore = function(queue, webGL, extraCfg) {
-
-    var krusovice = this.krusovice;
-
-    var plan = this.createPlan();
-
-    var cfg = {
-            timeline : plan,
-            background : {
-                type : "plain",
-                color : "#ffffff"
-            },
-            elem : null,
-            realtime : false,
-            webGL : webGL
-    };
-
-    if(extraCfg) {
-        $.extend(cfg, extraCfg);
-    } else {
-        extraCfg = {};
-    }
-
-    // Self sanity check
-    window.assertEquals(2, plan.length);
-
-    var show = new krusovice.Show(cfg);
-
-    var done = false;
-
-    queue.call('Step 1: load show media resources', function(callbacks) {
-
-        console.log("Step 1");
-
-        window.assertFalse(show.loaded);
-
-        // This will cause async abort
-        var interrupt = callbacks.addErrback("Failed to load media resources");
-
-        // This will go to next step
-        var onloaded = callbacks.add(function() {
-            console.log("zzzz");
-        });
-
-        $(show).bind("loadend", function() {
-            console.log("loadend");
-            onloaded();
-        });
-
-        $(show).bind("loaderror", function(event, msg) {
-            // Single load failure is enough to stop us
-            console.log("loaderror");
-            if(!done) {
-                done = true;
-                interrupt(msg);
-            }
-        });
-
-        show.prepare();
-
-    });
-
-    queue.call('Step 2: render the show', function(callbacks) {
-
-        console.log("Step 2");
-
-        window.assertTrue(show.loaded);
-
-        window.assertEquals(2, show.animatedObjects.length);
-
-        var duration = extraCfg.duration || 3;
-
-        for(var i=0; i<duration; i+=0.1) {
-            console.log("Rendering frame:" + i);
-            show.onClock(i);
-            show.render();
-        }
-
-        window.assertEquals(duration*10, show.currentFrame);
-
-    });
-
-    return { queue : queue, show : show };
-
-};
+RenderTest.prototype.renderCore = RenderBaseTest.prototype.renderCore;
 
 finalizeAsyncTestCase("Render", RenderTest);

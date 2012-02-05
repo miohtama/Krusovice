@@ -362,9 +362,9 @@ krusovice.Timeliner.prototype = {
         var transitionIn = this.settings.transitionIn;
         var transitionOut = this.settings.transitionOut;
 
-        var sourceTransitions = source.transitions || { transitionIn : {}, transitionOut : {}, onScreen : {} };
+        var sourceTransitions = source.transitions || { transitionIn : {}, transitionOut : {}, onScreen : {} };
 
-        var tid = sourceTransitions.transitionIn.duration || settings.transitionIn.duration;
+        var tid = sourceTransitions.transitionIn.duration || settings.transitionIn.duration;
         var tod = sourceTransitions.transitionOut.duration || settings.transitionOut.duration;
         var onScreen = sourceTransitions.onScreen.duration || settings.onScreen.duration;
 
@@ -480,7 +480,7 @@ krusovice.Timeliner.prototype = {
             percents = 0;
             duration = 0;
 
-            if(!suggestedDuration || isNaN(suggestedDuration)) {
+            if(!suggestedDuration || isNaN(suggestedDuration)) {
                 console.error(a);
                 throw "The animation has not proper duration set";
             }
@@ -535,7 +535,7 @@ krusovice.Timeliner.prototype = {
                 // This will fall back to current clock if not beat avail
                 hitsOut = this.findNextBeat(hitsOutSeek);
 
-                if(hitsOut < 0 || isNaN(hitsOut)) {
+                if(hitsOut < 0 || isNaN(hitsOut)) {
                     throw "Bad beat timing:" + hitsOut;
                 }
 
@@ -700,7 +700,7 @@ krusovice.Timeliner.prototype = {
             return clock;
         }
 
-        window = window || this.seekWindow;
+        window = window || this.seekWindow;
 
         var beat = this.analysis.findNextBeat(clock);
 
@@ -728,7 +728,7 @@ krusovice.Timeliner.prototype = {
             return null;
         }
 
-        window = window || this.seekWindow;
+        window = window || this.seekWindow;
 
         var bari = this.analysis.findNextBar(clock);
 
@@ -777,7 +777,7 @@ krusovice.Timeliner.prototype = {
             return clock;
         }
 
-        window = window || this.seekWindow;
+        window = window || this.seekWindow;
 
         var bari = this.analysis.findBarAtClock(clock);
 

@@ -62,8 +62,8 @@ Fast tests::
 Slow tests::
 
     python -m "SimpleHTTPServer" &
-    java -Xmx512M -jar JsTestDriver-1.3.2.jar --port 9876 --config jsTestDriver-render.conf &
-    java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all --reset
+    java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --port 9876 --config jsTestDriver-render.conf &
+    java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all --reset
 
 If you get::
 
@@ -95,8 +95,8 @@ JS-test-driver command line
 
 ::
 
-        wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar
-        java -jar JsTestDriver-1.3.2.jar --port 9876
+        wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.4-a.jar
+        java -jar JsTestDriver-1.3.4-a.jar --port 9876
 
 Then visit
 
@@ -106,7 +106,7 @@ Leave the browser running. Put the job JsTestDriver on background.
 
 Now trigger a test run::
 
-        java -jar JsTestDriver-1.3.2.jar --tests all
+        java -jar JsTestDriver-1.3.4-a.jar --tests all
 
 Asserts with JsTestDriver
 ===========================
@@ -190,7 +190,7 @@ with necessary skillz0r.
 
 Install JsTestDriver::
 
-        wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar
+        wget http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.4-a.jar
 
 Install Watchdog (in `virtualenv isolated Python <http://pypi.python.org/pypi/virtualenv>`_)::
 
@@ -205,7 +205,7 @@ Start JsTestDriver as a background process::
 
 ::
 
-        java -jar JsTestDriver-1.3.2.jar --port 9876 &
+        java -jar JsTestDriver-1.3.4-a.jar --port 9876 &
 
 Capture browser(s) by visiting in the URL in a browser opened on the
 computer running tests (usually your own computer...).
@@ -237,15 +237,15 @@ Pass/fail output still works.
 
 This magic spell will make Watchdog to rerun tests on file-system changes::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all'
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.4-a.jar --captureConsole --tests all'
 
 To run a single test case (e.g. Timeliner)::
 
-        java -jar JsTestDriver-1.3.2.jar --captureConsole --tests Timeliner
+        java -jar JsTestDriver-1.3.4-a.jar --captureConsole --tests Timeliner
 
 To run a single test::
 
-        java -jar JsTestDriver-1.3.2.jar --tests Timeliner.testBasicNoMusic
+        java -jar JsTestDriver-1.3.4-a.jar --tests Timeliner.testBasicNoMusic
 
 
 Save any *.js* file, watchmedo notices and runs the tests.
@@ -266,8 +266,8 @@ Sometimes JsTestDriver daemon process gets stuck. Kill it and restart with the f
 
 You might need to also increase the default Java heap site if you get out of memory errors::
 
-        java -Xmx512M -jar JsTestDriver-1.3.2.jar --port 9876 --config jsTestDriver-render.conf &
-        java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+        java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --port 9876 --config jsTestDriver-render.conf &
+        java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all
 
 
 Static data
@@ -293,9 +293,9 @@ We use Python SimpleHTTPServer to serve data,.
 How to run::
 
 	python -m SimpleHTTPServer &
-	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --port 9876 &
+	java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --port 9876 &
 	# Capture
-	java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+	java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all
 
 More info
 
@@ -338,11 +338,11 @@ Available test sets
 
 Fast (no images, canvas stressing)::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --captureConsole --tests all'
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.4-a.jar --captureConsole --tests all'
 
 Render (loads images, renders several frames, async)::
 
-        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all'
+        watchmedo shell-command --patterns="*.js" --recursive  --command='java -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all'
 
 Documentation
 ---------------

@@ -2550,6 +2550,8 @@ THREE.Projector = function() {
 
 	this.projectGraph = function ( root, sort ) {
 
+        console.log("projectGraph");
+
 		_objectCount = 0;
 
 		_renderData.objects.length = 0;
@@ -2558,10 +2560,18 @@ THREE.Projector = function() {
 
 		var projectObject = function ( object ) {
 
-			if ( object.visible === false ) return;
+		    console.log("projectObject()");
+		    console.log(object);
+
+			if ( object.visible === false ) {
+			     console.log("Was not visible");
+			     return;
+			}
 
 			if ( ( object instanceof THREE.Mesh || object instanceof THREE.Line ) &&
 			( object.frustumCulled === false || isInFrustum( object ) ) ) {
+
+                console.log("Was not frustrum culled");
 
 				_projScreenMatrix.multiplyVector3( _vector3.copy( object.position ) );
 
@@ -2589,6 +2599,8 @@ THREE.Projector = function() {
 
 			for ( var c = 0, cl = object.children.length; c < cl; c ++ ) {
 
+                console.log("Rendering child");
+                console.log(object.children[ c ]);
 				projectObject( object.children[ c ] );
 
 			}
@@ -2626,6 +2638,8 @@ THREE.Projector = function() {
 
 		}
 
+		console.log("Projecting " + near + " " + far);
+
 		scene.updateMatrixWorld();
 
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
@@ -2646,6 +2660,9 @@ THREE.Projector = function() {
 			_vertexCount = 0;
 
 			if ( object instanceof THREE.Mesh ) {
+
+                console.log("Projecting");
+                console.log(object);
 
 				geometry = object.geometry;
 				geometryMaterials = object.geometry.materials;
@@ -2849,6 +2866,9 @@ THREE.Projector = function() {
 			}
 
 		}
+
+		console.log("Got renderData");
+		console.log(_renderData);
 
 		sort && _renderData.elements.sort( painterSort );
 
@@ -5964,6 +5984,9 @@ THREE.CanvasRenderer = function ( parameters ) {
 		_elements = _renderData.elements;
 		_lights = _renderData.lights;
 
+		console.log("Got render data");
+		console.log(_renderData);
+
 		/* DEBUG
 		_context.fillStyle = 'rgba( 0, 255, 255, 0.5 )';
 		_context.fillRect( _clipRect.getX(), _clipRect.getY(), _clipRect.getWidth(), _clipRect.getHeight() );
@@ -5980,6 +6003,9 @@ THREE.CanvasRenderer = function ( parameters ) {
 		for ( e = 0, el = _elements.length; e < el; e++ ) {
 
 			element = _elements[ e ];
+
+            console.log("Rendering element:");
+            console.log(element);
 
 			material = element.material;
 			material = material instanceof THREE.MeshFaceMaterial ? element.faceMaterial : material;
@@ -6079,8 +6105,8 @@ THREE.CanvasRenderer = function ( parameters ) {
 			_context.strokeStyle = 'rgba( 0, 255, 0, 0.5 )';
 			_context.strokeRect( _bboxRect.getX(), _bboxRect.getY(), _bboxRect.getWidth(), _bboxRect.getHeight() );
 			*/
-
 			_clearRect.addRectangle( _bboxRect );
+
 
 
 		}

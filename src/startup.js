@@ -24,11 +24,15 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
          */
         mediaURL : null,
 
-        backgroundMediaURL : null,
+        // Set these URLs to null to skip loading
 
-        songDataURL : null,
+        backgroundMediaURL : undefined,
 
-        textMediaURL : null,
+        songMediaURL : undefined,
+
+        songDataURL : undefined,
+
+        textMediaURL : undefined,
 
 
         /**
@@ -44,23 +48,23 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
             console.log("krusovice.Startup.init()");
 
             if(!this.mediaURL) {
-                throw "mediaDataURL must be given";
+                throw new Error("mediURL must be given");
             }
 
             // Match olvi data layout here
-            if(!this.songMediaURL) {
+            if(this.songMediaURL === undefined) {
                 this.songMediaURL = urltools.joinRelativePath(this.mediaURL, "music");
             }
 
-            if(!this.songDataURL) {
+            if(this.songDataURL === undefined) {
                 this.songDataURL = urltools.joinRelativePath(this.songMediaURL, "songs.json");
             }
 
-            if(!this.textMediaURL) {
+            if(this.textMediaURL === undefined) {
                 this.textMediaURL = urltools.joinRelativePath(this.mediaURL, "text-backgrounds");
             }
 
-            if(!this.backgroundMediaURL) {
+            if(this.backgroundMediaURL === undefined) {
                 this.backgroundMediaURL = urltools.joinRelativePath(this.mediaURL, "backgrounds");
             }
 
@@ -76,6 +80,8 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
             var dfd = $.Deferred();
             var self = this;
 
+            // this step cannot fail - no async resources
+
             setTimeout(function() {
                 krusovice.texts.Registry.init(self.textMediaURL);
                 dfd.resolve();
@@ -88,6 +94,7 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
          * Load backgrounds database
          */
         loadBackgrounds : function() {
+
             var dfd = $.Deferred();
 
             function ok() {
@@ -98,7 +105,12 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
                 dfd.reject("Could not load background database");
             }
 
-            krusovice.backgrounds.Registry.init(this.backgroundMediaURL, ok, fail);
+            if(this.backgroundMediaURL) {
+                krusovice.backgrounds.Registry.init(this.backgroundMediaURL, ok, fail);
+            } else {
+                console.warn("loadBackground(): skip");
+                setTimeout(ok, 10);
+            }
 
             return dfd.promise();
         },
@@ -117,7 +129,12 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
                 dfd.reject("Could not load music database");
             }
 
-            krusovice.music.Registry.loadData(this.songDataURL, this.songMediaURL, ok, fail);
+           if(this.songDataURL) {
+                krusovice.music.Registry.loadData(this.songDataURL, this.songMediaURL, ok, fail);
+            } else {
+                console.warn("loadSongs(): skip");
+                setTimeout(ok, 10);
+            }
 
             return dfd.promise();
         }

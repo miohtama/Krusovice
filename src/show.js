@@ -37,7 +37,7 @@ krusovice.Show.prototype = {
     elem : null,
 
     /**
-     * @cfg {Array} timeline Timeline of {krusovice.TimelineElement} elements
+     * @cfg {Array} timeline Timeline of {krusovice.TimelineElement} elements
      */
     timeline : null,
 
@@ -528,7 +528,7 @@ krusovice.Show.prototype = {
         if(this.rhythmData) {
             this.analysis = new krusovice.RhythmAnalysis(this.rhythmData);
             this.analysis.initBeats();
-        } else {
+        } else {
             this.analysis = null;
         }
     },
