@@ -47,30 +47,13 @@ RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
     queue.call("Step 1: Initialize Krusovive async resources", function(callbacks) {
         console.log("Step 1");
 
-        var startup = new krusovice.Startup({
-            // No media paths defined
-            mediaURL : "http://localhost:8000/",
-            backgroundMediaURL : null,
-            songMediaURL : null,
-            songDataURL : null
-        });
+        // XXX: Now done in shared krusoviceLoadResources()
 
-        // This will cause async abort
-        var interrupt = callbacks.addErrback("Failed to load media resources");
         // This will go to next step
-        var initialized = callbacks.add(function() {
-            console.log("Krusovice initialized");
+        var onloaded = callbacks.add(function() {
         });
 
-        var dfd = startup.init();
-
-        dfd.done(function() {
-            initialized();
-        });
-
-        dfd.fail(function(msg) {
-            interrupt("Failed to initialize Krusovice:" + msg);
-        });
+        onloaded();
 
     });
 
@@ -85,7 +68,7 @@ RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
         // This will go to next step
         var onloaded = callbacks.add(function() {
-            console.log("zzzz");
+            console.log("Media resources loaded");
         });
 
         $(show).bind("loadend", function() {

@@ -108,6 +108,13 @@ window.amdTestCase = function (config, moduleArr, tests) {
                 tests.setUp.call(this, queue);
             }
         });
+
+        // call loadResources async handler if defined in user tests.
+        queue.call(function () {
+            if (tests.loadResources) {
+                tests.loadResources(queue);
+            }
+        });
     };
 
     proto.tearDown = function (queue) {

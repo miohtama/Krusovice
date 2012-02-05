@@ -1,6 +1,6 @@
 'use strict';
 
-/*global KrusoviceTestCase,window,krusovice,$,TestCase,assertTrue*/
+/*global KrusoviceTestCase,window,krusovice,$,TestCase,assertTrue,assertEquals*/
 
 /**
  * Various tests showing what kind of fittings of photos we can have in different shapes of videos.
