@@ -38,6 +38,7 @@ krusovice.Design.clean = function(design) {
 
     // Clean non-serializable references
     cleaned.plan.forEach(function(e) {
+        // Clean Image objects
         e.image = null;
     });
 
