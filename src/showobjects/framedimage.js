@@ -119,6 +119,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        var naturalWidth = img.naturalWidht || img.width;
        var naturalHeight = img.naturalHeight || img.height;
 
+
+       // Log why we fail
        if(!naturalWidth) {
             console.error("Image width/height missing");
             console.log(img);
