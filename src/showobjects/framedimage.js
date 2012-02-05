@@ -58,7 +58,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             load = true;
         }
 
-        if(!this.image.src) {
+        if(!this.image || $.isEmptyObject(this.image)) {
             console.error("Bad Image input for framedimage");
             console.log(this.image);
             throw new Error("Bad image input:" + this.image.src);
