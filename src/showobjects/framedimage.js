@@ -58,6 +58,12 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             load = true;
         }
 
+        if(!(this.image instanceof Image)) {
+            console.error("Bad Image input for framedimage");
+            console.log(this.image);
+            throw new Error("Bad image input:" + this.image.src);
+        }
+
         console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
 
         function imageLoaded() {
@@ -100,6 +106,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      * Convert raw photo to a framed image with drop shadow
      *
      * @param {Image} img Image object (loaded)
+     *
+     * @param {Number} Desired resized witdth in pixels
      */
     createFramedImage : function(img, width, height) {
 
@@ -112,13 +120,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
        // Actual pixel data dimensions, not ones presented in DOM tree
 
-       // Create temporary <canvas> to work with, with expanded canvas (sic.) size
-       var buffer = document.createElement('canvas');
-
        // <canvas> source doesn't give naturalWidth
        var naturalWidth = img.naturalWidht || img.width;
        var naturalHeight = img.naturalHeight || img.height;
-
 
        // Log why we fail
        if(!naturalWidth) {
@@ -126,6 +130,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             console.log(img);
             throw new Error("Image does not have width/height information available:" + img.src);
        }
+
+       // Create temporary <canvas> to work with, with expanded canvas (sic.) size
+       var buffer = document.createElement('canvas');
 
        // Texture sampling base
        //var base = Math.max(width, height);
