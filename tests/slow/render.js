@@ -89,7 +89,7 @@ RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
     });
 
-    queue.call('Step 3: render the show', function(callbacks) {
+    function _renderStep(callbacks) {
 
         console.log("Step 3");
 
@@ -107,8 +107,11 @@ RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
 
         window.assertEquals(duration*10, show.currentFrame);
 
-    });
+    }
 
+    var renderStep = extraCfg.renderStep || _renderStep;
+
+    queue.call('Step 3: render the show', renderStep);
     return { queue : queue, show : show };
 
 };

@@ -149,7 +149,9 @@ krusovice.Loader.prototype = {
      * If image is an object wait until it is completely laoded.
      * If image is an URL create an image and load it.
      *
-     * @param {Image|String} Image object or URL to an image
+     * @param {Image|String} obj Image object or URL to an image
+     *
+     * @param {Function} callback callback(img) - called on succesful load
      */
     loadImage : function(obj, callback) {
 

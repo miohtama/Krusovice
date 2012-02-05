@@ -137,6 +137,11 @@ krusovice.Show.prototype = {
     background : null,
 
     /**
+     * @cfg {Object} watermark {url,width,height}
+     */
+    watermark : null,
+
+    /**
      * <canvas> used as the main output element
      */
     canvas : null,
@@ -288,6 +293,7 @@ krusovice.Show.prototype = {
         this.prepareBackground();
         this.preparePreviewWarning();
         this.prepareEffects();
+        this.prepareWatermark();
         this.loadResources();
     },
 
@@ -522,6 +528,25 @@ krusovice.Show.prototype = {
     },
 
     /**
+     * Prepare watermark rendering on <canvas>
+     */
+    prepareWatermark : function() {
+
+        // No effective watermark for the show
+        if(!this.watermark) {
+            return;
+        }
+
+        var self = this;
+
+        function onWatermarkLoad(img) {
+            self.watermark.image = img;
+        }
+
+        this.loader.loadImage(this.watermark.url, onWatermarkLoad);
+    },
+
+    /**
      * Make sure we input data for drawing post-processing kind effects.
      */
     prepareEffects : function() {
@@ -683,6 +708,8 @@ krusovice.Show.prototype = {
 
         this.renderPreviewWarningMessage(renderClock);
 
+        this.renderWatermark(renderClock);
+
         // Notify listeners about succesful frame rendering
         $(this).trigger("framerendered", [this.currentFrame, renderClock]);
     },
@@ -777,6 +804,29 @@ krusovice.Show.prototype = {
         });
     },
 
+    renderWatermark : function(renderClock) {
+
+        if(!this.watermark) {
+            return;
+        }
+
+        var w = this.watermark;
+
+        var ctx = this.ctx;
+
+        var img = w.image;
+
+        var dimensions = krusovice.utils.calculateAspectRatioFit(img.naturalWidth, img.naturalHeight, w.width, w.height);
+
+        var x = 10;
+        var y = this.height - dimensions.height - 10;
+
+        ctx.drawImage(img, x, y, dimensions.width, dimensions.height);
+
+        // Some info to unit tests
+        $(this).trigger("watermarkrendered");
+
+    },
 
     renderPreviewWarningMessage : function(clock) {
 
