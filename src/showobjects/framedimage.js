@@ -120,8 +120,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        var naturalHeight = img.naturalHeight || img.height;
 
        if(!naturalWidth) {
-            console.error(img);
-            throw "Image does not have width/height information available";
+            console.error("Image width/height missing");
+            console.log(img);
+            throw new Error("Image does not have width/height information available:" + img.src);
        }
 
        // Texture sampling base
