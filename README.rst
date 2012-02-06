@@ -63,7 +63,7 @@ Slow tests::
 
     python -m "SimpleHTTPServer" &
     java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --port 9876 --config jsTestDriver-render.conf &
-    java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all --reset
+    java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --reset --tests all
 
 If you get::
 

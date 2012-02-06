@@ -271,11 +271,34 @@ krusovice.Show.prototype = {
      * Control individual render layers.
      *
      * Most useful for debugging.
+     *
+     * XXX: Move object initialization to the constructor
      */
     renderFlags : {
           background : true,
           scene : true,
           frameLabel : false
+    },
+
+    /**
+     * The screenshot state machinary.
+     *
+     * When the show is running, take screenshots of certain
+     * actions so we can later use these screenshots as thumbnails.
+     *
+     * Each attribute can be undefined (no screenshot taken),
+     * string (data URI of the screenshot PNG) or false (the screenshot image)
+     * has been consumed.
+     *
+     *
+     * XXX: Move object initialization to the constructing
+     */
+    screenshots : {
+
+        // Have we taken the screenshot
+        opening : undefined,
+
+        firstPhoto : undefined
     },
 
     /**
@@ -710,6 +733,8 @@ krusovice.Show.prototype = {
 
         this.renderWatermark(renderClock);
 
+        this.checkOpeningScreenshot();
+
         // Notify listeners about succesful frame rendering
         $(this).trigger("framerendered", [this.currentFrame, renderClock]);
     },
@@ -792,6 +817,7 @@ krusovice.Show.prototype = {
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
     renderAnimateObjects : function(renderClock) {
+        var self = this;
 
         if(!this.animatedObjects) {
             return;
@@ -800,6 +826,12 @@ krusovice.Show.prototype = {
         this.animatedObjects.forEach(function(obj) {
             var state = obj.animate(renderClock);
             obj.render(vu);
+
+            // Check screenshot logic
+            if(obj.data.type == "image" && state.animation == "onscreen" && state.value > 0.5) {
+                // Try to hit to the middle of the first photo on screen animation
+                self.checkFirstPhotoScreenshot();
+            }
             // console.log("Clock " + renderClock + " animated object " + e.data.id + " state " + state);
         });
     },
@@ -1094,6 +1126,56 @@ krusovice.Show.prototype = {
      */
     getCaptureCanvasContext : function() {
         return this.ctx;
+    },
+
+    /**
+     * @return dataUri of current frame screenshot
+     */
+    takeScreenshot : function() {
+        return this.canvas.toDataURL();
+    },
+
+    /**
+     * Check if we can take opening screenshot
+     */
+    checkOpeningScreenshot : function() {
+
+        // Screenshot has been already handled
+        if(this.screenshots.opening === undefined) {
+            this.screenshots.opening = this.takeScreenshot();
+        }
+    },
+
+
+    /**
+     * Check if we can take screenshot of first photo fully displayed
+     */
+    checkFirstPhotoScreenshot : function() {
+
+        // Screenshot has been already handled
+        if(this.screenshots.firstPhoto === undefined) {
+            this.screenshots.firstPhoto = this.takeScreenshot();
+        }
+    },
+
+    /**
+     * Return the current frame as { id, dataUri } if it's a desirable screenshot for a thumbnail.
+     *
+     * Must be called after render().
+     */
+    consumeLatestScreenshot : function() {
+        var shot = null;
+        if(this.screenshots.opening) {
+            shot = { id : "opening", data : this.screenshots.opening };
+            this.screenshots.opening = false;
+        }
+
+        if(this.screenshots.firstPhoto) {
+            shot = { id : "firstPhoto", data : this.screenshots.firstPhoto };
+            this.screenshots.firstPhoto = false;
+        }
+
+        return shot;
     }
 
 };
