@@ -2,7 +2,7 @@
 
 "use strict";
 
-/*global require, krusovice, window*/
+/*global require, krusovice, window, console, $, document*/
 
 /**
  *

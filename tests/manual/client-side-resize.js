@@ -3,7 +3,7 @@
  *
  */
 
-/*global require,window,simpleElements,console*/
+/*global XMLHttpRequest, FormData, require,window,simpleElements,console*/
 
 
 require(["krusovice/thirdparty/jquery",
@@ -30,6 +30,7 @@ require(["krusovice/thirdparty/jquery",
 
     function onFileUpload(event) {
 
+        /* XXX: fix */
         console.log(this.files);
 
         var i;

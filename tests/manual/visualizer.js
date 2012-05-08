@@ -1,4 +1,6 @@
-/*global require,simpleElements,sampleSongData*/
+/*global $, document, console, require,simpleElements,sampleSongData*/
+
+"use strict";
 
 require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
 

@@ -3,7 +3,7 @@
  *
  */
 
-/*global require,window,simpleElements*/
+/*global $, require,window,simpleElements*/
 
 "use strict";
 

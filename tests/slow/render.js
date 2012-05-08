@@ -1,4 +1,4 @@
-/*global window,console*/
+/*global $, window,console*/
 
 "use strict";
 

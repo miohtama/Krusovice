@@ -1,4 +1,4 @@
-/*global require,simpleElements,sampleSongData*/
+/*global $, document, require,simpleElements,sampleSongData*/
 
 /* Sample songs
 
@@ -6,6 +6,8 @@ http://localhost:8000/olvi/music/irreplaceableperson.json
 http://localhost:8000/olvi/music/TNT.json
 
 */
+
+"use strict";
 
 require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
 

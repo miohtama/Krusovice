@@ -1,6 +1,6 @@
 "use strict";
 
-/*global krusovice,window*/
+/*global require, krusovice, window, console, $, document*/
 
 /**
  * Test different <canvas> sizes for the show rendering.

@@ -1,7 +1,9 @@
 # Don't match hidden dotted files/folders
 # Don't match data folders with big media files
+# Don't match thirdparty source
 all: | 
   *
   !RE:.*\/\..*|^\..*
   !bin/**
   !testdata/**
+  !src/thirdparty/**
