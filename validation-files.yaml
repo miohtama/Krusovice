@@ -1,0 +1,7 @@
+# Don't match hidden dotted files/folders
+# Don't match data folders with big media files
+all: | 
+  *
+  !RE:.*\/\..*|^\..*
+  !bin/**
+  !testdata/**

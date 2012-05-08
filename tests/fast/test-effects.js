@@ -91,28 +91,28 @@ EffectsTest.prototype.testCalculateAnimation = function() {
 
     var krusovice = this.krusovice;
 
-	var source = {
-			position : [-0.03381065586581826, -0.024750653142109516, 0.9507922390475869],
-			scale : [1,1,1],
-			rotation : [0,0,0,1],
-			opacity : 1
-	};
+        var source = {
+                        position : [-0.03381065586581826, -0.024750653142109516, 0.9507922390475869],
+                        scale : [1,1,1],
+                        rotation : [0,0,0,1],
+                        opacity : 1
+        };
 
-	var target = {
-			position : [-0.03381065586581826, -0.024750653142109516, 0.9507922390475869],
-			scale : [1,1,1],
-			rotation : [0,0,0,1],
-			opacity : 1
-	};
+        var target = {
+                        position : [-0.03381065586581826, -0.024750653142109516, 0.9507922390475869],
+                        scale : [1,1,1],
+                        rotation : [0,0,0,1],
+                        opacity : 1
+        };
 
     var position = krusovice.utils.calculateAnimation(target.position, source.position, 0);
-	assertTrue(krusovice.utils.isNumber(position[0]));
+        assertTrue(krusovice.utils.isNumber(position[0]));
 
     position = krusovice.utils.calculateAnimation(target.position, source.position, 0.1);
-	assertTrue(krusovice.utils.isNumber(position[0]));
+        assertTrue(krusovice.utils.isNumber(position[0]));
 
     position = krusovice.utils.calculateAnimation(target.position, source.position, 1);
-	assertTrue(krusovice.utils.isNumber(position[0]));
+        assertTrue(krusovice.utils.isNumber(position[0]));
 
 };
 

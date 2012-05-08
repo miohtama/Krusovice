@@ -1,6 +1,6 @@
 <html>
-	<!-- Call remote video renderer to produce a sample clip -->
-	<head>
+        <!-- Call remote video renderer to produce a sample clip -->
+        <head>
         <script src=../../src/thirdparty/require.js></script>
 
         <script type="text/javascript" src="../../testdata/sample-song-data.js"></script>
@@ -18,18 +18,18 @@
         <script src="renderer.js"></script>
     </head>
 
-	<body>
-		 <h1>Test remote rendering service</h1>
+        <body>
+                 <h1>Test remote rendering service</h1>
 
-		 <p>Send Javascript prepared automatic payload to the rendering service</p>
+                 <p>Send Javascript prepared automatic payload to the rendering service</p>
 
-		 <form>
-		      <label for="rendering-service-url" value="Rendering service URL" />
+                 <form>
+                      <label for="rendering-service-url" value="Rendering service URL" />
                       <input type="text" value="http://localhost:6543/create-video" name="rendering-service-url"/>
-		      <button type="button" name="render">Render</button>
+                      <button type="button" name="render">Render</button>
 
-		      <button type="button" name="json">Get project JSON</button>
+                      <button type="button" name="json">Get project JSON</button>
 
-		 </form>
-	</body>
+                 </form>
+        </body>
 </html>

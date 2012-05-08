@@ -27,36 +27,36 @@ define("krusovice/project", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
      */
     design : null,
 
-	/**
-	 * @type Number
-	 *
-	 * Pixel width of rendering output
-	 */
-	width : 512,
+        /**
+         * @type Number
+         *
+         * Pixel width of rendering output
+         */
+        width : 512,
 
 
-	/**
-	 * @type Number
-	 *
-	 * Pixel height of rendering output
-	 */
-	height: 288,
+        /**
+         * @type Number
+         *
+         * Pixel height of rendering output
+         */
+        height: 288,
 
 
-	/**
-	 * @type String
-	 *
-	 * Email address of the owner of this show. Will be used to send email notification when done.
-	 */
-	email : null,
+        /**
+         * @type String
+         *
+         * Email address of the owner of this show. Will be used to send email notification when done.
+         */
+        email : null,
 
 
-	/**
-	 * @type String
-	 *
-	 * The server-side rendering process will notify this URL about its progress.
-	 * For internal use only - you cannot set this.
-	 */
-	pingbackURI : null
+        /**
+         * @type String
+         *
+         * The server-side rendering process will notify this URL about its progress.
+         * For internal use only - you cannot set this.
+         */
+        pingbackURI : null
     };
 });

@@ -18,11 +18,11 @@ define("krusovice/rhythmanalysis", ["krusovice/thirdparty/jquery-bundle", "kruso
  */
 krusovice.RhythmAnalysis = function(data) {
 
-	if(!data) {
-		throw "Rhythm data must be given";
-	}
+        if(!data) {
+                throw "Rhythm data must be given";
+        }
 
-	this.data = data;
+        this.data = data;
 
 };
 
@@ -78,24 +78,24 @@ krusovice.RhythmAnalysis.prototype = {
 
         var beat = 0;
 
-		var i = 0;
+                var i = 0;
 
-		clock *= 1000;
+                clock *= 1000;
 
-		var confidenceThreshold = this.minBeatConfidence;
+                var confidenceThreshold = this.minBeatConfidence;
 
-		for(i=0; i<this.data.beats.length; i++) {
+                for(i=0; i<this.data.beats.length; i++) {
             var t = this.data.beats[i];
-			if(t.confidence < confidenceThreshold) {
+                        if(t.confidence < confidenceThreshold) {
                 continue;
             }
 
-			if(t.start > clock) {
-				beat = t;
-				break;
-			}
+                        if(t.start > clock) {
+                                beat = t;
+                                break;
+                        }
 
-		}
+                }
 
         return beat;
     },
@@ -158,7 +158,7 @@ krusovice.RhythmAnalysis.prototype = {
         var i;
         for(i=0; i<array.length;i++) {
 
-		    var t = array[i];
+                    var t = array[i];
 
             if(t.confidence < confidenceThreshold) {
                 continue;

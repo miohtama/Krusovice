@@ -11,14 +11,14 @@ TextTest.prototype.testRenderBasicText = function() {
 
     var krusovice = this.krusovice;
 
-	var init = this.basicSetup();
+        var init = this.basicSetup();
 
-	var object = new krusovice.showobjects.Text({
-		data : init.elem,
-		renderer : init.renderer
-	});
+        var object = new krusovice.showobjects.Text({
+                data : init.elem,
+                renderer : init.renderer
+        });
 
-	object.prepare(null, 512, 512);
+        object.prepare(null, 512, 512);
 
     object.animate(0);
 
@@ -51,29 +51,29 @@ TextTest.prototype.createTimelineElement = function() {
         }
     ];
 
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(elements, null);
-	var plan = timeliner.createPlan();
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(elements, null);
+        var plan = timeliner.createPlan();
 
-	return plan[0];
+        return plan[0];
 };
 
 
 TextTest.prototype.basicSetup = function() {
 
     var krusovice = this.krusovice;
-	var renderer = new krusovice.renderers.Three({
-		width: 100,
-		height : 100
-	});
+        var renderer = new krusovice.renderers.Three({
+                width: 100,
+                height : 100
+        });
 
-	renderer.setup();
+        renderer.setup();
 
-	var elem = this.createTimelineElement();
+        var elem = this.createTimelineElement();
 
-	return {
-		elem : elem,
-		renderer : renderer
-	};
+        return {
+                elem : elem,
+                renderer : renderer
+        };
 
 };
 

@@ -1,6 +1,6 @@
 <html>
-	<!-- Manual inspection of visualizer renderer output -->
-	<head>
+        <!-- Manual inspection of visualizer renderer output -->
+        <head>
 
         <link href=../../media/visualizer.css rel=stylesheet></link>
 
@@ -19,31 +19,31 @@
 
             require(["krusovice/api", "../../src/thirdparty/domready!"], function(krusovice) {
 
-				// Visualization without music
-		        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
-		        var plan = timeliner.createPlan();
+                                // Visualization without music
+                        var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+                        var plan = timeliner.createPlan();
 
-		        // Use linear easing for better debugger
-		        plan.forEach(function(e) {
-		             e.animations[0].easing = e.animations[1].easing = e.animations[2].easing = "linear";
-		        });
+                        // Use linear easing for better debugger
+                        plan.forEach(function(e) {
+                             e.animations[0].easing = e.animations[1].easing = e.animations[2].easing = "linear";
+                        });
 
-		        var visualizer = new krusovice.TimelineVisualizer({plan:plan});
+                        var visualizer = new krusovice.TimelineVisualizer({plan:plan});
 
-		        visualizer.secondsPerPixel = 0.02;
-		        visualizer.clockSpan = 50;
+                        visualizer.secondsPerPixel = 0.02;
+                        visualizer.clockSpan = 50;
 
-		        var div = document.getElementById("visualizer-no-rhythm");
-		        visualizer.render(div);
-			});
+                        var div = document.getElementById("visualizer-no-rhythm");
+                        visualizer.render(div);
+                        });
         </script>
     </head>
 
-	<body>
-		<h1>No rhythm</h1>
-		<div id="visualizer-no-rhythm">
+        <body>
+                <h1>No rhythm</h1>
+                <div id="visualizer-no-rhythm">
 
-		</div>
+                </div>
 
-	</body>
+        </body>
 </html>

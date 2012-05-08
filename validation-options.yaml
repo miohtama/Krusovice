@@ -1,0 +1,49 @@
+linelength:
+  length: 250
+
+# Python additional configuration
+
+pylint:
+
+  host-python-env: true
+
+  python3k: true
+
+  configuration: |
+
+    [BASIC]
+    # Allow one letter variables
+    variable-rgx=.*$
+
+    # Regular expression which should only match correct instance attribute names.
+    # Allow two letter attributes
+    attr-rgx=.*$
+
+    # Allow module level lowercase variables
+    const-rgx=(([a-zA-Z_][a-zA-Z0-9_]*)|(__.*__))$
+
+    [FORMAT]
+    max-line-length=250
+
+    [MISCELLANEOUS]
+    # Don't fail validation because of our notes
+    notes=
+    #notes=FIXME,XXX,TODO
+
+    [DESIGN]
+    # Maximum number of arguments for function / method
+    max-args=12
+
+    # Maximum number of attributes for a class (see R0902).
+    max-attributes=25
+
+    # Maximum number of locals for function / method body
+    max-locals=25
+
+    [MESSAGES CONTROL]
+    # Disable:
+    # - Missing docstring
+    # :C0112: *Empty docstring*
+    # :R0903: *Too few public methods (%s/%s)*
+    # :R0904: *Too many public methods (%s/%s)*
+    disable = C0111, C0112, R0903, R0904

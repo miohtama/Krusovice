@@ -10,15 +10,15 @@ var TimelinerTest = function() {};
  */
 TimelinerTest.prototype.testBasicNoMusic = function() {
     var krusovice = this.krusovice;
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
-	var plan = timeliner.createPlan();
-	assertEquals(plan.length, 2);
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+        var plan = timeliner.createPlan();
+        assertEquals(plan.length, 2);
 
-	console.log("Got plan");
-	console.log(plan);
-	assertEquals(krusovice.effects.ZoomIn.easing, plan[0].animations[0].easing);
-	assertEquals("linear", plan[0].animations[1].easing);
-	assertEquals(krusovice.effects.ZoomFar.easing, plan[0].animations[2].easing);
+        console.log("Got plan");
+        console.log(plan);
+        assertEquals(krusovice.effects.ZoomIn.easing, plan[0].animations[0].easing);
+        assertEquals("linear", plan[0].animations[1].easing);
+        assertEquals(krusovice.effects.ZoomFar.easing, plan[0].animations[2].easing);
 
 };
 
@@ -28,11 +28,11 @@ TimelinerTest.prototype.testBasicNoMusic = function() {
  */
 TimelinerTest.prototype.testBasicMusic = function() {
     var krusovice = this.krusovice;
-	assertObject("Could not load song data", window.sampleSongData);
+        assertObject("Could not load song data", window.sampleSongData);
 
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, window.sampleSongData);
-	var plan = timeliner.createPlan();
-	assertEquals(plan.length, 2);
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, window.sampleSongData);
+        var plan = timeliner.createPlan();
+        assertEquals(plan.length, 2);
 
 };
 
@@ -42,11 +42,11 @@ TimelinerTest.prototype.testBasicMusic = function() {
  */
 TimelinerTest.prototype.testNoInput = function() {
     var krusovice = this.krusovice;
-	function test() {
-		var timeliner = krusovice.Timeliner.createSimpleTimeliner();
-	}
-	// you must give list of elements to show
-	assertException("Must fail - bad input", test);
+        function test() {
+                var timeliner = krusovice.Timeliner.createSimpleTimeliner();
+        }
+        // you must give list of elements to show
+        assertException("Must fail - bad input", test);
 };
 
 
@@ -55,13 +55,13 @@ TimelinerTest.prototype.testNoInput = function() {
  */
 TimelinerTest.prototype.testHasWakeUpTime = function() {
     var krusovice = this.krusovice;
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
-	var plan = timeliner.createPlan();
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+        var plan = timeliner.createPlan();
 
-	var elem = plan[0];
+        var elem = plan[0];
 
-	assertTrue(elem.wakeUpTime >= 0);
-	assertTrue(elem.wakeUpTime < 5);
+        assertTrue(elem.wakeUpTime >= 0);
+        assertTrue(elem.wakeUpTime < 5);
 
 };
 
@@ -70,24 +70,24 @@ TimelinerTest.prototype.testHasWakeUpTime = function() {
  */
 TimelinerTest.prototype.testHasAnimationTypes = function() {
     var krusovice = this.krusovice;
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
-	var plan = timeliner.createPlan();
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+        var plan = timeliner.createPlan();
 
 
-	plan.forEach(function(e) {
+        plan.forEach(function(e) {
 
         var realAnimations = e.animations.slice(0, e.length-1);
 
-		realAnimations.forEach(function(a) {
+                realAnimations.forEach(function(a) {
 
-			/* Goner element has a type of null */
-			if(a.type != "gone") {
-				assertString(a.effectType);
-				assertString(a.type);
-				assertString(a.easing);
-			}
-		});
-	});
+                        /* Goner element has a type of null */
+                        if(a.type != "gone") {
+                                assertString(a.effectType);
+                                assertString(a.type);
+                                assertString(a.easing);
+                        }
+                });
+        });
 
 };
 
@@ -109,28 +109,28 @@ TimelinerTest.prototype.testJQueryEasing = function() {
  */
 TimelinerTest.prototype.testShowElementEase = function() {
     var krusovice = this.krusovice;
-	var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
-	var plan = timeliner.createPlan();
+        var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
+        var plan = timeliner.createPlan();
 
-	assertEquals(4, plan[0].animations.length);
+        assertEquals(4, plan[0].animations.length);
 
-	plan[0].animations[0].easing = "linear";
-	plan[0].animations[0].duration = 1.0;
+        plan[0].animations[0].easing = "linear";
+        plan[0].animations[0].duration = 1.0;
 
-	plan[0].animations[1].easing = "linear";
-	plan[0].animations[1].duration = 1.0;
+        plan[0].animations[1].easing = "linear";
+        plan[0].animations[1].duration = 1.0;
 
-	plan[0].animations[2].easing = "linear";
-	plan[0].animations[2].duration = 1.0;
+        plan[0].animations[2].easing = "linear";
+        plan[0].animations[2].duration = 1.0;
 
-	// Assert midpoint in one second
+        // Assert midpoint in one second
 
     var val = krusovice.utils.calculateElementEase(plan[0], -0.1);
     assertEquals(0, val.value);
     assertEquals("notyet", val.animation);
 
-	val = krusovice.utils.calculateElementEase(plan[0], 0.5);
-	assertEquals(0.5, val.value);
+        val = krusovice.utils.calculateElementEase(plan[0], 0.5);
+        assertEquals(0.5, val.value);
     assertEquals("transitionin", val.animation);
 
     val = krusovice.utils.calculateElementEase(plan[0], 1.5);
@@ -156,14 +156,14 @@ TimelinerTest.prototype.testShowElementEase2sec = function() {
     var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
     var plan = timeliner.createPlan();
 
-	plan[0].animations[0].easing = "linear";
-	plan[0].animations[0].duration = 2.0;
+        plan[0].animations[0].easing = "linear";
+        plan[0].animations[0].duration = 2.0;
 
-	plan[0].animations[1].easing = "linear";
-	plan[0].animations[1].duration = 2.0;
+        plan[0].animations[1].easing = "linear";
+        plan[0].animations[1].duration = 2.0;
 
-	plan[0].animations[2].easing = "linear";
-	plan[0].animations[2].duration = 2.0;
+        plan[0].animations[2].easing = "linear";
+        plan[0].animations[2].duration = 2.0;
 
     var val = krusovice.utils.calculateElementEase(plan[0], -1);
     assertEquals(0, val.value);
