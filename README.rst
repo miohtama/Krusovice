@@ -106,7 +106,7 @@ Leave the browser running. Put the job JsTestDriver on background.
 
 Now trigger a test run::
 
-        java -jar JsTestDriver-1.3.2.jar --tests all
+        java -jar JsTestDriver-1.3.4-a.jar --tests all
 
 Asserts with JsTestDriver
 ===========================
@@ -293,9 +293,9 @@ We use Python SimpleHTTPServer to serve data,.
 How to run::
 
         python -m SimpleHTTPServer &
-        java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --port 9876 &
-        # Capture
-        java -Xmx512M -jar JsTestDriver-1.3.2.jar --config jsTestDriver-render.conf --tests all
+        java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --port 9876 &
+        # Capture browser in this point
+        java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --config jsTestDriver-render.conf --tests all
 
 More info
 
