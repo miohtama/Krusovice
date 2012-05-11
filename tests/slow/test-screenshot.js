@@ -1,4 +1,4 @@
-/*global $, console, RenderBaseTest,window,finalizeAsyncTestCase,assertTrue,assertObject,assertEquals,assertNotEquals,assertException,assertString,assertFalse,renderCore*/
+/*global console, RenderBaseTest, window, finalizeAsyncTestCase, assertTrue, assertObject, assertEquals, assertNotEquals, assertException, assertString, assertFalse, renderCore, jQuery, $ */
 
 'use strict';
 

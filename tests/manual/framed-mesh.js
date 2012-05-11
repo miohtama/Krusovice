@@ -3,7 +3,7 @@
  *
  */
 
-/*global Image, document, require,window,simpleElements,console,THREE*/
+/*global Image, document, require, window, simpleElements, console, THREE, jQuery, $ */
 
 
 require(["krusovice/thirdparty/jquery",

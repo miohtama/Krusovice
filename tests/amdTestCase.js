@@ -1,5 +1,7 @@
 /*jslint  newcap: true, sloppy: true*/
-/*global window, AsyncTestCase, require */
+/*global requirejs, window, AsyncTestCase, require, console, jQuery, $ */
+
+"use strict";
 
 window.amdTestCase = function (config, moduleArr, tests) {
     var testName,
@@ -22,6 +24,8 @@ window.amdTestCase = function (config, moduleArr, tests) {
 
     function reload(context, callbacks) {
         var req, prop, reqConfig = {};
+
+        /*jshint validthis:true */
 
         // copy config to new object
         for (prop in config) {
@@ -143,5 +147,6 @@ window.amdTestCase = function (config, moduleArr, tests) {
         }
     }
 
+    /*jshint newcap:false*/
     return AsyncTestCase(testCase, proto);
 };

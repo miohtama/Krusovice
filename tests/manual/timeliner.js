@@ -1,4 +1,4 @@
-/*global $, document, require,simpleElements,sampleSongData*/
+/*global document, require, simpleElements, sampleSongData, console, jQuery, $ */
 
 /* Sample songs
 

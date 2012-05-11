@@ -3,7 +3,7 @@
  *
  */
 
-/*global XMLHttpRequest, FormData, require,window,simpleElements,console*/
+/*global XMLHttpRequest, FormData, require, window, simpleElements, console, jQuery, $ */
 
 
 require(["krusovice/thirdparty/jquery",
@@ -30,11 +30,8 @@ require(["krusovice/thirdparty/jquery",
 
     function onFileUpload(event) {
 
-        /* XXX: fix */
-        console.log(this.files);
-
         var i;
-        var files = this.files;
+        var files = event.target.files;
 
         function progress() {
 

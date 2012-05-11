@@ -1,6 +1,6 @@
 'use strict';
 
-/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals*/
+/*global Image, document, window, finalizeTestCase, assertTrue, assertObject, assertEquals, console, jQuery, $ */
 
 function BackgroundCase() {}
 

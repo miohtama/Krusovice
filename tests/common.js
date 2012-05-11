@@ -13,13 +13,17 @@
  * Finalize test case: rename all testXXX -> shouldXXX
  */
 
-/*global amdTestCase*/
+"use strict";
+
+/*global amdTestCase, console, jQuery, $ */
 
 
 /**
  * Actual testcase.setUp();
  */
 function krusoviceSetUp(queue) {
+    /*jshint validthis:true*/
+
     console.log("krusoviceSetUp(): load krusovice API to member var");
     this.krusovice = this.req('krusovice/api');
 }
@@ -97,6 +101,8 @@ function finalizeTestCase(name, obj) {
     var tests = obj.prototype;
     var testName;
 
+    /*jshint newcap:false*/
+
     for(testName in tests) {
         if (tests.hasOwnProperty(testName)) {
             if (testName.indexOf('test') === 0) {
@@ -113,5 +119,6 @@ function finalizeTestCase(name, obj) {
 }
 
 function finalizeAsyncTestCase(name, obj) {
+    /*jshint newcap:false*/
     return KrusoviceTestCase(name, obj.prototype);
 }

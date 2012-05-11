@@ -1,4 +1,4 @@
-/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals,assertNotEquals*/
+/*global document, window, finalizeTestCase, assertTrue, assertObject, assertEquals, assertNotEquals, console, jQuery, $ */
 
 'use strict';
 

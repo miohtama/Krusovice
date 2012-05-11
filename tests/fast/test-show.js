@@ -1,4 +1,4 @@
-/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals,assertNotEquals*/
+/*global document, window, finalizeTestCase, assertTrue, assertObject, assertEquals, assertNotEquals, console, jQuery, $ */
 
 'use strict';
 
@@ -161,7 +161,7 @@ ShowTest.prototype.testPlainBackground = function() {
 ShowTest.prototype.createTimeline = function() {
     var krusovice = this.krusovice;
 
-    var timeliner = krusovice.Timeliner.createSimpleTimeliner(simpleElements, null);
+    var timeliner = krusovice.Timeliner.createSimpleTimeliner(window.simpleElements, null);
     var plan = timeliner.createPlan();
 
     // Do not try to load

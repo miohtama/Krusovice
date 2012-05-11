@@ -1,12 +1,13 @@
 'use strict';
 
-/*global KrusoviceTestCase,window,krusovice,$,TestCase,assertTrue,assertEquals*/
+/*global finalizeTestCase, window, krusovice, TestCase, assertTrue, assertEquals, console, jQuery, $ */
 
 /**
  * Various tests showing what kind of fittings of photos we can have in different shapes of videos.
  */
-KrusoviceTestCase("AspectRatio",
-    {
+var AspectRatioCase = {};
+
+AspectRatioCase.prototype= {
 
         /**
          *
@@ -84,7 +85,10 @@ KrusoviceTestCase("AspectRatio",
 
         }
 
-    }
-);
+};
+
+
+finalizeTestCase("AspectRatio", AspectRatioCase);
+
 
 

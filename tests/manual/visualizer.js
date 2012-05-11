@@ -1,4 +1,4 @@
-/*global $, document, console, require,simpleElements,sampleSongData*/
+/*global document, console, require, simpleElements, sampleSongData, jQuery, $ */
 
 "use strict";
 

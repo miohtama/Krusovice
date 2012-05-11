@@ -1,6 +1,6 @@
 'use strict';
 
-/*global window,finalizeTestCase,assertTrue,assertObject,assertEquals*/
+/*global  assertNotEquals, window, finalizeTestCase, assertTrue, assertObject, assertEquals, console, jQuery, $ */
 
 var EffectsTest = function() {};
 
@@ -68,7 +68,6 @@ EffectsTest.prototype.testTransitionOutParameters = function() {
     var krusovice = this.krusovice;
     var effect = krusovice.effects.Manager.get("zoomfar");
     var params = {};
-    var krusovice = this.krusovice;
 
     effect.prepareParameters("source", params, {}, {});
 
