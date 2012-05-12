@@ -6,7 +6,7 @@
  *
  */
 
-/*global define,window,console*/
+/*global define, window, console, jQuery, document, setTimeout */
 
 define("krusovice/rhythmanalysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";

@@ -9,3 +9,7 @@ jshint:
             {
                 "globalstrict" : true
             }
+
+# No need to wind up pylint for our puny files
+pylint:
+    enabled: false

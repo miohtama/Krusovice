@@ -1,3 +1,4 @@
+/*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 "use strict";
 
 /**
@@ -68,15 +69,16 @@ var effectbrowser = {
         lines.forEach(function(l) {
             l = l.trim();
             console.log("Got line:" + l);
+            var copy;
 
-            if(l != "") {
+            if(l !== "") {
 
                 if(l.indexOf(".jpg") >= 0) {
-                    var copy = $.extend({}, baseelem);
+                    copy = $.extend({}, baseelem);
                     copy.imageURL = l;
                     baseplan.push(copy);
                 } else {
-                    var copy = $.extend({}, baseelem);
+                    copy = $.extend({}, baseelem);
                     copy.type = "text";
                     copy.texts = { text : l };
                     copy.shape = "clear";
@@ -102,7 +104,7 @@ var effectbrowser = {
             },
 
             onScreen : {
-                type : $("#onscreen option:selected").val() || "zoomfar",
+                type : $("#onscreen option:selected").val() || "zoomfar"
             }
 
         };
@@ -269,13 +271,13 @@ var effectbrowser = {
             defaultName = "Random";
         }
 
-        var elems = [{id:defaultId, name:defaultName}]
+        var elems = [{id:defaultId, name:defaultName}];
         $.merge(elems, data);
 
         elems.forEach(function(e) {
             var selected="";
             if(e.id == defaults[id.substring(1)]) {
-                selected="selected"
+                selected="selected";
             }
             sel.append("<option " + selected + " value='" + e.id + "'>" + e.name + "</option>");
         });
@@ -344,6 +346,8 @@ var effectbrowser = {
 
         function switchSong(song) {
 
+            /*jshint validthis:true*/
+
             if(!song) {
                 throw "Who turned off the music?";
             }
@@ -403,7 +407,7 @@ var effectbrowser = {
         $("#create-json").click($.proxy(this.outputJSON, this));
     }
 
-}
+};
 
 
 require(["krusovice/api", "../src/thirdparty/domready!"], function(krusovice) {

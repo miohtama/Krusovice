@@ -4,7 +4,7 @@
  *
  */
 
-/*global window,$,console,define*/
+/*global window, console, define, jQuery, document, setTimeout, Image */
 
 define("krusovice/showobjects/text", ["krusovice/thirdparty/jquery-bundle",
     "krusovice/core",

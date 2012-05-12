@@ -1,9 +1,12 @@
-"using strict";
+/*global jQuery, document, setTimeout, console, $ */
 
 /**
  * Test show with one portrait and one landscape image.
  */
 function getHorizontalAndVerticalDesign() {
+
+    "use strict";
+
 
     // Create a show with two elements
     var horizontalAndVerticalPlan = [

@@ -1,4 +1,4 @@
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 define("krusovice/project", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     'use strict';

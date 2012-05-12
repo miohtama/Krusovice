@@ -1,6 +1,6 @@
 "use strict";
 
-/*global require,krusovice,window*/
+/*global require, krusovice, window, jQuery, document, setTimeout, console, $ */
 
 /**
  * Test different text outputs

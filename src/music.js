@@ -1,4 +1,4 @@
-/*global define,window*/
+/*global define, window, console, jQuery, document, setTimeout */
 
 define("krusovice/music", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
 "use strict";
@@ -91,7 +91,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      *
      * @param {Object} audio HTMLAudio element used for music playback, or null if only to load rhytm data
      *
-     * @param {Function} callback(songURL, rhytmhURL, rhytmData) called when all done
+     * @param {Function} callback(songURL, rhytmhURL, rhytmData) called when all done
      *
      * @param {boolean} prelisten Load low quality audio version
      *

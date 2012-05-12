@@ -9,10 +9,12 @@
  *
  */
 
-/*global require,define,window,console*/
+/*global require, define, window, console, jQuery, document, setTimeout, Image */
 
 
 define("krusovice/tools/html2svg2canvas", ["krusovice/thirdparty/jquery"], function($) {
+
+    "use strict";
 
     // Data URI template to create SVG images
     var svgTemplate = "data:image/svg+xml," +
@@ -34,7 +36,7 @@ define("krusovice/tools/html2svg2canvas", ["krusovice/thirdparty/jquery"], funct
      * https://bugzilla.mozilla.org/show_bug.cgi?id=672013
      */
     function Renderer(cfg) {
-        $.extend(this, cfg)
+        $.extend(this, cfg);
     }
 
     Renderer.prototype = {

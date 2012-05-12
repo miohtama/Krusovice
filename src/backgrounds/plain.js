@@ -4,9 +4,11 @@
  * Scroll & rotate inside a bigger continuous 2D texture.
  */
 
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 define("krusovice/backgrounds/plain", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/backgrounds"], function($, krusovice, backgrounds) {
+
+"use strict";
 
 /**
  * Single color background

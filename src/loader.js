@@ -1,4 +1,4 @@
-/*global define,window,console*/
+/*global define, window, console, jQuery, document, setTimeout, Image */
 
 define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";

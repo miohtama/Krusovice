@@ -2,7 +2,7 @@
  * Client-side image resizer module
  */
 
-/*global require,define,window,console,atob,unescape,ArrayBuffer,Uint8Array*/
+/*global require, define, window, console, atob, unescape, ArrayBuffer, Uint8Array, jQuery, document, setTimeout */
 
 
 define("krusovice/tools/resizer", ["krusovice/thirdparty/jquery",

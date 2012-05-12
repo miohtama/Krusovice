@@ -1,4 +1,4 @@
-/*global define,window*/
+/*global define, window, console, jQuery, document, setTimeout */
 
 define("krusovice/api", [
 
@@ -44,6 +44,9 @@ define("krusovice/api", [
     //"krusovice/thirdparty/three-extra/BloomPass"
 
 ], function(require, $, THREE, krusovice) {
+
+    "use strict";
+
     console.log("Krusovice API init");
     window.krusovice = krusovice;
     return krusovice;

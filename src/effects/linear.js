@@ -1,4 +1,4 @@
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 define("krusovice/effects/linear",
     ["krusovice/thirdparty/jquery-bundle",
@@ -8,7 +8,7 @@ define("krusovice/effects/linear",
      ], function($, krusovice, effects, THREE) {
 "use strict";
 
-/*global krusovice,window,THREE*/
+/*global krusovice, window, THREE, console, jQuery, document, setTimeout */
 
 /**
  *
@@ -248,8 +248,8 @@ effects.SlightMove = $.extend(true, {}, effects.Interpolate, {
         var y = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_Y;
         this.parameters.sourceVariation.position = [x, y, 0];
 
-        var x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X;
-        var y = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_Y;
+        x = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_X;
+        y = krusovice.utils.splitrnd(r) * effects.ON_SCREEN_MAX_Y;
         this.parameters.targetVariation.position = [x, y, 0];
     }
 
@@ -493,7 +493,7 @@ effects.Flip = $.extend(true, {}, effects.QuaternionRotate, {
         p.target.axis = [0,0,0];
         p.targetVariation.axis = [0,0,0];
         p.target.angle = 0;
-    },
+    }
 
 });
 

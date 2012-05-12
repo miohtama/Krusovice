@@ -5,7 +5,7 @@ define("krusovice/showobjects/framedimage", ["krusovice/thirdparty/jquery-bundle
 
 "use strict";
 
-/*global krusovice,window,$,console,THREE*/
+/*global krusovice, window, console, THREE, jQuery, document, setTimeout, Image */
 
 /**
  *
@@ -36,9 +36,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      *
      * Draw borders around the image.
      *
-     * @param {Number} width Canvas width for which we prepare (downscale)
+     * @param {Number} width Canvas width for which we prepare (downscale)
      *
-     * @param {Number} height Canvas width for which we prepare (downscale)
+     * @param {Number} height Canvas width for which we prepare (downscale)
      */
     prepare : function(loader, width, height) {
 
@@ -248,7 +248,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         var mat = new THREE.ShaderMaterial({
           uniforms: uniforms,
           vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader,
+          fragmentShader: shader.fragmentShader
           //blending: THREE.NormalBlending,
           //transparent : true,
           //opacity : 0.5

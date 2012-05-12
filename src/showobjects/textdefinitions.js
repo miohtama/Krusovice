@@ -1,4 +1,4 @@
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 
 /**

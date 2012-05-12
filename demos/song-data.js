@@ -1,3 +1,7 @@
+/*global jQuery, document, setTimeout, console, $ */
+
+"use strict";
+
 var songData = [
 
         {
@@ -9,4 +13,4 @@ var songData = [
                 "license" : "Creative Commons",
                 "categories" : ["Test"]
         }
-]
+];

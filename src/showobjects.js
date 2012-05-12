@@ -1,4 +1,4 @@
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 define("krusovice/showobjects", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 'use strict';
@@ -34,12 +34,12 @@ krusovice.showobjects.Base = function(cfg) {
 krusovice.showobjects.Base.prototype = {
 
     /**
-     * @cfg {krusovice.Show} Rendering backend used to create artsy
+     * @cfg {krusovice.Show} Rendering backend used to create artsy
      */
     renderer : null,
 
     /**
-     * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters
+     * @cfg {krusovice.TimelineElement} data TimelineElement of play parameters
      */
     data : null,
 
@@ -55,7 +55,7 @@ krusovice.showobjects.Base.prototype = {
     effectObject : null,
 
     /**
-     * @cfg {Function} Function which is called when async prepare() is ready.
+     * @cfg {Function} Function which is called when async prepare() is ready.
      *
      * prepareCallback(success, msg). If success is false delegate the error message.
      */

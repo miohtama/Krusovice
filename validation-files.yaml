@@ -4,6 +4,5 @@
 all: | 
   *
   !RE:.*\/\..*|^\..*
-  !bin/**
   !testdata/**
   !src/thirdparty/**

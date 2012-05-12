@@ -1,6 +1,6 @@
 "use strict";
 
-/*global require, krusovice, window, console, $, document*/
+/*global require, krusovice, window, console, document, jQuery, setTimeout, $ */
 
 /**
  * Test different <canvas> sizes for the show rendering.

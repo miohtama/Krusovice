@@ -3,7 +3,7 @@
  */
 
 // jslint hints
-/*global window,define*/
+/*global window, define, console, jQuery, document, setTimeout */
 define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     "use strict";
 

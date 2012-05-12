@@ -3,7 +3,7 @@
  */
 
 // jslint hints
-/*global window,define,console*/
+/*global window, define, console, jQuery, document, setTimeout */
 define("krusovice/tools/url", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
     "use strict";
 
@@ -75,7 +75,7 @@ define("krusovice/tools/url", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             uri = {},
             i   = 14;
 
-        while (i--) { uri[o.key[i]] = m[i] || ""; }
+        while (i--) { uri[o.key[i]] = m[i] || ""; }
 
         uri[o.q.name] = {};
         uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {

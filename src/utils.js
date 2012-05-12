@@ -1,4 +1,4 @@
-/*global window,console,define*/
+/*global window, console, define, jQuery, document, setTimeout */
 
 define("krusovice/utils", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
 "use strict";

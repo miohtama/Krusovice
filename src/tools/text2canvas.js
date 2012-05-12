@@ -3,11 +3,12 @@
  *
  */
 
-/*global require,define,window,console*/
+/*global require, define, window, console, jQuery, document, setTimeout */
 
 
 define("krusovice/tools/text2canvas", ["krusovice/thirdparty/jquery"], function($) {
 
+    "use strict";
 
     /**
      * Renderer provides some basic text rendering tools for <canvas>

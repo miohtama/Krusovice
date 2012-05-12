@@ -5,15 +5,17 @@
  * before including this file.
  */
 
-/*global require,define,window,console*/
+/*global require, define, window, console, jQuery, document, setTimeout */
 
 define("krusovice/tools/gettext", function() {
+
+    "use strict";
 
     function noop(msg) {
         return msg;
     }
 
-    var gettext = window.gettext || noop;
+    var gettext = window.gettext || noop;
 
     //
     // public API

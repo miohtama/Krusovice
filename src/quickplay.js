@@ -6,14 +6,14 @@
  * This is not part of the API bundle, but must be loaded separately using require.js.
  */
 
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api"], function($, krusovice) {
     "use strict";
 
 
     function setupFadeOut(show, audio, fadeOutThreshold) {
 
-        fadeOutThreshold = fadeOutThreshold || 3.0;
+        fadeOutThreshold = fadeOutThreshold || 3.0;
         var duration = show.getDuration();
         var nearEnd = duration - fadeOutThreshold;
 

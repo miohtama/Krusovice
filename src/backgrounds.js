@@ -3,7 +3,7 @@
  *
  */
 
-/*global define*/
+/*global define, console, jQuery, document, setTimeout */
 
 define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle",
 "krusovice/core",

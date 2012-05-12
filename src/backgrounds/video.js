@@ -1,3 +1,5 @@
+/*global console, jQuery, document, setTimeout */
+
 /*
 (function() {
     "use strict";

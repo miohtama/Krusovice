@@ -1,3 +1,4 @@
+/*global jQuery, document, setTimeout, console, $ */
 var backgroundData = [
         {
                 "id" : "plain-white",

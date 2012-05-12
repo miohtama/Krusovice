@@ -1,4 +1,4 @@
-/*global define,window*/
+/*global define, window, console, jQuery, document, setTimeout */
 
 define("krusovice/timeliner", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";
@@ -549,7 +549,9 @@ krusovice.Timeliner.prototype = {
 
             }
 
-            // console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration + " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode + " bar match duration:" + duration + " percents:" + percents);
+            // console.log("Matching anim end: " + a.type + " suggested duration:" + suggestedDuration + " actual duration:" + actualDuration +
+            // " hits out seek:" + hitsOutSeek + " hits out:" + hitsOut + " match mode:" + matchMode +
+            // " bar match duration:" + duration + " percents:" + percents);
 
             a.duration = actualDuration;
 
