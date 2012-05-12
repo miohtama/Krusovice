@@ -3,6 +3,7 @@
 # Don't match thirdparty source
 all: | 
   *
+  !*.json
   !RE:.*\/\..*|^\..*
   !testdata/**
   !src/thirdparty/**

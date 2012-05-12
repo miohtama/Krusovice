@@ -157,7 +157,14 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
             songURL = design.songData.url;
         } else if(design.songId) {
             songURL = this.getAudioURL(design.songId);
-        } else {
+            if(!songURL) {
+                throw new Error("Library did not have a song with id:" + design.songId);
+            }
+        }
+
+        console.log("loadSongFromDesign(): orignal song url " + songURL);
+
+        if(!songURL) {
             // Mute design
             return callback(null, null, null);
         }
@@ -208,11 +215,19 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
     },
 
     /**
+     * Load audio file from stock library.
+     *
      * @param {Boolean} prelisten Get low quality preview version
+     *
+     * @return null if unknown song id
      */
     getAudioURL : function(songId, prelisten) {
 
         var song = this.get(songId);
+
+        if(!song) {
+            return null;
+        }
 
         var url = song.mp3;
 

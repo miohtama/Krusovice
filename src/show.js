@@ -617,6 +617,7 @@ krusovice.Show.prototype = {
         console.log("Show playing start");
 
         if(this.playing) {
+            console.warn("Was already playing");
             return;
         }
 

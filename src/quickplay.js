@@ -36,6 +36,8 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * @param {String} elementId Wrapping div id
      *
+     * @param {Object} initOptions As would be passed to krusovice.Startup()
+     *
      * @param {Object} project krusovice.Project object
      *
      * @param {Object} showOptions Extra options for krusovice.Show
@@ -52,12 +54,13 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         var timeline = timeliner.createPlan();
         var audio;
 
-
         if(!showOptions) {
             showOptions = {};
         }
 
         function onSongData(songURL, rhythmURL, rhythmData) {
+
+            console.log("onSongData()");
 
             var cfg = {
                 width : project.width,
@@ -96,25 +99,24 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
         function loadAudio() {
             audio = document.createElement("audio");
-
             audio.controls = true;
-
             elem.append(audio);
-
             krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, true);
-
         }
 
-        function onBackgroundData() {
-            loadAudio();
-        }
-
-        if(initOptions.backgroundMediaURL) {
-            krusovice.backgrounds.Registry.init(initOptions.backgroundMediaURL, onBackgroundData);
-        } else {
+        function onReady() {
             // SKip this step
             loadAudio();
         }
+
+        var startup = new krusovice.Startup(initOptions);
+
+        var dfd = startup.init();
+
+        dfd.done(onReady);
+        dfd.fail(function() {
+            throw new Error("Krusovice init failed");
+        });
     }
 
     /**
