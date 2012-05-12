@@ -113,7 +113,7 @@ krusovice.backgrounds.Registry = $.extend(true, {}, utils.Registry, {
 
     checkInit : function() {
         if(!this.mediaURL) {
-            throw "Background registry not initalized - need to load background JSON database first";
+            throw new Error("Background registry not initalized - call krusovice.backgrounds.Registry.init()");
         }
     }
 

@@ -1,5 +1,4 @@
-/*global jQuery, document, setTimeout, console, $ */
-var backgroundData = [
+[
         {
                 "id" : "plain-white",
                 "name" : "White",
@@ -34,4 +33,4 @@ var backgroundData = [
                 "color" : "#aabbff"
         }
 
-];
+]

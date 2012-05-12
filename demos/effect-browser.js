@@ -383,9 +383,9 @@ var effectbrowser = {
         $("body").append(p);
     },
 
-    init : function() {
-        this.populate();
+    initUI : function() {
 
+        this.populate();
 
         $("select").live("change", $.proxy(effectbrowser.onSelect, effectbrowser));
 
@@ -395,16 +395,29 @@ var effectbrowser = {
         $("#reanimate").click($.proxy(effectbrowser.reanimate, effectbrowser));
 
         // XXX: Cannot distribute media files on Github
-        krusovice.backgrounds.Registry.processData(window.backgroundData, "./");
         this.createBackgroundSelector();
 
         // XXX: Cannot distribute media files on Github
-        krusovice.music.Registry.processData(window.songData, "./");
         this.createSongSelector();
 
         $("#images").val("ukko.jpg\nTest text\nukko.jpg\nukko.jpg\n");
 
         $("#create-json").click($.proxy(this.outputJSON, this));
+
+    },
+
+    init : function() {
+
+        // Initialize media databases and such
+        var startup = new krusovice.Startup({
+            mediaURL : "/demos",
+            songDataURL : "/demos/songs.json",
+            backgroundMediaURL : "/demos"
+
+        });
+        var dfd = startup.init();
+        dfd.done($.proxy(this.initUI, this));
+
     }
 
 };

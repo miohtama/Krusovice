@@ -41,7 +41,7 @@ If you run demos from file:// you need to disable AJAX security checks.
 
 Start Google Chrome with no security from command lin, OSX::
 
-        /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security
+        /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security -–allow-file-access-from-files
 
 Start Google Chrome from command line, Ubuntu/Linux::
 

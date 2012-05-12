@@ -4,7 +4,9 @@ define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", "krusovice/cor
 "use strict";
 
 /**
- * Simple element loader helper
+ * Show media loader helper.
+ * 
+ * Load media elements like bg music, photos, etc. needed to run show.
  */
 krusovice.Loader = function(cfg) {
     $.extend(this, cfg);

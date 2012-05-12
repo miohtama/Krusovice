@@ -1,5 +1,5 @@
 /**
- * Handle initialization which depends on loading of data resources
+ * Handle Krusovice database initializations
  */
 
 /*global define, console, jQuery, document, setTimeout */
@@ -13,7 +13,10 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
     };
 
     /**
-     *
+     * Load krusovice media databases.
+     * These databases include things like available backgrounds, medias, etc.
+     * 
+     * Uses jQuery defer pattern.
      */
     krusovice.Startup.prototype = {
 
@@ -48,7 +51,7 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
             console.log("krusovice.Startup.init()");
 
             if(!this.mediaURL) {
-                throw new Error("mediURL must be given");
+                throw new Error("Startup.mediaURL must be given");
             }
 
             // Match olvi data layout here
