@@ -1025,7 +1025,7 @@ krusovice.Show.prototype = {
             // Send in render event if we are not in playback mode
             // to visualize the current position on audio
             if(!self.playing && !self.stopped) {
-                console.log("forcing rendering");
+                //console.log("forcing rendering");
                 self.resetClock();
                 self.requestAnimationFrame();
             }

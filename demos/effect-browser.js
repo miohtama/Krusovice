@@ -186,9 +186,12 @@ var effectbrowser = {
             rhythmData = this.song.rhythmData;
             songURL = krusovice.music.Registry.getAudioURL(this.song.id);
         } else {
+            // Use default test song
             rhythmData = null;
             songURL = krusovice.music.Registry.getAudioURL("test-song");
         }
+
+        songURL = krusovice.music.Registry.getBrowserAudioFormat(songURL);
 
         var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhythmData, design.settings);
         var timeline = timeliner.createPlan();
@@ -412,6 +415,7 @@ var effectbrowser = {
         var startup = new krusovice.Startup({
             mediaURL : "/demos",
             songDataURL : "/demos/songs.json",
+            songMediaURL : "/demos",
             backgroundMediaURL : "/demos"
 
         });

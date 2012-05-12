@@ -172,14 +172,18 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
     },
 
-    convertToPrelistenURL : function(url) {
+    /**
+     * Return URL converted to a file in the same place, but with a compatible format / suffix
+     *
+     * @param  {String} url [description]
+     * @return {String}     [description]
+     */
+    getBrowserAudioFormat : function(url) {
 
         var audio = document.createElement("audio");
 
         var needAAC = audio.canPlayType('audio/mp4; codecs="mp4a.40.5"') !== "";
         var needOGG = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
-
-        url = url.replace(".mp3", ".prelisten.mp3");
 
         if(needOGG) {
             url = url.replace(".mp3", ".ogg");
@@ -190,6 +194,17 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         }
 
         return url;
+    },
+
+    /**
+     * Get prelisten quality of uploaded song.
+     *
+     * @param  {[type]} url [description]
+     * @return {[type]}     [description]
+     */
+    convertToPrelistenURL : function(url) {
+        url = url.replace(".mp3", ".prelisten.mp3");
+        return this.getBrowserAudioFormat(url);
     },
 
     /**

@@ -500,7 +500,11 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
 
     $(this.audio).bind("play", function() {
         console.log("Trying to set start time:" + musicStartTime);
-        audio.currentTime = musicStartTime;
+        try {
+            audio.currentTime = musicStartTime;
+        } catch(e) {
+            // An attempt was made to use an object that is not, or is no longer, usable
+        }
     });
 
     $(this.audio).bind("canplaythrough", function() {
@@ -534,7 +538,11 @@ krusovice.TimelinePlayer.prototype = {
 
 
     onTimeUpdate : function() {
-        var ctime = this.audio.currentTime;
+        var ctime = 0;
+        try {
+            ctime = this.audio.currentTime;
+        } catch(e) {
+        }
         this.visualization.setPositionIndicator(ctime, true);
     }
 
