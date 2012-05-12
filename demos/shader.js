@@ -114,11 +114,11 @@ var effectbrowser = {
         }
 
 
-        var backgroundId = $("#background option:selected").val() || "random";
+        var backgroundId = $("#background option:selected").val() || "plain-white";
 
         if(backgroundId == "random") {
             // XXX: Not supported right now
-            backgroundId = "plain-sky";
+            backgroundId = "plain-white";
         }
 
         var background = krusovice.backgrounds.Registry.get(backgroundId);
@@ -390,8 +390,6 @@ var effectbrowser = {
 
         this.populate();
 
-        $("#images").val("ukko.jpg\nTest text\nukko.jpg\nukko.jpg\n");
-
         $("select").live("change", $.proxy(effectbrowser.onSelect, effectbrowser));
 
         $("input[type=checkbox]").live("change", $.proxy(effectbrowser.setupRenderLayers, effectbrowser));
@@ -404,6 +402,8 @@ var effectbrowser = {
 
         // XXX: Cannot distribute media files on Github
         this.createSongSelector();
+
+        $("#images").val("ukko.jpg\nTest text\nukko.jpg\nukko.jpg\n");
 
         $("#create-json").click($.proxy(this.outputJSON, this));
 

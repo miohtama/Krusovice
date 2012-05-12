@@ -59,7 +59,7 @@
 </head>
 
 <body>
-<h1>Krusovice Effect Browser and Test Board</h1>
+<h1>Effect browser</h1>
 
 <div id="show"></div>
 <div id="visualizer-wrapper">
@@ -133,6 +133,8 @@
         <!-- -->
 </div>
 
+<button id="create-video">Create video</button>
+
 <button id="create-json">Create project JSON</button>
 
 <input type="text" value="http://localhost:6543/create-video" />
@@ -146,11 +148,6 @@
 <li>Press play
 </ul>
 
-<h2>Sample song</h2>
-
-<p>
-        <a href="http://dig.ccmixter.org/dig?user=grapes">Sample song by grapes</a>
-</p>
 
 </body>
 </html>
