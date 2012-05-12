@@ -36,7 +36,7 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * @param {String} elementId Wrapping div id
      *
-     * @param {Object} initOptions As would be passed to krusovice.Startup()
+     * @param {Object} initOptions As would be passed to krusovice.Startup() + additional option prelistenSongs if small encoding version load is tried
      *
      * @param {Object} project krusovice.Project object
      *
@@ -97,11 +97,12 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
+        // Load song from the db    
         function loadAudio() {
             audio = document.createElement("audio");
             audio.controls = true;
             elem.append(audio);
-            krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, true);
+            krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, initOptions.prelistenSongs);
         }
 
         function onReady() {

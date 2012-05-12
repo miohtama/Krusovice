@@ -131,7 +131,11 @@ krusovice.InputElement.prototype = {
      *
      * Animation id -> transition defition overrides for this item.
      *
-     * For examples see textdefinitions.js.
+     * {
+     *     transitionIn : {},
+     *     onScreen : {},
+     *     transitionOut : {}
+     * }
      */
     transitions : null,
 

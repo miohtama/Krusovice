@@ -4,8 +4,10 @@
 
     "use strict";
 
-    var showSource = "ukko.jpg\nukko.jpg\nukko.jpg";
+    // List of texts and images in the show
+    var showSource = "WebGL shader test\nukko.jpg\nukko.jpg\nukko.jpg";
 
+    // Media locations
     var initOptions = {
         mediaURL : "../demos",
         songDataURL : "../demos/songs.json",
@@ -13,6 +15,29 @@
         backgroundMediaURL : "../demos",
         textMediaURL : "../src/showobjects/textdefinitions.js"
     };
+
+    // transition settings
+    var transitions = {
+
+        // Time in seconds where song starts playing
+        musicStartTime : 0,
+
+        transitionIn : {
+            type : "zoomin",
+            duration : 1.0
+        },
+
+        transitionOut : {
+            type : "zoomfar",
+            duration : 3.0
+        },
+
+        onScreen : {
+            type : "slightmove"
+        }
+
+    };
+
 
     /**
      * Shader demo
@@ -29,7 +54,6 @@
         createDesign : function() {
 
             var baseplan = [];
-
 
             var baseelem = {
                 type : "image",
@@ -60,36 +84,17 @@
 
                     }
                 }
+
+                copy.transitions = $.extend({}, transitions);
             });
 
-            var settings = {
-
-                // Time in seconds where song starts playing
-                musicStartTime : 0,
-
-                transitionIn : {
-                    type : "zoomin",
-                    duration : 1.0
-                },
-
-                transitionOut : {
-                    type : "slightmove",
-                    duration : 3.0
-                },
-
-                onScreen : {
-                    type : "zoomfar"
-                }
-
-            };
-
+    
             for(var i=0; i<baseplan.length; i++) {
                 baseplan[i].id = i;
             }
 
             var design = new krusovice.Design({
                 plan : baseplan,
-                settings : settings,
                 background : {
                     backgroundId : "plain-sky"
                 },
