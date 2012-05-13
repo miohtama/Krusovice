@@ -6,7 +6,7 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.EffectComposer = function( renderer, renderTarget, width, height) {
+THREE.EffectComposer = function( renderer, width, height, renderTarget ) {
 
         this.renderer = renderer;
 
@@ -16,7 +16,6 @@ THREE.EffectComposer = function( renderer, renderTarget, width, height) {
 
                 this.renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
                 this.renderTarget1 = new THREE.WebGLRenderTarget(width, height, this.renderTargetParameters );
-
         }
 
         this.renderTarget2 = this.renderTarget1.clone();
@@ -48,22 +47,22 @@ THREE.EffectComposer.prototype = {
 
         render: function ( delta ) {
 
-
                 this.writeBuffer = this.renderTarget1;
                 this.readBuffer = this.renderTarget2;
 
                 var maskActive = false;
 
-                var i, il = this.passes.length;
+                var pass, i, il = this.passes.length;
 
                 for ( i = 0; i < il; i ++ ) {
 
-                    //console.log("Rendering pass:" + this.passes[i] + " mask:" + maskActive);
+                        pass = this.passes[ i ];
 
-                        this.passes[ i ].render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+                        if ( !pass.enabled ) continue;
 
+                        pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
 
-                        if ( this.passes[ i ].needsSwap ) {
+                        if ( pass.needsSwap ) {
 
                                 if ( maskActive ) {
 
@@ -81,21 +80,17 @@ THREE.EffectComposer.prototype = {
 
                         }
 
-                        if ( this.passes[ i ] instanceof THREE.MaskPass ) {
+                        if ( pass instanceof THREE.MaskPass ) {
 
                                 maskActive = true;
 
-                        }
-
-                        if ( this.passes[ i ] instanceof THREE.ClearMaskPass ) {
+                        } else if ( pass instanceof THREE.ClearMaskPass ) {
 
                                 maskActive = false;
 
                         }
 
                 }
-
-        //
 
         },
 
@@ -127,8 +122,33 @@ THREE.EffectComposer.prototype = {
 
 };
 
+// shared ortho camera
+
+
 // shared fullscreen quad scene
 
+
+THREE.EffectComposer.setup = function(width, height) {
+
+        THREE.EffectComposer.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
+
+        THREE.EffectComposer.geometry = new THREE.PlaneGeometry( 1, 1 );
+        //THREE.EffectComposer.geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+
+        THREE.EffectComposer.quad = new THREE.Mesh( THREE.EffectComposer.geometry, null );
+        THREE.EffectComposer.quad.position.z = -100;
+        THREE.EffectComposer.quad.scale.set(width, height, 1);
+        THREE.EffectComposer.quad.updateMatrixWorld();
+
+        THREE.EffectComposer.scene = new THREE.Scene();
+        THREE.EffectComposer.scene.add( THREE.EffectComposer.quad );
+        THREE.EffectComposer.scene.add( THREE.EffectComposer.camera );
+};
+
+
+
+// shared fullscreen quad scene
+/*
 THREE.EffectComposer.setup = function(width, height) {
     THREE.EffectComposer.geometry = new THREE.PlaneGeometry( 1, 1 );
 
@@ -154,6 +174,6 @@ THREE.EffectComposer.setup = function(width, height) {
 
     THREE.EffectComposer.camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
     THREE.EffectComposer.camera.updateMatrixWorld();
-}
+}*/
 
 });

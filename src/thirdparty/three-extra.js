@@ -9,8 +9,9 @@ define([
     "krusovice/thirdparty/three-extra/MaskPass",
     "krusovice/thirdparty/three-extra/DotScreenPass",
     "krusovice/thirdparty/three-extra/TexturePass",
+    "krusovice/thirdparty/three-extra/FilmPass"
     ],
-function (bloom) {
-    return bloom;
+function () {
+    return;
 });
 

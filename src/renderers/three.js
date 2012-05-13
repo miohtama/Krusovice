@@ -10,6 +10,52 @@ function cssToOpenGLColor(cssColor) {
 }
 
 /**
+ * Copy WebGL buffer.
+ *
+ * Render a texture on the another using orthogonal scene with 1x1 target texture.
+ *
+ * @param  {Object} renderer Three.js renderer instance
+ * @param  {[type]} target   [description]
+ * @param  {[type]} src      [description]
+ * @param  {[type]} width    [description]
+ * @param  {[type]} height   [description]
+ * @return {[type]}          [description]
+ */
+function copyWebGLBuffer(renderer, target, src, width, height) {
+   
+
+    var geometry = new THREE.PlaneGeometry( 1, 1 );
+
+    //var tex = new THREE.Texture("http://localhost:8000/demos/test-texture-transparent.png", THREE.UVMapping);
+    //tex.needsUpdate = true;
+
+    var quad = new THREE.Mesh(geometry);
+    quad.position.z = -100;
+    quad.scale.set(width, height, 1 );
+    quad.updateMatrixWorld();
+    quad.material = new THREE.MeshBasicMaterial(
+        {
+        color : 0x008800,
+        transparent : true,
+        map: src
+        });
+
+    var scene = new THREE.Scene();
+    scene.addObject(quad );
+
+    var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
+    camera.updateMatrixWorld();
+
+    var color = new THREE.Color(0);
+    renderer.setClearColor(color, 0);
+
+    renderer.clearTarget(target);
+    renderer.render(scene, camera, target, false);
+    //renderer.render(scene, camera);
+}
+
+
+/**
  * Show object rendering backend utilizing THREE.js for 3D operations abstraction.
  *
  * Pushes the heavy 3D math for a lib which is designed for this purpose.
@@ -66,6 +112,14 @@ krusovice.renderers.Three.prototype = {
      */
     webGL : false,
 
+
+    /**
+     * Run rendered scene thru fragment shader post-processing step
+     *
+     * @type {Boolean}
+     */
+    usePostProcessing : false,
+
     // Default pixel sizes used for photo quad
     // Will be aspect ratio resized
 
@@ -88,8 +142,8 @@ krusovice.renderers.Three.prototype = {
 
             var settings  ={
                 antialias : true,
-                //clearColor : 0x00ff00,
-                //clearAlpha : 1,
+                clearColor : 0x00ff00,
+                clearAlpha : 1,
                 autoClear : false
             };
 
@@ -178,12 +232,13 @@ krusovice.renderers.Three.prototype = {
         var ambient = new THREE.AmbientLight(0x888888);
         scene.add( ambient );
 
-        if(this.webGL) {
-            this.setupComposer();
-        }
-
     },
 
+    /**
+     * Set-up image post processing fragment shaders
+     *
+     *
+     */
     setupComposer : function() {
 
         THREE.EffectComposer.setup(this.width, this.height);
@@ -191,17 +246,35 @@ krusovice.renderers.Three.prototype = {
         var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat};
 
         this.target = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
-        this.target2 = this.target.clone();
-        this.bloomBuffer = this.target.clone();
-        this.bloomBuffer2 = this.target.clone();
-        //var composer = new THREE.EffectComposer(this.renderer, target);
 
-        var renderModel = new THREE.RenderPass(this.scene, this.camera);
-        var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
-        this.maskObject = new THREE.RenderPass(this.maskScene, this.camera);
+        var effectFilm = new THREE.FilmPass( 0.35, 0.025, 648, false );
+        var effectFilmBW = new THREE.FilmPass( 0.35, 0.5, 2048, true );
+
+        this.target2 = this.target.clone();
+        //this.bloomBuffer = this.target.clone();
+        //this.bloomBuffer2 = this.target.clone();
+        var composer = new THREE.EffectComposer(this.renderer, this.width, this.height);
+
+        var renderScene = new THREE.RenderPass(this.scene, this.camera);
+        //var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
+        //this.maskObject = new THREE.RenderPass(this.maskScene, this.camera);
         //var renderScene = new THREE.TexturePass(composer.renderTarget2);
 
+        composer.addPass(renderScene);
+        //composer3.addPass( renderMask );
+        //composer.addPass( effectSepia );
+        //
+        effectFilm.renderToScreen = true;
+        composer.addPass( effectFilm );
+
+        this.composer = composer;
+        //composer3.addPass( clearMask );
+        //composer.addPass( effectVignette );
+
         //var renderModel = new THREE.RenderPass(this.maskScene, this.maskCamera);
+        ///*
+        //
+        /*
         var maskModel = new THREE.MaskPass(this.maskScene, this.camera);
         var clearMask = new THREE.ClearMaskPass();
         var dotScreen = new THREE.DotScreenPass( new THREE.Vector2( 0, 0 ), 0.5, 0.6 );
@@ -224,8 +297,6 @@ krusovice.renderers.Three.prototype = {
         this.copyPass.clear = false;
 
         this.composer = true;
-
-        /*
         var quadMask;
 
         var plane = new THREE.PlaneGeometry( 1, 1 );
@@ -439,91 +510,45 @@ krusovice.renderers.Three.prototype = {
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
     },
 
+    renderPostProcessing : function(frontBuffer) {
+
+
+        console.log("renderPostProcessing()");
+
+        // Let Three.js do its magic
+        var scene = this.scene;
+        var camere = this.camera;
+        var r = this.renderer;
+
+        /*
+        r.autoClear = false;
+        var color = new THREE.Color(0);
+        r.setClearColor(color, 0);
+        r.clear();
+
+        var r = this.renderer;
+        var read = this.target;
+        var write = this.target2;
+        var bloomBuffer  = this.bloomBuffer;
+        var bloomBuffer2  = this.bloomBuffer2;
+        */
+       
+        //renderer.setViewport(0, halfHeight, halfWidth, halfHeight );
+        //
+        this.renderer.clear();
+        this.composer.render(0.01);
+
+    },
+
     renderGL : function(frontBuffer) {
 
         // Let Three.js do its magic
         var scene = this.scene;
         var camere = this.camera;
 
+        // XXX: Clean up rendering code to separate methods
 
-        function copy(renderer, target, src, width, height) {
-            var geometry = new THREE.PlaneGeometry( 1, 1 );
-
-            //var tex = new THREE.Texture("http://localhost:8000/demos/test-texture-transparent.png", THREE.UVMapping);
-            //tex.needsUpdate = true;
-
-            var quad = new THREE.Mesh(geometry);
-            quad.position.z = -100;
-            quad.scale.set(width, height, 1 );
-            quad.updateMatrixWorld();
-            quad.material = new THREE.MeshBasicMaterial(
-                {
-                color : 0x008800,
-                transparent : true,
-                //blending: THREE.AdditiveBlending,
-                map: src
-                });
-
-            var scene = new THREE.Scene();
-            scene.addObject(quad );
-
-            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
-            camera.updateMatrixWorld();
-
-            var color = new THREE.Color(0);
-            renderer.setClearColor(color, 0);
-
-            renderer.clearTarget(target);
-            renderer.render(scene, camera, target, false);
-            //renderer.render(scene, camera);
-        }
-
-
-        if(true) {
-
-            //this.setupBloom();
-
-            //this.renderer.autoClear = false;
-            //this.renderer.clear();
-
-            //this.renderer.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
-
-            /*
-            var context = this.renderer.context;
-
-            context.colorMask( true, true, true, true );
-            context.depthMask( false );
-
-            // set up stencil
-
-            context.enable( context.STENCIL_TEST );
-            context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
-            context.stencilFunc( context.ALWAYS, 1, 0xffffffff );
-
-            // draw into the stencil buffer
-
-            this.renderer.render(this.maskScene, this.maskCamera, this.composer.readBuffer, false);
-
-            //this.renderer.render(this.maskScene, this.maskCamera);
-
-            // re-enable update of color and depth
-            context.colorMask( true, true, true, true );
-            context.depthMask( true );
-            // only render where stencil is set to 1
-
-            context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
-            context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
-
-
-            this.renderer.render(this.scene, this.camera, this.composer.readBuffer, false);
-
-             //this.renderer.render(this.scene, this.camera);
-
-            context.disable( context.STENCIL_TEST );
-            */
-
-            //this.composer.render( 0.05 );
-
+        if(!this.usePostProcessing) {
 
             var gl = this.renderer.context;
 
@@ -614,7 +639,7 @@ krusovice.renderers.Three.prototype = {
             this.renderModel.render(r, undefined, undefined, 0);
 
         } else {
-            this.renderer.render(this.scene, this.camera);
+            this.renderPostProcessing(frontBuffer);
         }
 
         //composer.addPass( effectFilm );

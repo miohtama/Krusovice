@@ -1,6 +1,7 @@
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
-  require(["krusovice/api", "krusovice/quickplay", "../src/thirdparty/domready!"], function(krusovice, quickplay) {
+  require(["krusovice/api", "krusovice/quickplay", "../src/thirdparty/domready!"], 
+    function(krusovice, quickplay) {
 
     "use strict";
 
@@ -104,6 +105,34 @@
             return design;
         },
 
+        customizeRenderer : function() {
+
+            krusovice.renderers.Three.prototype.usePostProcessing = true;
+
+            krusovice.Show.prototype.prepareRenderer = function() {
+
+                console.log("Custom prepareRenderer()");
+
+                // XXX: hardcoded for THREE.js now
+
+                if(!this.renderer) {
+                    console.log("Creating show renderer");
+                    this.renderer = new krusovice.renderers.Three({
+                        width : this.width,
+                        height : this.height,
+                        elem : this.elem,
+                        webGL : this.webGL
+                    });
+
+                }
+
+                this.renderer.setup();
+
+                this.renderer.setupComposer();
+            };
+
+        },
+
         /**
          * Reconstruct Show
          *
@@ -120,11 +149,13 @@
                 design : design
             });
 
-            quickplay.play("show", project, initOptions);
+            var show = quickplay.play("show", project, initOptions);
+
 
         },
 
         run : function() {
+            this.customizeRenderer();
             this.playShow();
         }
 

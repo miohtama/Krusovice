@@ -41,6 +41,8 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      * @param {Object} project krusovice.Project object
      *
      * @param {Object} showOptions Extra options for krusovice.Show
+     *
+     * @return {jQuery.Deferred} 
      */
     function play(elementId, project, initOptions, showOptions) {
         var elem = $("#" + elementId);
@@ -97,7 +99,8 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        // Load song from the db    
+        // Load song from the db
+        // and create <audio> contr
         function loadAudio() {
             audio = document.createElement("audio");
             audio.controls = true;
@@ -115,9 +118,14 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         var dfd = startup.init();
 
         dfd.done(onReady);
+
+
         dfd.fail(function() {
             throw new Error("Krusovice init failed");
         });
+
+
+        return dfd;
     }
 
     /**
