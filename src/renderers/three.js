@@ -142,8 +142,8 @@ krusovice.renderers.Three.prototype = {
 
             var settings  ={
                 antialias : true,
-                clearColor : 0x00ff00,
-                clearAlpha : 1,
+                clearColor : 0x008800,
+                clearAlpha : 0,
                 autoClear : false
             };
 
@@ -255,6 +255,9 @@ krusovice.renderers.Three.prototype = {
         //this.bloomBuffer2 = this.target.clone();
         var composer = new THREE.EffectComposer(this.renderer, this.width, this.height);
 
+        var shaderSepia = THREE.ShaderExtras.sepia;
+        var effectSepia = new THREE.ShaderPass( shaderSepia );
+        effectSepia.uniforms.amount.value = 0.9;
         var renderScene = new THREE.RenderPass(this.scene, this.camera);
         //var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
         //this.maskObject = new THREE.RenderPass(this.maskScene, this.camera);
@@ -264,8 +267,11 @@ krusovice.renderers.Three.prototype = {
         //composer3.addPass( renderMask );
         //composer.addPass( effectSepia );
         //
-        effectFilm.renderToScreen = true;
         composer.addPass( effectFilm );
+        composer.addPass( effectSepia );
+
+        effectSepia.renderToScreen = true;
+
 
         this.composer = composer;
         //composer3.addPass( clearMask );

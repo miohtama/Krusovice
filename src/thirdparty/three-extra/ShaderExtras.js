@@ -420,7 +420,8 @@ THREE.ShaderExtras = {
                 uniforms: {
 
                         tDiffuse: { type: "t", value: 0, texture: null },
-                        amount:   { type: "f", value: 1.0 }
+                        amount:   { type: "f", value: 1.0 },
+                        opacity : { type : "f", value : 1.0}
 
                 },
 

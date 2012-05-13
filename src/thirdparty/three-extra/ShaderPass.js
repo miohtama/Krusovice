@@ -4,22 +4,21 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
  * @author alteredq / http://alteredqualia.com/
  */
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 THREE.ShaderPass = function( shader, textureID ) {
 
         this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
 
         this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
-    this.uniforms[ "opacity" ].value = 0.5;
-    //this.uniforms[ "tDiffuse" ].value = 0;
-
         this.material = new THREE.ShaderMaterial( {
 
                 uniforms: this.uniforms,
                 vertexShader: shader.vertexShader,
-                fragmentShader: shader.fragmentShader,
-        //blending: THREE.NormalBlending,
-        //transparent: true
+                fragmentShader: shader.fragmentShader
 
         } );
 
@@ -43,7 +42,6 @@ THREE.ShaderPass.prototype = {
 
                 THREE.EffectComposer.quad.material = this.material;
 
-
                 if ( this.renderToScreen ) {
 
                         renderer.render( THREE.EffectComposer.scene, THREE.EffectComposer.camera );
@@ -53,8 +51,6 @@ THREE.ShaderPass.prototype = {
                         renderer.render( THREE.EffectComposer.scene, THREE.EffectComposer.camera, writeBuffer, this.clear );
 
                 }
-
-        //renderer.clear(false, true, true);
 
         }
 
