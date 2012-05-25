@@ -22,7 +22,7 @@ function cssToOpenGLColor(cssColor) {
  * @return {[type]}          [description]
  */
 function copyWebGLBuffer(renderer, target, src, width, height) {
-   
+
 
     var geometry = new THREE.PlaneGeometry( 1, 1 );
 
@@ -239,7 +239,7 @@ krusovice.renderers.Three.prototype = {
      *
      *
      */
-    setupComposer : function() {
+    setupSepiaComposer : function() {
 
         THREE.EffectComposer.setup(this.width, this.height);
 
@@ -346,7 +346,6 @@ krusovice.renderers.Three.prototype = {
             texture.magFilter = THREE.LinearFilter;
         }
 
-
         var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
 
         var borderWidth = 16;
@@ -366,7 +365,10 @@ krusovice.renderers.Three.prototype = {
 
         var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody, x, y);
 
-        var filler = new THREE.MeshBasicMaterial( {  map: texture } );
+        var filler = new THREE.MeshBasicMaterial({map: texture});
+
+        // Consumed by post-processing
+        filler.krusoviceMaterialHint = "photo";
 
         var border;
 
@@ -374,12 +376,12 @@ krusovice.renderers.Three.prototype = {
 
         if(this.webGL) {
             // Phong shaded borders on webGL
-            border = new THREE.MeshPhongMaterial( {
+            border = new THREE.MeshPhongMaterial({
                 ambient: 0x999999,
                 color: borderColorHex,
                 specular: 0xffFFff,
                 shininess: 30,
-                shading: THREE.SmoothShading
+                shading: THREE.SmoothShading,
              });
         } else {
 
@@ -394,8 +396,11 @@ krusovice.renderers.Three.prototype = {
                 shading : THREE.FlatShading });
         }
 
-        var material = new THREE.MeshFaceMaterial();
+        // Consumed by post-processing
+        border.krusoviceMaterialHint = "frame";
 
+
+        var material = new THREE.MeshFaceMaterial();
 
         // Debug material
         //var material = new THREE.MeshBasicMaterial({color : 0xff00ff, wireframe:true});
@@ -516,36 +521,6 @@ krusovice.renderers.Three.prototype = {
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
     },
 
-    renderPostProcessing : function(frontBuffer) {
-
-
-        console.log("renderPostProcessing()");
-
-        // Let Three.js do its magic
-        var scene = this.scene;
-        var camere = this.camera;
-        var r = this.renderer;
-
-        /*
-        r.autoClear = false;
-        var color = new THREE.Color(0);
-        r.setClearColor(color, 0);
-        r.clear();
-
-        var r = this.renderer;
-        var read = this.target;
-        var write = this.target2;
-        var bloomBuffer  = this.bloomBuffer;
-        var bloomBuffer2  = this.bloomBuffer2;
-        */
-       
-        //renderer.setViewport(0, halfHeight, halfWidth, halfHeight );
-        //
-        this.renderer.clear();
-        this.composer.render(0.01);
-
-    },
-
     renderGL : function(frontBuffer) {
 
         // Let Three.js do its magic
@@ -640,8 +615,8 @@ krusovice.renderers.Three.prototype = {
             //r.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
             //
 
-            this.maskObject.render(r, undefined, undefined, 0);
-            r.clear(false, true, true);
+            //this.maskObject.render(r, undefined, undefined, 0);
+            //r.clear(false, true, true);
             this.renderModel.render(r, undefined, undefined, 0);
 
         } else {

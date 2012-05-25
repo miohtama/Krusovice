@@ -1,7 +1,7 @@
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
-  require(["krusovice/api", "krusovice/quickplay", "../src/thirdparty/domready!"], 
-    function(krusovice, quickplay) {
+  require(["krusovice/api", "krusovice/quickplay", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
+    function(krusovice, quickplay, postprocessing) {
 
     "use strict";
 
@@ -20,17 +20,14 @@
     // transition settings
     var transitions = {
 
-        // Time in seconds where song starts playing
-        musicStartTime : 0,
-
         transitionIn : {
             type : "zoomin",
-            duration : 1.0
+            duration : 2.0
         },
 
         transitionOut : {
             type : "zoomfar",
-            duration : 3.0
+            duration : 2.0
         },
 
         onScreen : {
@@ -38,6 +35,22 @@
         }
 
     };
+
+               transitions = {
+                    transitionIn : {
+                        type : "zoomfar",
+                        duration : 1
+                    },
+                    transitionOut : {
+                        type : "zoomin",
+                        duration : 1
+                    },
+                    onScreen : {
+                        type : "slightrotatez"
+                    }
+                };
+
+
 
 
     /**
@@ -89,7 +102,7 @@
                 copy.transitions = $.extend({}, transitions);
             });
 
-    
+
             for(var i=0; i<baseplan.length; i++) {
                 baseplan[i].id = i;
             }
@@ -107,7 +120,6 @@
 
         customizeRenderer : function() {
 
-            krusovice.renderers.Three.prototype.usePostProcessing = true;
 
             krusovice.Show.prototype.prepareRenderer = function() {
 
@@ -128,7 +140,15 @@
 
                 this.renderer.setup();
 
-                this.renderer.setupComposer();
+                this.postprocessor = new postprocessing.PostProcessor();
+                this.postprocessor.init(this.renderer.renderer, this.renderer.width, this.renderer.height);
+                this.postprocessor.takeOver(this.renderer);
+
+                var sepia = new postprocessing.SepiaPass();
+                this.postprocessor.addPass(sepia);
+
+
+                this.postprocessor.prepare();
             };
 
         },
@@ -162,7 +182,7 @@
     };
 
     shader.run();
-  
+
 });
 
 
