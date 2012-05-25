@@ -381,7 +381,7 @@ krusovice.renderers.Three.prototype = {
                 color: borderColorHex,
                 specular: 0xffFFff,
                 shininess: 30,
-                shading: THREE.SmoothShading,
+                shading: THREE.SmoothShading
              });
         } else {
 
@@ -461,7 +461,9 @@ krusovice.renderers.Three.prototype = {
     },
 
     /**
-     * Make object alive
+     * Make object alive.
+     *
+     * TODO: Get rid of effectObject
      */
     wakeUp : function(mesh, effectObject) {
 
@@ -471,11 +473,6 @@ krusovice.renderers.Three.prototype = {
 
         if(!mesh.added) {
             this.scene.add(mesh);
-
-            if(effectObject) {
-                 this.maskScene.addObject(effectObject);
-            }
-
             mesh.added = true;
         } else {
             mesh.visible = true;
@@ -650,9 +647,6 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
 
     THREE.Geometry.call( this );
 
-
-    console.log("nobody:" + noBody);
-
     var ix, iy,
     width_half = width / 2,
     height_half = height / 2,
@@ -673,7 +667,7 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         for ( ix = 0; ix < gridX1; ix++ ) {
             var x = ix * segment_width - width_half;
             var y = iy * segment_height - height_half;
-            this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, - y, 0 ) ) );
+            this.vertices.push(new THREE.Vector3( x, - y, 0 ));
         }
     }
 
@@ -750,10 +744,10 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
 
         // console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
 
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + left, ay + top,  0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + right, ay + top, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + right, ay + bottom, 0)));
-        self.vertices.push(new THREE.Vertex( new THREE.Vector3(ax + left, ay + bottom, 0)));
+        self.vertices.push( new THREE.Vector3(ax + left, ay + top,  0));
+        self.vertices.push( new THREE.Vector3(ax + right, ay + top, 0));
+        self.vertices.push( new THREE.Vector3(ax + right, ay + bottom, 0));
+        self.vertices.push( new THREE.Vector3(ax + left, ay + bottom, 0));
 
         // Create faces for both sides
 

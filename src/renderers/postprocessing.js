@@ -100,6 +100,7 @@ function($, THREE) {
             var self = this;
 
             function renderGL(frontBuffer) {
+                /*jshint validthis:true */
                 self.render(frontBuffer, this.scene, this.camera);
             }
 
@@ -125,6 +126,8 @@ function($, THREE) {
          * Iterate scene and extract all materials out of it.
          *
          * XXX: Replace this with your own material registry.
+         *
+         * XXX: Use https://github.com/mrdoob/three.js/blob/master/src/extras/SceneUtils.js#L13
          */
         getMaterials : function(scene) {
 
@@ -152,7 +155,7 @@ function($, THREE) {
          *
          * @param  {THREE.WebGLRenderTarget} renderTarget
          *
-         * @oaram {Object} layers { frame : true, photo : true }
+         * @oaram {Object} layers { frame : true, photo : true }
          */
         renderWorld : function(renderTarget, scene, camera, layers) {
 
@@ -170,14 +173,13 @@ function($, THREE) {
                     throw new Error("Scene material lacks Krusovice post-processing rendering hints");
                 }
 
-
                 // Is the material layer on or off
                 if(layers[hint]) {
                     //console.log("Visible:" + hint);
-                    material.visibile = true;
+                    material.visible = true;
                 } else {
                     //console.log("invisible:" + hint);
-                    material.visible = false;
+                    material.visible = true;
                 }
             });
 
@@ -235,9 +237,8 @@ function($, THREE) {
                 throw new Error("Effect was never given a proper Renderer instance");
             }
 
-
-            this.setMaskMode("normal");
-            this.renderWorld(renderTarget, scene, camera, { frame : true, photo : true });
+            // this.setMaskMode("normal");
+            this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
             //this.setMaskMode("fill");
             //this.renderWorld(renderTarget, scene, camera, { photo : true });
             //this.setMaskMode("clip");
