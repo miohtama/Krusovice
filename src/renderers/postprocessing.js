@@ -200,6 +200,7 @@ function($, THREE) {
                 }
             });
 
+            scene.overrideMaterial = this.overrideMaterial;
             this.renderer.render(scene, camera);
         },
 
@@ -224,9 +225,7 @@ function($, THREE) {
                 context.depthMask(false);
                 context.disable(context.STENCIL_TEST);
                 context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE);
-
                 context.stencilFunc(context.ALWAYS, mode == "fill" ? 1 : 0, 0xffffffff );
-
                 this.overrideMaterial = new THREE.MeshBasicMaterial( { color : mode == "fill" ? 0xff00ff : 0x00ff00 } );
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
@@ -267,14 +266,9 @@ function($, THREE) {
             this.setMaskMode("normal");
             this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
 
-
             // Set mask to photo
             this.setMaskMode("fill");
             this.renderWorld(renderTarget, scene, camera, { photo : true });
-
-
-            this.setMaskMode("negative-fill");
-            this.renderWorld(renderTarget, scene, camera, { frame : true });
 
             //this.setMaskMode("clip");
             //this.renderWorld(renderTarget, scene, camera, { photo : true });
