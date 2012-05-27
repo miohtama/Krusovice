@@ -47,8 +47,8 @@ require(["krusovice/thirdparty/jquery",
 
 
         if(mesh2) {
-            mesh2.rotation.y -= 0.02;
-            //mesh.rotation.x += 0.02;
+            mesh2.rotation.y -= 0.005;
+            mesh2.rotation.x += 0.005;
             //mesh.updateMatrix();
             //mesh2.updateMatrixWorld();
         }
@@ -74,7 +74,7 @@ require(["krusovice/thirdparty/jquery",
         texture.needsUpdate = true;
         texture.minFilter = texture.magFilter = THREE.NearestFilter;
 
-        var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xffFFff, map:texture});
+        var bodyMaterial = new THREE.MeshLambertMaterial({color : 0xffFFff, map:texture});
         //bodyMaterial.alphaTest = true;
         //var bodyMaterial = new THREE.MeshBasicMaterial({color : 0xff000055 });
 
@@ -98,12 +98,14 @@ require(["krusovice/thirdparty/jquery",
         var materials = [];
         for ( var i = 0; i < 6; i ++ ) {
 
-            material = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff });
+            material = new THREE.MeshPhongMaterial( {shininess: 255, ambient: 0xffffff, color: 0xddDDdd } );
+            //material = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff });
             materials.push(material);
             // materials.push( new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff } ) );
         }
 
-        var geometry = new THREE.CubeGeometry(200, 200, 200, 1, 1, 1, materials);
+        var d = 300;
+        var geometry = new THREE.CubeGeometry(d, d, d, 1, 1, 1, materials);
 
 
         mesh2 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial() );
@@ -214,7 +216,7 @@ require(["krusovice/thirdparty/jquery",
 
         //renderer.setupSimple();
         renderer.setup();
-        document.body.appendChild(renderer.renderer.domElement);
+        //document.body.appendChild(renderer.renderer.domElement);
 
 
     }

@@ -70,7 +70,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             self.framed = self.createFramedImage(self.image, width, height);
             //self.framed = self.image;
             self.object = self.createRendererObject();
-            self.effectObject = self.createEffectObject();
             if(self.prepareCallback) {
                 self.prepareCallback(true);
             }
@@ -215,54 +214,6 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
         return this.renderer.createQuad(this.framed, this.framed.naturalWidth, this.framed.naturalHeight, borderColor);
     },
 
-    /**
-     * Create the mesh rendering fragment shader making the pulse effect by the beat.
-     *
-     *
-     */
-    createEffectObject : function() {
-
-        // Enabled only on webGL
-        if(!this.renderer.webGL) {
-            return null;
-        }
-
-
-        var borderColor = this.data.borderColor || "#eeEEee";
-
-        var mesh = this.renderer.createQuad(this.framed,
-            this.framed.naturalWidth,
-            this.framed.naturalHeight,
-            borderColor, true);
-
-        //mesh.baseScale = new THREE.Vector3(0.2, 0.2, 0.2);
-
-        // This object should be used as stencil mask drawing only
-        //var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
-
-        var shader = THREE.CustomShaders.alphaedge;
-        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-
-        uniforms.color.value = krusovice.utils.getCSSColorAsThreeVector(borderColor);
-
-        var mat = new THREE.ShaderMaterial({
-          uniforms: uniforms,
-          vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader
-          //blending: THREE.NormalBlending,
-          //transparent : true,
-          //opacity : 0.5
-        });
-
-        this.effectUniforms = uniforms;
-
-        //var mat = new THREE.MeshBasicMaterial({color:0xff00ff});
-
-        mesh.geometry.materials = [mat,mat,mat,mat];
-
-        return mesh;
-
-    },
 
     render : function(vuStrength) {
         if(this.effectObject) {

@@ -1,4 +1,4 @@
-/*global define, console, jQuery, document, setTimeout */
+/*global define, console, jQuery, document, setTimeout, window */
 
 define("krusovice/renderers/three", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
 'use strict';
@@ -144,7 +144,8 @@ krusovice.renderers.Three.prototype = {
                 antialias : true,
                 clearColor : 0x008800,
                 clearAlpha : 0,
-                autoClear : false
+                autoClear : false,
+                stencil : true
             };
 
             renderer = new THREE.WebGLRenderer(settings);
@@ -221,17 +222,36 @@ krusovice.renderers.Three.prototype = {
         var halfWidth = this.width/2, halfHeight=this.height/2;
         this.maskCamera = new THREE.OrthographicCamera( -halfWidth, halfWidth, halfHeight, -halfHeight, -10000, 10000 );
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff);
-        //directionalLight.position.set(0, 0.5, -1.0).normalize();
-        directionalLight.position.set(1, 1, 0.5).normalize();
-
-
-        scene.add(directionalLight);
-
-        var ambient = new THREE.AmbientLight(0x888888);
-        scene.add( ambient );
+        this.setupLights();
         // this.setupDebugObjects();
 
+    },
+
+    /**
+     * Setup lighting for the photo show.
+     *
+     * Spotlight is used to create Apple "shiny" effect on photo borders.
+     * The parameters are manually tuned with fraed-mesh.js to look good.
+     *
+     * Photo content itself should react to the light less.
+     *
+     */
+    setupLights : function() {
+
+        var scene = this.scene;
+
+        var directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(0, 0.5, -1.0).normalize();
+        directionalLight.position.set(1, 1, 0.5).normalize();
+        //scene.add(directionalLight);
+
+        var ambient = new THREE.AmbientLight(0xaaAAaa);
+        scene.add( ambient );
+
+        var spotLight = new THREE.SpotLight( 0xaaaaaa );
+        spotLight.position.set(0, 0, 1200);
+        spotLight.castShadow = false;
+        scene.add( spotLight );
     },
 
     /**
@@ -407,12 +427,10 @@ krusovice.renderers.Three.prototype = {
             borderWidth = 0;
         }
 
-        var plane = new THREE.FramedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, hasNoBody, x, y);
+        var bodyPlane = new THREE.TwoSidedPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth);
+        var borderPlane = new THREE.BorderPlaneGeometry(dimensions.width, dimensions.height, 4, 4, borderWidth, borderWidth, x, y);
 
         var filler = new THREE.MeshBasicMaterial({map: texture});
-
-        // Consumed by post-processing
-        filler.krusoviceMaterialHint = "photo";
 
         var border;
 
@@ -420,13 +438,8 @@ krusovice.renderers.Three.prototype = {
 
         if(this.webGL) {
             // Phong shaded borders on webGL
-            border = new THREE.MeshPhongMaterial({
-                ambient: 0x999999,
-                color: borderColorHex,
-                specular: 0xffFFff,
-                shininess: 30,
-                shading: THREE.SmoothShading
-             });
+            border = new THREE.MeshPhongMaterial( {shininess: 255, ambient: 0xffffff, color: borderColorHex } );
+
         } else {
 
             // XXX: White on white issue
@@ -440,40 +453,40 @@ krusovice.renderers.Three.prototype = {
                 shading : THREE.FlatShading });
         }
 
-        // Consumed by post-processing
-        border.krusoviceMaterialHint = "frame";
-
-
+        // Two sided faces each get their own material
         var material = new THREE.MeshFaceMaterial();
 
-        // Debug material
-        //var material = new THREE.MeshBasicMaterial({color : 0xff00ff, wireframe:true});
+        bodyPlane.materials[0] = bodyPlane.materials[1] = filler;
+        borderPlane.materials[2] = borderPlane.materials[3] = border;
 
-        plane.materials[0] = plane.materials[1] = filler;
-        plane.materials[2] = plane.materials[3] = border;
+        var bodyMesh = new THREE.Mesh(bodyPlane, material);
+        // Consumed by post-processing
+        bodyMesh.krusoviceTypeHint = "photo";
 
-        var mesh = new THREE.Mesh(plane, material);
+        var borderMesh =  new THREE.Mesh(borderPlane, material);
+        // Consumed by post-processing
+        borderMesh.krusoviceTypeHint = "frame";
 
-        if(!this.webGL) {
-            // <canvas> 3d face gap elimimination
-            // XXX: When fading out, set overdraw = false
-            filler.overdraw = true;
-            material.overdraw = true;
-            mesh.overdraw = true;
-        }
+        // Create master object which has both photo + frame
+        var object = new THREE.Object3D();
+        object.add(bodyMesh);
+        object.add(borderMesh);
 
-        mesh.useQuaternion = true;
+        object.bodyObject = bodyMesh;
+        object.borderObject = borderMesh;
+
+        object.useQuaternion = true;
 
         // Add a special fix parameter to make landscape images closer to camera
         // XXX: Think something smarter here.
         if(srcWidth > srcHeight) {
-            mesh.baseScale = this.baseScaleLandscape;
+            object.baseScale = this.baseScaleLandscape;
         } else {
-            mesh.baseScale = this.baseScalePortrait;
+            object.baseScale = this.baseScalePortrait;
         }
 
         //console.log("Base scale is:"+ mesh.baseScale);
-        return mesh;
+        return object;
     },
 
 
@@ -584,9 +597,18 @@ krusovice.renderers.Three.prototype = {
 
 
 /**
- * Create a plane mesh with fill and border material, optionally different for both sides
+ * 3D object used to draw border around plane
+ *
+ * @param {[type]} width          [description]
+ * @param {[type]} height         [description]
+ * @param {[type]} segmentsWidth  [description]
+ * @param {[type]} segmentsHeight [description]
+ * @param {[type]} frameWidth     [description]
+ * @param {[type]} frameHeight    [description]
+ * @param {[type]} ax             Border x width
+ * @param {[type]} ay             Border y width
  */
-THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight, noBody, ax, ay) {
+THREE.BorderPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight, ax, ay) {
 
     THREE.Geometry.call( this );
 
@@ -599,8 +621,132 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
     gridY1 = gridY + 1,
     segment_width = width / gridX,
     segment_height = height / gridY,
-    normal = new THREE.Vector3( 0, 0, -1 ),
-    normal2 = new THREE.Vector3( 0, 0, 1 );
+    normal = new THREE.Vector3( 0, 0, 1 ),
+    normal2 = new THREE.Vector3( 0, 0, -1 );
+
+    this.borderFaces = [];
+    var self = this;
+
+    function addBorderFace(left, top, right, bottom, v1, v2, v3, v4) {
+
+        if(v4 === undefined) {
+            throw "Ooops.";
+        }
+
+        var vi = self.vertices.length;
+
+        var uv = [
+            new THREE.UV( 0, 0 ),
+            new THREE.UV( 0, 1 ),
+            new THREE.UV(1, 1),
+            new THREE.UV(1, 0 )
+        ];
+
+        left -= width_half;
+        top -= height_half;
+        right -= width_half;
+        bottom -= height_half;
+
+        // console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
+
+        self.vertices.push( new THREE.Vector3(ax + left, ay + top,  0));
+        self.vertices.push( new THREE.Vector3(ax + right, ay + top, 0));
+        self.vertices.push( new THREE.Vector3(ax + right, ay + bottom, 0));
+        self.vertices.push( new THREE.Vector3(ax + left, ay + bottom, 0));
+
+        // Create faces for both sides
+
+        var face = new THREE.Face4(vi, vi+1, vi+2, vi+3);
+        face.normal.copy( normal );
+        face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
+        face.materialIndex = 0;
+        self.faces.push( face );
+        self.borderFaces.push(face);
+
+        self.faceVertexUvs[0].push( [
+                    uv[v1], uv[v2], uv[v3], uv[v4]
+                ] );
+
+        face = new THREE.Face4(vi, vi+3, vi+2, vi+1);
+        face.normal.copy(normal2);
+        face.vertexNormals.push(normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone());
+        face.materialIndex = 1;
+        self.faces.push(face);
+        self.borderFaces.push(face);
+
+        self.faceVertexUvs[0].push( [
+                    uv[v1], uv[v3], uv[v2], uv[v1]
+                ] );
+
+
+    }
+
+    if(frameWidth > 0 && frameHeight > 0) {
+
+        // bl
+        addBorderFace(-frameWidth, -frameHeight, 0, 0,     0, 0, 2, 0);
+
+        // bottom
+        addBorderFace(0, -frameHeight, width, 0, 0,     0, 2, 2, 0);
+
+        // br
+        addBorderFace(width, -frameHeight, width+frameWidth, 0,    0, 0, 0, 2);
+
+        // ml
+        addBorderFace(-frameWidth, 0, 0, height,    0, 2, 2, 0);
+
+        // tl
+        addBorderFace(-frameWidth, height, 0, height+frameHeight,    0, 2, 0, 0);
+
+        // top
+        addBorderFace(0, height, width, height+frameHeight,    2, 2, 0, 0);
+
+        // tr
+        addBorderFace(width+frameWidth, height+frameHeight, width, height,    0, 0, 2, 0);
+
+        // mr
+        addBorderFace(width, 0, width+frameWidth, height,    2, 0, 0, 2);
+
+
+        //addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0, 0, 1, 2, 3);
+        //addBorderFace(-frameWidth, 0, 0, height, 0, 1, 2, 3);
+        //addBorderFace(width, 0, width+frameWidth, height, 0, 1, 2, 3);
+        //addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight, 0, 1, 2, 3);
+    }
+
+
+    var borderMaterial = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading });
+    var borderMaterial2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x00dd00, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading });
+
+    this.materials = [borderMaterial, borderMaterial2];
+
+    this.computeCentroids();
+
+};
+
+
+THREE.BorderPlaneGeometry.prototype = new THREE.Geometry();
+
+THREE.BorderPlaneGeometry.prototype.constructor = THREE.BorderPlaneGeometry;
+
+/**
+ * Create a two-sided plane
+ */
+THREE.TwoSidedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight) {
+
+    THREE.Geometry.call( this );
+
+    var ix, iy,
+    width_half = width / 2,
+    height_half = height / 2,
+    gridX = segmentsWidth || 1,
+    gridY = segmentsHeight || 1,
+    gridX1 = gridX + 1,
+    gridY1 = gridY + 1,
+    segment_width = width / gridX,
+    segment_height = height / gridY,
+    normal = new THREE.Vector3( 0, 0, 1 ),
+    normal2 = new THREE.Vector3( 0, 0, -1 );
 
     // Add UV coordinates for back fill material
     this.faceVertexUvs.push([]);
@@ -614,54 +760,51 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         }
     }
 
-    if(!noBody) {
+    for ( iy = 0; iy < gridY; iy++ ) {
 
-        for ( iy = 0; iy < gridY; iy++ ) {
+        for ( ix = 0; ix < gridX; ix++ ) {
 
-            for ( ix = 0; ix < gridX; ix++ ) {
+            var a = ix + gridX1 * iy;
+            var b = ix + gridX1 * ( iy + 1 );
+            var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+            var d = ( ix + 1 ) + gridX1 * iy;
 
-                var a = ix + gridX1 * iy;
-                var b = ix + gridX1 * ( iy + 1 );
-                var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-                var d = ( ix + 1 ) + gridX1 * iy;
+            var face = new THREE.Face4( a, b, c, d );
+            face.normal.copy( normal );
+            face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
 
-                var face = new THREE.Face4( a, b, c, d );
-                face.normal.copy( normal );
-                face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
+            face.materialIndex = 0;
 
-                face.materialIndex = 0;
+            this.faces.push( face );
+            this.faceVertexUvs[ 0 ].push( [
+                        new THREE.UV( ix / gridX, iy / gridY ),
+                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
+                    ] );
 
-                this.faces.push( face );
-                this.faceVertexUvs[ 0 ].push( [
-                            new THREE.UV( ix / gridX, iy / gridY ),
-                            new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
-                            new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                            new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
-                        ] );
+            // Back side
 
-                // Back side
+            face = new THREE.Face4( a, d, c, b );
+            face.normal.copy( normal2 );
+            face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
 
-                face = new THREE.Face4( a, d, c, b );
-                face.normal.copy( normal2 );
-                face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
+            face.materialIndex = 1;
 
-                face.materialIndex = 1;
+            this.faces.push( face );
+            this.faceVertexUvs[0].push( [
+                        new THREE.UV( ix / gridX, iy / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
+                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
+                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
+                    ] );
 
-                this.faces.push( face );
-                this.faceVertexUvs[0].push( [
-                            new THREE.UV( ix / gridX, iy / gridY ),
-                            new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
-                            new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                            new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
-                        ] );
-
-
-            }
 
         }
 
     }
 
+    /*
     this.borderFaces = [];
     var self = this;
 
@@ -751,7 +894,7 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
         //addBorderFace(width, 0, width+frameWidth, height, 0, 1, 2, 3);
         //addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight, 0, 1, 2, 3);
     }
-
+    */
 
     var fillMaterial = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );
     var borderMaterial = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading });
@@ -763,9 +906,9 @@ THREE.FramedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHei
 
 };
 
-THREE.FramedPlaneGeometry.prototype = new THREE.Geometry();
+THREE.TwoSidedPlaneGeometry.prototype = new THREE.Geometry();
 
-THREE.FramedPlaneGeometry.prototype.constructor = THREE.FramedPlaneGeometry;
+THREE.TwoSidedPlaneGeometry.prototype.constructor = THREE.TwoSidedPlaneGeometry;
 
 
 // http://data-arts.appspot.com/globe/globe.js

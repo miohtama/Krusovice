@@ -237,13 +237,19 @@ krusovice.showobjects.Base.prototype = {
     },
 
     /**
-     * Handle apply opacity
+     * Handle apply opacity.
+     *
+     * XXX: Do this smarter
      */
     setOpacity : function(mesh, opacity) {
 
-        var materials = mesh.geometry.materials;
-        materials.forEach(function(m) {
-           m.opacity =  opacity;
+        var objects = [ mesh.bodyObject, mesh.borderObject ];
+
+        objects.forEach(function(mesh) {
+            var materials = mesh.geometry.materials;
+            materials.forEach(function(m) {
+               m.opacity =  opacity;
+            });
         });
     },
 

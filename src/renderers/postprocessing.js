@@ -61,12 +61,17 @@ function($, THREE) {
                 e.init(self.renderer);
             });
 
+            // Set renderer to play along with our stencil buffer pipeline
+            this.renderer.autoClear = false;
+            //this.autoClearColor = true;
+            //this.autoClearDepth = true;
+            //this.autoClearStencil = true;
         },
-
 
         renderPass : function(pass, renderTarget, scene, camera) {
             pass.render(renderTarget, scene, camera);
         },
+
 
         /**
          * Main scene renderer function.
@@ -77,7 +82,9 @@ function($, THREE) {
          */
         render : function(frontBuffer, scene, camera) {
             var self = this;
-            this.renderer.clear();
+
+            // color + depth + stencil
+            this.renderer.clear(true, true, true);
 
             var i;
 
@@ -85,12 +92,6 @@ function($, THREE) {
                 var pass = this.passes[i];
                 var target = this.renderTarget;
                 this.renderPass(pass, target, scene, camera);
-            }
-
-            console.log(this.renderer.info);
-
-            if(this.renderer.info.render.faces > 0) {
-                console.log("Ok");
             }
 
             // Dump WebGL canvas on 2D canvas
@@ -122,6 +123,11 @@ function($, THREE) {
     }
 
     PostProcessingPass.prototype = {
+
+        renderer : null,
+
+        /** Fill stencil with 0xff00ff color */
+        stencilDebug : false,
 
 
         init : function(renderer) {
@@ -168,24 +174,29 @@ function($, THREE) {
             //scene.overrideMaterial = this.overrideMaterial;
 
             // Prepare what is visible in this pass
-            var materials = this.getMaterials(scene);
+            //
 
-            materials.forEach(function(material) {
+            THREE.SceneUtils.traverseHierarchy(scene, function(object) {
 
-                var hint = material.krusoviceMaterialHint;
+                if(!(object instanceof THREE.Mesh)) {
+                    // Skip lights and stuff
+                    return;
+                }
+
+                var hint = object.krusoviceTypeHint;
 
                 if(!hint) {
-                    console.log(material);
-                    throw new Error("Scene material lacks Krusovice post-processing rendering hints");
+                    console.log(object);
+                    throw new Error("Scene object lacks Krusovice post-processing rendering hints");
                 }
 
                 // Is the material layer on or off
                 if(layers[hint]) {
                     //console.log("Visible:" + hint);
-                    material.visible = true;
+                    object.visible = true;
                 } else {
                     //console.log("invisible:" + hint);
-                    material.visible = true;
+                    object.visible = false;
                 }
             });
 
@@ -199,18 +210,27 @@ function($, THREE) {
 
             var context = this.renderer.context;
 
-            if(mode == "fill") {
+            if(mode == "fill" || mode == "negative-fill") {
 
                 // This draw pass will lit stencil pixels, not normal pixels
-                context.colorMask(false, false, false, false);
-                context.depthMask(false);
-                context.enable( context.STENCIL_TEST );
-                context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE );
-                context.stencilFunc(context.ALWAYS, 1, 0xffffffff );
-                this.overrideMaterial = null; // TODO
+                if(this.stencilDebug) {
+                    // Render output visually
+                    context.colorMask(true, true, true, true);
+                } else {
+                    // Don't touch RGBA data
+                    context.colorMask(false, false, false, false);
+                }
 
+                context.depthMask(false);
+                context.disable(context.STENCIL_TEST);
+                context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE);
+
+                context.stencilFunc(context.ALWAYS, mode == "fill" ? 1 : 0, 0xffffffff );
+
+                this.overrideMaterial = new THREE.MeshBasicMaterial( { color : mode == "fill" ? 0xff00ff : 0x00ff00 } );
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
+                context.enable(context.STENCIL_TEST);
                 context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
                 context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
                 this.overrideMaterial = null;
@@ -243,10 +263,19 @@ function($, THREE) {
                 throw new Error("Effect was never given a proper Renderer instance");
             }
 
-            // this.setMaskMode("normal");
+            // Draw frame as is
+            this.setMaskMode("normal");
             this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
-            //this.setMaskMode("fill");
-            //this.renderWorld(renderTarget, scene, camera, { photo : true });
+
+
+            // Set mask to photo
+            this.setMaskMode("fill");
+            this.renderWorld(renderTarget, scene, camera, { photo : true });
+
+
+            this.setMaskMode("negative-fill");
+            this.renderWorld(renderTarget, scene, camera, { frame : true });
+
             //this.setMaskMode("clip");
             //this.renderWorld(renderTarget, scene, camera, { photo : true });
         }

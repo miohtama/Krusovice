@@ -1,12 +1,12 @@
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
-  require(["krusovice/api", "krusovice/quickplay", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
-    function(krusovice, quickplay, postprocessing) {
+require(["krusovice/api", "krusovice/quickplay", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
+function(krusovice, quickplay, postprocessing) {
 
     "use strict";
 
     // List of texts and images in the show
-    var showSource = "WebGL shader test\nukko.jpg\nukko.jpg\nukko.jpg";
+    var showSource = "ukko.jpg\nukko.jpg\nukko.jpg";
 
     // Media locations
     var initOptions = {
@@ -36,21 +36,19 @@
 
     };
 
-               transitions = {
-                    transitionIn : {
-                        type : "zoomfar",
-                        duration : 1
-                    },
-                    transitionOut : {
-                        type : "zoomin",
-                        duration : 1
-                    },
-                    onScreen : {
-                        type : "slightrotatez"
-                    }
-                };
-
-
+    transitions = {
+        transitionIn : {
+            type : "zoomfar",
+            duration : 1
+        },
+        transitionOut : {
+            type : "zoomin",
+            duration : 1
+        },
+        onScreen : {
+            type : "slightrotatez"
+        }
+    };
 
 
     /**
@@ -145,6 +143,7 @@
                 this.postprocessor.takeOver(this.renderer);
 
                 var sepia = new postprocessing.SepiaPass();
+                sepia.stencilDebug = true; // Paint in stencil when poking the code
                 this.postprocessor.addPass(sepia);
 
 
