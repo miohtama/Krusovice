@@ -13295,6 +13295,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
         function initMeshBuffers ( geometryGroup, object ) {
 
+                //console.log("initMeshBuffers");
                 var geometry = object.geometry,
                         faces3 = geometryGroup.faces3,
                         faces4 = geometryGroup.faces4,
@@ -15547,6 +15548,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
         this.renderBufferDirect = function ( camera, lights, fog, material, geometryGroup, object ) {
 
+                console.log("renderBufferDirect");
                 if ( material.visible === false ) return;
 
                 var program, attributes, linewidth, primitives, a, attribute;
@@ -15639,6 +15641,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
         this.renderBuffer = function ( camera, lights, fog, material, geometryGroup, object ) {
 
+                //console.log("renderBuffer:"  + material.visible);
                 if ( material.visible === false ) return;
 
                 var program, attributes, linewidth, primitives, a, attribute, i, il;
@@ -15681,6 +15684,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 
                 if ( updateBuffers ) {
+
+                        //console.log("updateBuffers");
 
                         // custom attributes
 
@@ -16024,6 +16029,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 
                 renderList = scene.__webglObjects;
 
+                // console.log("renderList");
+                // console.log(renderList);
+
                 for ( i = 0, il = renderList.length; i < il; i ++ ) {
 
                         webglObject = renderList[ i ];
@@ -16032,6 +16040,7 @@ THREE.WebGLRenderer = function ( parameters ) {
                         webglObject.render = false;
 
                         if ( object.visible ) {
+
 
                                 if ( ! ( object instanceof THREE.Mesh || object instanceof THREE.ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
 
@@ -16042,6 +16051,8 @@ THREE.WebGLRenderer = function ( parameters ) {
                                         unrollBufferMaterial( webglObject );
 
                                         webglObject.render = true;
+
+                                        //console.log(webglObject.render);
 
                                         if ( this.sortObjects ) {
 

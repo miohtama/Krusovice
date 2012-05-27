@@ -87,6 +87,12 @@ function($, THREE) {
                 this.renderPass(pass, target, scene, camera);
             }
 
+            console.log(this.renderer.info);
+
+            if(this.renderer.info.render.faces > 0) {
+                console.log("Ok");
+            }
+
             // Dump WebGL canvas on 2D canvas
             frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         },

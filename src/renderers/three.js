@@ -203,7 +203,7 @@ krusovice.renderers.Three.prototype = {
 
         // var renderer = new THREE.WebGLRenderer();
 
-        var camera = new THREE.Camera(fov,
+        var camera = new THREE.PerspectiveCamera(fov,
                                       this.width / this.height,
                                       near,
                                       far);
@@ -221,16 +221,60 @@ krusovice.renderers.Three.prototype = {
         var halfWidth = this.width/2, halfHeight=this.height/2;
         this.maskCamera = new THREE.OrthographicCamera( -halfWidth, halfWidth, halfHeight, -halfHeight, -10000, 10000 );
 
-        var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        directionalLight.position.x = 0;
-        directionalLight.position.y = 0.5;
-        directionalLight.position.z = -1.0;
-        directionalLight.position.normalize();
+        var directionalLight = new THREE.DirectionalLight(0xffffff);
+        //directionalLight.position.set(0, 0.5, -1.0).normalize();
+        directionalLight.position.set(1, 1, 0.5).normalize();
 
-        scene.add( directionalLight );
+
+        scene.add(directionalLight);
 
         var ambient = new THREE.AmbientLight(0x888888);
         scene.add( ambient );
+        // this.setupDebugObjects();
+
+    },
+
+    /**
+     * Debugging set-up.
+     *
+     * Used with framed-mesh.js testing.
+     *
+     * Copied from https://github.com/mrdoob/three.js/blob/master/examples/canvas_geometry_cube.html
+     *
+     */
+    setupSimple : function() {
+        this.scene = new THREE.Scene();
+
+        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+        this.camera.position.y = 150;
+        this.camera.position.z = 500;
+        this.scene.add(this.camera);
+
+        this.renderer = new THREE.CanvasRenderer();
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+    },
+
+
+    setupDebugObjects : function() {
+
+        var scene = this.scene;
+
+        var geometry = new THREE.CubeGeometry( 500, 500, 500 );
+        var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
+
+        for ( var i = 0; i < 100; i ++ ) {
+
+            var cube = new THREE.Mesh( geometry, material );
+
+            cube.scale.y = Math.floor( Math.random() * 2 + 1 );
+
+            cube.position.x = Math.floor( ( Math.random() * 1000 - 500 ) / 50 ) * 50 + 25;
+            cube.position.y = ( cube.scale.y * 50 ) / 2;
+            cube.position.z = 0;
+
+            scene.add(cube);
+
+        }
 
     },
 
@@ -522,110 +566,9 @@ krusovice.renderers.Three.prototype = {
 
         // Let Three.js do its magic
         var scene = this.scene;
-        var camere = this.camera;
+        var camera = this.camera;
 
-        // XXX: Clean up rendering code to separate methods
-
-        if(!this.usePostProcessing) {
-
-            var gl = this.renderer.context;
-
-            var r = this.renderer;
-            var read = this.target;
-            var write = this.target2;
-            var bloomBuffer  = this.bloomBuffer;
-            var bloomBuffer2  = this.bloomBuffer2;
-
-            //r.clearTarget(read);
-
-            // Clear target to 100% alpha
-            r.autoClear = false;
-            var color = new THREE.Color(0);
-            r.setClearColor(color, 0);
-            r.clear();
-
-            //gl.blendEquation(gl.FUNC_ADD );
-            //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-            //gl.enable(gl.BLEND);
-
-            //context.clearColor(0xff00ff);
-
-            r.clearTarget(bloomBuffer);
-            r.clearTarget(read);
-            r.clearTarget(write);
-            r.clearTarget(bloomBuffer2);
-
-            //r.setClearColor(0xffFFff, 0);
-            //r.autoClear = false;
-            //r.clear();
-
-
-            //r.render(this.maskScene);
-            //r.render(this.scene);
-
-
-            // Make copy of the orignal rendering
-            //r.clearTarget(bloomBuffer, true, true, true);
-
-            /*
-            this.copyPass.render(r, this.bloomBuffer, read, 0);
-
-            // Clear depth buffer so that mask object will not Z conflict with real obj
-            r.clearTarget(read, false, true, true);
-            //r.clearTarget(read);
-            //r.clearTarget(write, true, true, true);
-
-            this.maskModel.render(r, bloomBuffer2, read, 0);
-            // XXX: WTF... whyyy? Can't understand.
-            // Haapala will spank me.
-            this.copyPass.render(r, bloomBuffer2, read, 0);
-            //this.renderer.render(this.scene, this.camera);
-            this.clearMask.render(r);
-
-            // Now have bloomable content in read buffer
-            //r.clearTarget(this.bloomBuffer);
-            //this.copyPass.render(r, write, this.bloomBuffer, 0);
-
-            //this.effectBloom.render(r, write, this.bloomBuffer, 0);
-
-            // Place actual image
-            //this.copyPass.render(r, write, bloomBuffer, 0);
-            this.copyPass.render(r, write, bloomBuffer, 0);
-            //this.copyPass.render(r, write, bloomBuffer2, 0);
-            */
-            // Place bloom overlay
-            //this.copyPass.render(r, write, this.bloomBuffer, 0);
-
-            //r.clearTarget(write, true, true, true);
-            //r.clearTarget(read, true, true, true);
-
-            //this.copyPass.render(r, read, this.bloomBuffer, 0);
-            //this.copyPass.render(r, write, this.bloomBuffer, 0);
-            //context.stencilFunc( context.EQUAL, 1, 0xffffffff );
-            //this.copyPass.render(r, write, read, 0);
-
-            //copy(r, write, read, this.width, this.height);
-
-            //this.renderer.render(this.scene, this.camera);
-            //r.clear(false, true, true);
-            //THREE.EffectComposer.quad.material = new THREE.MeshBasicMaterial({map:write});
-            //r.render(THREE.EffectComposer.scene, THREE.EffectComposer.camera);
-            //
-
-            //this.maskObject.render(r, undefined, undefined, 0);
-            //r.clear(false, true, true);
-            this.renderModel.render(r, undefined, undefined, 0);
-
-        } else {
-            this.renderPostProcessing(frontBuffer);
-        }
-
-        //composer.addPass( effectFilm );
-        //console.log("Got three");
-        //console.log(this.renderer);
-        /*
-        console.log("Got buffer");
-        console.log(frontBuffer);*/
+        this.renderer.render(scene, camera);
 
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         // blit to actual image output from THREE <canvas> renderer internal buffer

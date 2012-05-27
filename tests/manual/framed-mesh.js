@@ -1,5 +1,7 @@
 /**
- * See what we can do for images on the client side.
+ *
+ * This is mostly scratch test code to see that krusovice.renderers.Three gives meaningful output
+ * and how different texture resize / upload / clip behavior work.
  *
  */
 
@@ -15,9 +17,19 @@ require(["krusovice/thirdparty/jquery",
 
     var renderer = new krusovice.renderers.Three({ width : 640, height: 360, webGL : true});
 
+    var mesh, mesh2;
+
     var i = 0;
 
-    function loop(mesh, mesh2) {
+    /**
+     * Bypass complex rendering
+     *
+     */
+    function directRender() {
+        renderer.renderer.render(renderer.scene, renderer.camera);
+    }
+
+    function loop() {
         var canvas = document.getElementsByTagName("canvas")[0];
         if(!canvas) { throw "Ooops"; }
         var ctx = canvas.getContext("2d");
@@ -28,23 +40,24 @@ require(["krusovice/thirdparty/jquery",
         ctx.fillRect(0, 200, 512, 280);
 
         mesh.rotation.y += 0.02;
-        //mesh.rotation.x += 0.02;
 
+        //mesh.rotation.x += 0.02;
         //mesh.updateMatrix();
-        mesh.updateMatrixWorld();
+        //mesh.updateMatrixWorld();
 
 
         if(mesh2) {
             mesh2.rotation.y -= 0.02;
             //mesh.rotation.x += 0.02;
-
             //mesh.updateMatrix();
-            mesh2.updateMatrixWorld();
+            //mesh2.updateMatrixWorld();
         }
 
+        //directRender();
         renderer.render(ctx);
 
         function again() {
+            console.log("frame");
             loop(mesh, mesh2);
         }
 
@@ -72,25 +85,37 @@ require(["krusovice/thirdparty/jquery",
         plane.materials[0] = bodyMaterial;
         plane.materials[1] = bodyMaterial;
         //mesh = new THREE.Mesh(plane, material);
-        var mesh = new THREE.Mesh(plane, material);
+        mesh = new THREE.Mesh(plane, material);
         //mesh.doubleSided = true;
         //mesh.useQuaternion = true;
         //mesh.position = [0,0,krusovice.effects.ON_SCREEN_Z];
         //mesh.rotation.z = 3;
         //mesh.rotation.y = 2;
 
-        renderer.scene.addObject(mesh);
-
         mesh.scale = new THREE.Vector3(0.5, 0.5, 0.5);
+        renderer.scene.add(mesh);
+
+        var materials = [];
+        for ( var i = 0; i < 6; i ++ ) {
+
+            material = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff });
+            materials.push(material);
+            // materials.push( new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff } ) );
+        }
+
+        var geometry = new THREE.CubeGeometry(200, 200, 200, 1, 1, 1, materials);
+
+
+        mesh2 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial() );
+        renderer.scene.add(mesh2);
+
 
         return mesh;
     }
 
     function init() {
-        renderer.setup();
 
         var img = new Image();
-
 
         function createImage() {
             var texture = new THREE.Texture(img, THREE.UVMapping);
@@ -101,6 +126,9 @@ require(["krusovice/thirdparty/jquery",
             return mesh;
         }
 
+        /**
+         * See output from text rendering functions.
+         */
         function createText(callback) {
             var canvas = document.createElement("canvas");
             canvas.width = 512;
@@ -113,9 +141,7 @@ require(["krusovice/thirdparty/jquery",
             //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             var renderer = new text2canvas.Renderer({canvas:canvas});
-
             renderer.css["border-color"] = "#ffFFff";
-
             renderer.renderText("Foobar");
 
             /*
@@ -174,8 +200,8 @@ require(["krusovice/thirdparty/jquery",
             mesh = createImage();
 
 
-            createText(donedone);
-            //donedone();
+            //createText(donedone);
+            donedone();
         }
 
         //var material = new THREE.MeshFaceMaterial();
@@ -185,6 +211,11 @@ require(["krusovice/thirdparty/jquery",
         img.onload = done;
         img.crossOrigin = '';
         img.src = src;
+
+        //renderer.setupSimple();
+        renderer.setup();
+        document.body.appendChild(renderer.renderer.domElement);
+
 
     }
 
