@@ -173,6 +173,11 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
         if(prelisten) {
             songURL = this.convertToPrelistenURL(songURL);
+        } else {
+            var needOGG = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
+            if(needOGG) {
+                songURL = songURL.replace(".mp3", ".ogg");
+            }
         }
 
         return this.loadSong(songURL, rhythmURL, audio, callback, prelisten);

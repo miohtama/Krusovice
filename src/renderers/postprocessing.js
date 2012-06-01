@@ -4,6 +4,8 @@
  * These effects are bound to Krusovice world model - what kind of objects there is (photo frame etc.)
  * and cannot be re-used as is.
  *
+ * https://bdsc.webapps.blackberry.com/html5/apis/WebGLRenderingContext.html
+ *
  */
 
 /*global define, window, jQuery, document, setTimeout, console, $, krusovice */
@@ -224,15 +226,29 @@ function($, THREE) {
 
                 context.depthMask(false);
                 context.disable(context.STENCIL_TEST);
-                context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE);
-                context.stencilFunc(context.ALWAYS, mode == "fill" ? 1 : 0, 0xffffffff );
+                context.clearStencil(mode == "fill" ? 0 : 1);
+
+                //context.stencilMask(0xffFFffFF);
+
+                context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE); // fail, zfail, zpass
+                context.stencilFunc(context.ALWAYS, 1, 0xffFFffFF);
+
                 this.overrideMaterial = new THREE.MeshBasicMaterial( { color : mode == "fill" ? 0xff00ff : 0x00ff00 } );
+
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
                 context.enable(context.STENCIL_TEST);
-                context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
-                context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
+                //context.stencilFunc(context.EQUAL, 1, 0xffffffff);  // draw if == 1
+                // https://bdsc.webapps.blackberry.com/html5/apis/WebGLRenderingContext.html#stencilFunc
+                context.stencilFunc(context.EQUAL, 1, 0xffFFffFF);
+                //context.stencilMask(0xffFFffFF);
+                context.stencilOp(context.KEEP, context.KEEP, context.KEEP);
+
+                context.colorMask(true, true, true, true);
+                context.depthMask(true);
+
                 this.overrideMaterial = null;
+
             } else {
                 // Normal
                 context.colorMask(true, true, true, true);
@@ -263,15 +279,17 @@ function($, THREE) {
             }
 
             // Draw frame as is
-            this.setMaskMode("normal");
-            this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
+            // this.setMaskMode("normal");
+            // this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
 
             // Set mask to photo
             this.setMaskMode("fill");
             this.renderWorld(renderTarget, scene, camera, { photo : true });
 
-            //this.setMaskMode("clip");
-            //this.renderWorld(renderTarget, scene, camera, { photo : true });
+            this.setMaskMode("clip");
+            var context = this.renderer.context;
+            context.depthFunc(context.ALWAYS);
+            this.renderWorld(renderTarget, scene, camera, { photo : true });
         }
 
     });
