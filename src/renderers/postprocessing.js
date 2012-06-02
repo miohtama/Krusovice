@@ -29,6 +29,12 @@ function($, THREE) {
         /** All polygons will use special material - mostly used for speed in Stencil tests */
         overrideMaterial : null,
 
+        /** Used by 2d post-processing */
+        camera2d : null,
+        geometry2d : null,
+        quad2d : null,
+        scene2d : null,
+
         init : function(renderer, width, height) {
 
             if(!renderer) {
@@ -50,6 +56,28 @@ function($, THREE) {
         },
 
         /**
+         * Create orthonagonal camera, good for 2D effect purposes.
+         *
+         * You will write to a hidden bugger and then use it as a texture with this dummy scene.
+         * @return {[type]} [description]
+         */
+        setup2DCamera : function() {
+            var width = this.width, height = this.height;
+
+            this.camera2d = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
+            this.geometry2d = new THREE.PlaneGeometry(1, 1);
+            this.geometry2d.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+
+            this.quad2d = new THREE.Mesh(this.geometry2d, null);
+            this.quad2d.position.z = -100;
+            this.quad2d.scale.set(width, height, 1);
+
+            this.scene2d = new THREE.Scene();
+            this.scene2d.add(this.quad2d);
+            this.scene2d.add(this.camera2d);
+        },
+
+        /**
          * Prepare for rendering. Must be called after all passes have been added to the chain.
          *
          */
@@ -60,7 +88,7 @@ function($, THREE) {
             this.renderTarget = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
 
             this.passes.forEach(function(e) {
-                e.init(self.renderer);
+                e.init(self);
             });
 
             // Set renderer to play along with our stencil buffer pipeline
@@ -68,6 +96,8 @@ function($, THREE) {
             //this.autoClearColor = true;
             //this.autoClearDepth = true;
             this.autoClearStencil = false;
+
+            this.setup2DCamera();
         },
 
         renderPass : function(pass, renderTarget, scene, camera) {
@@ -126,14 +156,30 @@ function($, THREE) {
 
     PostProcessingPass.prototype = {
 
+        postprocessor : null,
+
         renderer : null,
 
         /** Fill stencil with 0xff00ff color */
         stencilDebug : false,
 
+        uniforms : null,
 
-        init : function(renderer) {
-            this.renderer = renderer;
+        /** THREE.js material used on 2D scene quad surface */
+        material : null,
+
+        init : function(postprocessor) {
+            this.postprocessor = postprocessor;
+            this.renderer = postprocessor.renderer;
+
+            this.prepare();
+        },
+
+        /**
+         * Child classes to override to setup shader code.
+         */
+        prepare : function() {
+
         },
 
         /**
@@ -203,7 +249,50 @@ function($, THREE) {
             });
 
             scene.overrideMaterial = this.overrideMaterial;
-            this.renderer.render(scene, camera);
+
+            if(renderTarget) {
+                // buffer
+                this.renderer.render(scene, camera, renderTarget);
+            } else {
+                // screen
+                this.renderer.render(scene, camera);
+            }
+            //
+        },
+
+        /**
+         * Upload shader code to GPU
+         */
+        prepare2dEffect : function(shader) {
+            this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+            this.material = new THREE.ShaderMaterial( {
+                uniforms: this.uniforms,
+                vertexShader: shader.vertexShader,
+                fragmentShader: shader.fragmentShader
+            });
+        },
+
+        /**
+         * Renders a 2D fragment shader.
+         *
+         *
+         */
+        render2dEffect : function(readBuffer, writeBuffer) {
+            var postprocessor = this.postprocessor;
+
+            // Use existing real world scene buffer as source for the shader program
+            //
+            if(this.material.uniforms.tDiffuse) {
+                this.material.uniforms.tDiffuse.texture = readBuffer;
+            }
+
+            this.postprocessor.quad2d.material = this.material;
+
+            if(writeBuffer) {
+                this.renderer.render(postprocessor.scene2d, postprocessor.camera2d, writeBuffer);
+            } else {
+                this.renderer.render(postprocessor.scene2d, postprocessor.camera2d);
+            }
         },
 
         /**
@@ -236,13 +325,13 @@ function($, THREE) {
                 context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE); // fail, zfail, zpass
                 context.stencilFunc(context.ALWAYS, 1, 0xffFFffFF);
 
-                this.overrideMaterial = new THREE.MeshBasicMaterial( { color : mode == "fill" ? 0xff00ff : 0x00ff00 } );
+                this.overrideMaterial = new THREE.MeshBasicMaterial({ color : mode == "fill" ? 0xff00ff : 0x00ff00 });
 
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
 
                 context.enable(context.STENCIL_TEST);
-                context.stencilFunc(context.EQUAL, 1, 0xffFFffFF);
+                context.stencilFunc(context.EQUAL, 0, 0xffFFffFF);
                 context.stencilOp(context.KEEP, context.KEEP, context.KEEP);
 
                 context.colorMask(true, true, true, true);
@@ -264,7 +353,6 @@ function($, THREE) {
      * WebGL effec composer which renders Sepia + Noise on the image itself
      */
     function SepiaPass(renderer) {
-        this.renderer = renderer;
     }
 
     /**
@@ -273,24 +361,38 @@ function($, THREE) {
      */
     $.extend(SepiaPass.prototype, PostProcessingPass.prototype, {
 
+        prepare : function() {
+            var sepia = THREE.ShaderExtras.sepia;
+            //var sepia = THREE.ShaderExtras.basic;
+            this.prepare2dEffect(sepia);
+        },
+
         render : function(renderTarget, scene, camera) {
 
             if(!this.renderer) {
                 throw new Error("Effect was never given a proper Renderer instance");
             }
 
-            // Draw frame as is
-            // this.setMaskMode("normal");
-            // this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
+            // Render world to the buffer
+            renderTarget = this.postprocessor.renderTarget;
 
-            // Set mask to photo
-            this.setMaskMode("fill");
+            // Draw frame as is
+            this.setMaskMode("normal");
+            this.renderWorld(renderTarget, scene, camera, { frame : true, photo : false });
+
+            // Draw photo as is
+            this.setMaskMode("normal");
             this.renderWorld(renderTarget, scene, camera, { photo : true });
 
-            this.setMaskMode("clip");
+            // Mask buffer for photo area
+            this.setMaskMode("fill");
             var context = this.renderer.context;
             context.depthFunc(context.ALWAYS);
             this.renderWorld(renderTarget, scene, camera, { photo : true });
+
+            // Run sepia filter against masked area
+            this.setMaskMode("clip");
+            this.render2dEffect(renderTarget, null);
         }
 
     });
