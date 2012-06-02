@@ -6,7 +6,7 @@ function(krusovice, quickplay, postprocessing) {
     "use strict";
 
     // List of texts and images in the show
-    var showSource = "ukko.jpg\nukko.jpg\nukko.jpg";
+    var showSource = "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg";
 
     // Media locations
     var initOptions = {
@@ -17,33 +17,14 @@ function(krusovice, quickplay, postprocessing) {
         textMediaURL : "../src/showobjects/textdefinitions.js"
     };
 
-    // transition settings
     var transitions = {
-
-        transitionIn : {
-            type : "zoomin",
-            duration : 2.0
-        },
-
-        transitionOut : {
-            type : "zoomfar",
-            duration : 2.0
-        },
-
-        onScreen : {
-            type : "slightmove"
-        }
-
-    };
-
-    transitions = {
         transitionIn : {
             type : "zoomfar",
-            duration : 1
+            duration : 1.5
         },
         transitionOut : {
             type : "zoomin",
-            duration : 1
+            duration : 1.5
         },
         onScreen : {
             type : "slightrotatez"
@@ -70,7 +51,7 @@ function(krusovice, quickplay, postprocessing) {
             var baseelem = {
                 type : "image",
                 label : null,
-                duration : 1.5,
+                duration : 3.5,
                 imageURL : "ukko.jpg"
             };
 
