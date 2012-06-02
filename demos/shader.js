@@ -155,8 +155,8 @@ function(krusovice, quickplay, postprocessing) {
             var design = this.createDesign();
 
             var project = new krusovice.Project({
-                width : 512,
-                height : 288,
+                width : 720,
+                height : 405,
                 design : design
             });
 

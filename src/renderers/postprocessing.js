@@ -37,6 +37,13 @@ function($, THREE) {
         scene : null,
         camera : null,
 
+        /**
+         * Seconds since show start.
+         *
+         * @type {Number}
+         */
+        time : 0,
+
         /** All polygons will use special material - mostly used for speed in Stencil tests */
         overrideMaterial : null,
 
@@ -260,11 +267,12 @@ function($, THREE) {
          *
          * @param  {Canvas} frontBuffer Where all the result goes
          */
-        render : function(frontBuffer, scene, camera) {
+        render : function(frontBuffer, time, scene, camera) {
 
             // XXX: Move
             this.scene = scene;
             this.camera = camera;
+            this.time = time;
 
             // color + depth + stencil
             this.renderer.clear(true, true, true);
@@ -283,12 +291,29 @@ function($, THREE) {
 
             var self = this;
 
-            function renderGL(frontBuffer) {
+            function renderGL(frontBuffer, time) {
                 /*jshint validthis:true */
-                self.render(frontBuffer, this.scene, this.camera);
+                self.render(frontBuffer, time, this.scene, this.camera);
             }
 
             krusoviceRenderer.renderGL = renderGL;
+        },
+
+        /**
+         * Creates a post-processing pass and binds it to this post processor.
+         * @param  {Function} klass Constructor
+         * @return {Object}       PostProcessor instance
+         */
+        createPass : function(klass) {
+
+            if(!klass) {
+                throw new Error("You must give a PostProcessor constructor as an argument");
+            }
+
+            /*jshint newcap:false*/
+            var processor = new klass();
+            processor.init(this);
+            return processor;
         }
     };
 
@@ -346,13 +371,10 @@ function($, THREE) {
          *
          */
         render2dEffect : function(readBuffer, writeBuffer) {
+
             var postprocessor = this.postprocessor;
 
-            // Use existing real world scene buffer as source for the shader program
-            //
-            if(this.material.uniforms.tDiffuse) {
-                this.material.uniforms.tDiffuse.texture = readBuffer;
-            }
+            this.updateUniforms(readBuffer, writeBuffer);
 
             this.postprocessor.quad2d.material = this.material;
 
@@ -361,6 +383,34 @@ function($, THREE) {
             } else {
                 this.renderer.render(postprocessor.scene2d, postprocessor.camera2d);
             }
+        },
+
+        /**
+         * Called for every frame to update shader uniform values.
+         *
+         */
+        updateUniforms : function(readBuffer, writeBuffer) {
+
+            // Use existing real world scene buffer as source for the shader program
+            //
+            if(this.material.uniforms.tDiffuse) {
+                this.material.uniforms.tDiffuse.texture = readBuffer;
+            }
+
+            if(this.material.uniforms.time !== undefined) {
+                this.material.uniforms.time.value = this.postprocessor.time;
+            }
+
+        },
+
+        /**
+         * Manually update filter uniform value for next render()
+         *
+         * @param {String} name  uniform name,
+         * @param {Number} value new value
+         */
+        setUniform : function(name, value) {
+            this.material.uniforms[name].value = value;
         },
 
         render : function(source, target) {
@@ -385,6 +435,9 @@ function($, THREE) {
 
     });
 
+    /**
+     * TV noise + scanline effect.
+     */
     function FilmPass() {
     }
 
@@ -396,16 +449,29 @@ function($, THREE) {
         }
     });
 
+    /**
+     * Test shader pass.
+     */
+    function CopyPass() {
+
+    }
+
+    $.extend(CopyPass.prototype, PostProcessingPass.prototype, {
+
+        prepare : function() {
+            var effect = THREE.ShaderExtras.screen;
+            this.prepare2dEffect(effect);
+        }
+    });
+
     function setupPipeline(renderer) {
 
         var postprocessor = new PostProcessor({ bufferCount : 2});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
-        var sepia = new SepiaPass();
-        var film = new FilmPass();
-
-        sepia.init(postprocessor);
-        film.init(postprocessor);
+        var sepia = postprocessor.createPass(SepiaPass);
+        var film =postprocessor.createPass(FilmPass);
+        var copy = postprocessor.createPass(CopyPass);
 
         function pipeline(postprocessor, buffers) {
 
@@ -413,34 +479,50 @@ function($, THREE) {
                 throw new Error("Prior buffer allocation failed");
             }
 
+            var renderer = postprocessor.renderer;
+
+            // Clean up both buffers for the start
+            renderer.clearTarget(buffers[0]);
+            renderer.clearTarget(buffers[1]);
+
             // Draw frame as is
             postprocessor.setMaskMode("normal");
-            postprocessor.renderWorld(null, {frame : true, photo : false });
+            postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
             // Draw photo as is to the buffer
             postprocessor.setMaskMode("normal");
             postprocessor.renderWorld(buffers[0], { photo : true });
 
-            // Mask the target buffer for photo area
-            postprocessor.setMaskMode("fill");
+            // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
             context.depthFunc(context.ALWAYS);
-            postprocessor.renderWorld(null, { photo : true });
 
-            // Run sepia filter against masked area
-            postprocessor.setMaskMode("clip");
-            sepia.render(buffers[0], null);
-
-            // Mask the target buffer for photo area
-            /*
+            // Create target mask to operate only on photo content, not its frame
             postprocessor.setMaskMode("fill");
-            var context = postprocessor.renderer.context;
-            context.depthFunc(context.ALWAYS);
+            postprocessor.renderWorld(buffers[0], { photo : true });
             postprocessor.renderWorld(buffers[1], { photo : true });
 
+            // Operate 2D filters only on the area masked by clip
             postprocessor.setMaskMode("clip");
-            film.render(buffers[1], null);
-            */
+
+            // Run sepia filter against masked area buffer 0 -> buffer 1
+            sepia.setUniform("amount", 0.5);
+            sepia.render(buffers[0], buffers[1]);
+
+            // Run film filter against masked area buffer 1 -> buffer 0
+            film.setUniform("grayscale", 0);
+            film.setUniform("sIntensity", 0.3);
+            film.setUniform("nIntensity", 0.3);
+
+            film.render(buffers[1], buffers[0]);
+
+            // Mask the target buffer for photo area
+            // postprocessor.setMaskMode("fill");
+            // postprocessor.renderWorld(buffers[1], { photo : true });
+
+            // Copy buffer 0 to screen
+            postprocessor.setMaskMode("normal");
+            copy.render(buffers[0], null);
         }
 
         postprocessor.prepare(pipeline);

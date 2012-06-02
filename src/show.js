@@ -765,7 +765,7 @@ krusovice.Show.prototype = {
         var vu = 0;
         this.renderer.postProcessStrength = vu;
 
-        this.renderer.render(this.ctx);
+        this.renderer.render(this.ctx, clock);
     },
 
     /**

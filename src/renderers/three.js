@@ -546,11 +546,11 @@ krusovice.renderers.Three.prototype = {
         this.effectBloom = new THREE.BloomPass(this.postProcessingStrength);
     },
 
-    render : function(frontBuffer) {
+    render : function(frontBuffer, time) {
         if(this.webGL) {
-            this.renderGL(frontBuffer);
+            this.renderGL(frontBuffer, time);
         } else {
-            this.renderCanvas(frontBuffer);
+            this.renderCanvas(frontBuffer, time);
         }
     },
 
@@ -562,13 +562,13 @@ krusovice.renderers.Three.prototype = {
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
     },
 
-    renderGL : function(frontBuffer) {
+    renderGL : function(frontBuffer, time) {
 
         // Let Three.js do its magic
         var scene = this.scene;
         var camera = this.camera;
 
-        this.renderer.render(scene, camera);
+        this.renderer.render(scene, camera, time);
 
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         // blit to actual image output from THREE <canvas> renderer internal buffer
