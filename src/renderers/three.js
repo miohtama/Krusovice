@@ -150,7 +150,7 @@ krusovice.renderers.Three.prototype = {
 
             renderer = new THREE.WebGLRenderer(settings);
         } else {
-            renderer = new THREE.CanvasRenderer();
+            throw new Error("<canvas> 2D backend not supported, because it sucks");
         }
 
         // start the renderer

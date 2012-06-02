@@ -310,8 +310,11 @@ function($, THREE) {
                 throw new Error("You must give a PostProcessor constructor as an argument");
             }
 
+            var args = Array.prototype.slice.call(arguments);
+
             /*jshint newcap:false*/
-            var processor = new klass();
+            var processor = new klass(args[1]); // TODO: pass all arguments here
+
             processor.init(this);
             return processor;
         }
@@ -419,59 +422,34 @@ function($, THREE) {
 
     };
 
-    /**
-     * WebGL effec composer which renders Sepia + Noise on the image itself
-     */
-    function SepiaPass() {
-    }
+    function ShaderPass(shader) {
 
-    $.extend(SepiaPass.prototype, PostProcessingPass.prototype, {
-
-        prepare : function() {
-            var sepia = THREE.ShaderExtras.sepia;
-            //var sepia = THREE.ShaderExtras.basic;
-            this.prepare2dEffect(sepia);
+        if(shader) {
+            this.shader = shader;
+        } else {
+            throw new Error("No shader given for ShaderPass");
         }
-
-    });
-
-    /**
-     * TV noise + scanline effect.
-     */
-    function FilmPass() {
     }
 
-    $.extend(FilmPass.prototype, PostProcessingPass.prototype, {
+    $.extend(ShaderPass.prototype, PostProcessingPass.prototype, {
 
         prepare : function() {
-            var film = THREE.ShaderExtras.film;
-            this.prepare2dEffect(film);
+            this.prepare2dEffect(this.shader);
         }
     });
 
-    /**
-     * Test shader pass.
-     */
-    function CopyPass() {
-
-    }
-
-    $.extend(CopyPass.prototype, PostProcessingPass.prototype, {
-
-        prepare : function() {
-            var effect = THREE.ShaderExtras.screen;
-            this.prepare2dEffect(effect);
-        }
-    });
 
     function setupPipeline(renderer) {
 
         var postprocessor = new PostProcessor({ bufferCount : 2});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
-        var sepia = postprocessor.createPass(SepiaPass);
-        var film =postprocessor.createPass(FilmPass);
-        var copy = postprocessor.createPass(CopyPass);
+        var sepia = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.sepia);
+        var film =postprocessor.createPass(ShaderPass, THREE.ShaderExtras.film);
+        var copy = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.screen);
+        var fxaa = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.fxaa);
+
+        fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
         function pipeline(postprocessor, buffers) {
 
@@ -487,6 +465,7 @@ function($, THREE) {
 
             // Draw frame as is
             postprocessor.setMaskMode("normal");
+            //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
             postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
             // Draw photo as is to the buffer
@@ -513,7 +492,6 @@ function($, THREE) {
             film.setUniform("grayscale", 0);
             film.setUniform("sIntensity", 0.3);
             film.setUniform("nIntensity", 0.3);
-
             film.render(buffers[1], buffers[0]);
 
             // Mask the target buffer for photo area
@@ -522,7 +500,8 @@ function($, THREE) {
 
             // Copy buffer 0 to screen
             postprocessor.setMaskMode("normal");
-            copy.render(buffers[0], null);
+            fxaa.render(buffers[0], null);
+
         }
 
         postprocessor.prepare(pipeline);
