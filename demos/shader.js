@@ -138,16 +138,8 @@ function(krusovice, quickplay, postprocessing) {
 
                 this.renderer.setup();
 
-                this.postprocessor = new postprocessing.PostProcessor();
-                this.postprocessor.init(this.renderer.renderer, this.renderer.width, this.renderer.height);
-                this.postprocessor.takeOver(this.renderer);
+                postprocessing.setupPipeline(this.renderer);
 
-                var sepia = new postprocessing.SepiaPass();
-                sepia.stencilDebug = false; // Paint in stencil when poking the code
-                this.postprocessor.addPass(sepia);
-
-
-                this.postprocessor.prepare();
             };
 
         },
