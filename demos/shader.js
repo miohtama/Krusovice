@@ -143,7 +143,7 @@ function(krusovice, quickplay, postprocessing) {
                 this.postprocessor.takeOver(this.renderer);
 
                 var sepia = new postprocessing.SepiaPass();
-                sepia.stencilDebug = true; // Paint in stencil when poking the code
+                sepia.stencilDebug = false; // Paint in stencil when poking the code
                 this.postprocessor.addPass(sepia);
 
 

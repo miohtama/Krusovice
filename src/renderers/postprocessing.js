@@ -67,7 +67,7 @@ function($, THREE) {
             this.renderer.autoClear = false;
             //this.autoClearColor = true;
             //this.autoClearDepth = true;
-            //this.autoClearStencil = true;
+            this.autoClearStencil = false;
         },
 
         renderPass : function(pass, renderTarget, scene, camera) {
@@ -213,6 +213,9 @@ function($, THREE) {
 
             var context = this.renderer.context;
 
+            // This will fill the stencil buffer with 1 or 0
+            // for the parts which are drawn. Later this stencil can be used for
+            // effect passes
             if(mode == "fill" || mode == "negative-fill") {
 
                 // This draw pass will lit stencil pixels, not normal pixels
@@ -225,7 +228,7 @@ function($, THREE) {
                 }
 
                 context.depthMask(false);
-                context.disable(context.STENCIL_TEST);
+                context.enable(context.STENCIL_TEST);
                 context.clearStencil(mode == "fill" ? 0 : 1);
 
                 //context.stencilMask(0xffFFffFF);
@@ -237,11 +240,9 @@ function($, THREE) {
 
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
+
                 context.enable(context.STENCIL_TEST);
-                //context.stencilFunc(context.EQUAL, 1, 0xffffffff);  // draw if == 1
-                // https://bdsc.webapps.blackberry.com/html5/apis/WebGLRenderingContext.html#stencilFunc
                 context.stencilFunc(context.EQUAL, 1, 0xffFFffFF);
-                //context.stencilMask(0xffFFffFF);
                 context.stencilOp(context.KEEP, context.KEEP, context.KEEP);
 
                 context.colorMask(true, true, true, true);
