@@ -436,7 +436,6 @@ krusovice.renderers.Three.prototype = {
 
         var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
 
-
         // Phong shaded borders on webGL
         border = new THREE.MeshPhongMaterial( {shininess: 255, ambient: 0xffffff, color: borderColorHex } );
 

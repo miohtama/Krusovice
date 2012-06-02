@@ -52,7 +52,8 @@ function(krusovice, quickplay, postprocessing) {
                 type : "image",
                 label : null,
                 duration : 3.5,
-                imageURL : "ukko.jpg"
+                imageURL : "ukko.jpg",
+                borderColor : "#faa8833"
             };
 
             var lines = showSource.split("\n");
