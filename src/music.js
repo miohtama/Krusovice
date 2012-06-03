@@ -107,7 +107,6 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         function onRhythmData(data) {
             rhythmDone = true;
             rhythmData = data;
-            debugger;
             allDone();
         }
 
