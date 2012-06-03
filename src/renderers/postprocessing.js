@@ -445,7 +445,7 @@ function($, THREE) {
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
         var sepia = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.sepia);
-        var film =postprocessor.createPass(ShaderPass, THREE.ShaderExtras.film);
+        var film = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.film);
         var copy = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.screen);
         var fxaa = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.fxaa);
 
@@ -498,7 +498,7 @@ function($, THREE) {
             // postprocessor.setMaskMode("fill");
             // postprocessor.renderWorld(buffers[1], { photo : true });
 
-            // Copy buffer 0 to screen
+            // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
             postprocessor.setMaskMode("normal");
             fxaa.render(buffers[0], null);
 

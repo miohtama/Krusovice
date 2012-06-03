@@ -50,10 +50,11 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
 
     /**
-     * Decode song bank data to internal format.
+     * Decode song aritist info and media URLs to internal format.
      */
     processData : function(data, mediaURL) {
         var self = this;
+
         data.forEach(function(obj) {
             self.fixMediaURLs(obj, mediaURL);
             self.register(obj);
@@ -65,7 +66,6 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      */
     fixMediaURLs : function(obj, mediaURL) {
 
-
         if(obj.mp3 && typeof(obj.mp3) == "string") {
             if(!obj.mp3.match("^http")) {
                 // Convert background source url from relative to absolute
@@ -75,14 +75,6 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
     },
 
-
-
-    /**
-     * Load rhythm data for MP3;
-     */
-    loadRhythmData : function(file, callback) {
-
-    },
 
     /**
      * Load a song into audio element and load related rhytm data too.
@@ -115,6 +107,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         function onRhythmData(data) {
             rhythmDone = true;
             rhythmData = data;
+            debugger;
             allDone();
         }
 

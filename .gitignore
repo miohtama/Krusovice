@@ -24,7 +24,7 @@ dist
 *~
 *.bak
 .coverage
-*.pyd 
+*.pyd
 *.so
 *.orig
 *.rej
@@ -59,3 +59,5 @@ jsduck
 watchdog
 
 yuicompressor-*
+
+venv

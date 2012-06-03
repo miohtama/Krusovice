@@ -407,5 +407,14 @@ Echo Nest remix API Python bindings can be installed:
     sudo ln -s `which ffmpeg` /usr/local/bin/en-ffmpeg
 
 
-
 TODO: How to build rhythm .json data files by hand.
+
+Loudness data generation
+---------------------------
+
+Generate loudness .json info for MP3 files::
+
+    python virtualenv.py --system-site-packages -p /opt/local/bin/python2.7 venv
+    source venv/bin/activate
+    pip install plac
+
