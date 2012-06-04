@@ -42,36 +42,42 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * @param {Object} showOptions Extra options for krusovice.Show
      *
-     * @return {jQuery.Deferred} 
+     * @return {jQuery.Deferred}
      */
     function play(elementId, project, initOptions, showOptions) {
+
         var elem = $("#" + elementId);
-
         var design = project.design;
-
-        var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, null, design.transitions);
-
-        timeliner.updateFromDesign(design);
-
-        var timeline = timeliner.createPlan();
         var audio;
 
         if(!showOptions) {
             showOptions = {};
         }
 
-        function onSongData(songURL, rhythmURL, rhythmData) {
+        // Create show timeline and playback object after we have the song and its music data
+        function createShow() {
 
-            console.log("onSongData()");
+            console.log("createShow()");
+
+            var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, audio.rhytmData, design.transitions);
+
+            timeliner.updateFromDesign(design);
+
+            var timeline = timeliner.createPlan();
 
             var cfg = {
                 width : project.width,
                 height : project.height,
                 timeline : timeline,
                 elem : elem,
-                webGL : "auto",
-                background : design.background
+                webGL : true,
+                background : design.background,
+                rhytmData : audio.rhytmData
             };
+
+            if(!audio.levelData) {
+                throw new Error("audio.levelData missing");
+            }
 
             $.extend(cfg, showOptions);
 
@@ -84,7 +90,6 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             show.bindToAudio(audio);
 
             // Auto-start
-
             $(show).bind("loadend", function() {
                 console.log("Rendering the show");
                 audio.play();
@@ -95,37 +100,37 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             show.prepare();
         }
 
+        // Make sure we have text style
         if(initOptions.textMediaURL) {
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        // Load song from the db
-        // and create <audio> contr
-        function loadAudio() {
-            audio = document.createElement("audio");
-            audio.controls = true;
-            elem.append(audio);
-            krusovice.music.Registry.loadSongFromDesign(design, audio, onSongData, initOptions.prelistenSongs);
-        }
-
-        function onReady() {
-            // SKip this step
-            loadAudio();
-        }
+        // Load <audio> element for song playback
+        audio = document.createElement("audio");
+        audio.controls = true;
+        elem.append(audio);
 
         var startup = new krusovice.Startup(initOptions);
-
-        var dfd = startup.init();
-
-        dfd.done(onReady);
-
-
-        dfd.fail(function() {
-            throw new Error("Krusovice init failed");
+        var startupLoader = startup.init();
+        startupLoader.fail(function(msg) {
+            console.error("Krusovice show quick play failed: " + msg);
         });
 
 
-        return dfd;
+        // We need to load song db by start-up loader before we can try to load song
+        $.when(startupLoader).done(function() {
+
+            var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs);
+
+            songLoader.fail(function(msg) {
+                console.erro("Song loader failed:" + msg);
+            });
+
+            songLoader.done(function() {
+                createShow();
+            });
+
+        });
     }
 
     /**

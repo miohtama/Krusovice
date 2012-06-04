@@ -1,3 +1,6 @@
+define(["krusovice/thirdparty/three-bundle"], function(THREE) {
+
+
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author zz85 / http://www.lab4games.net/zz85/blog
@@ -1786,3 +1789,6 @@ THREE.ShaderExtras = {
         }
 
 };
+
+
+});

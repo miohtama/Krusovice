@@ -1,7 +1,7 @@
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
-require(["krusovice/api", "krusovice/quickplay", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
-function(krusovice, quickplay, postprocessing) {
+require(["krusovice/api", "krusovice/quickplay", "krusovice/music", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
+function(krusovice, quickplay, music, postprocessing) {
 
     "use strict";
 
@@ -36,13 +36,6 @@ function(krusovice, quickplay, postprocessing) {
      * Shader demo
      */
     var shader = {
-
-
-        hasMusic : false,
-
-        hasBackgrounds : false,
-
-        song : null,
 
         createDesign : function() {
 
@@ -133,7 +126,6 @@ function(krusovice, quickplay, postprocessing) {
          */
         playShow : function() {
 
-
             var design = this.createDesign();
 
             var project = new krusovice.Project({
@@ -142,8 +134,9 @@ function(krusovice, quickplay, postprocessing) {
                 design : design
             });
 
-            var show = quickplay.play("show", project, initOptions);
+            music.Registry.useLevelData = true;
 
+            quickplay.play("show", project, initOptions);
 
         },
 

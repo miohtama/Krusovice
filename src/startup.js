@@ -15,7 +15,7 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
     /**
      * Load krusovice media databases.
      * These databases include things like available backgrounds, medias, etc.
-     * 
+     *
      * Uses jQuery defer pattern.
      */
     krusovice.Startup.prototype = {
@@ -44,7 +44,7 @@ define("krusovice/startup", ["krusovice/thirdparty/jquery-bundle", "krusovice/co
          * Construct URLs to various data bits we need to load and create a deferred object
          * to load all this data.
          *
-         * @return a Deferred object with a promise to have everything loaded or will fail() with an error message argument
+         * @return {jQuery.Deferred} a Deferred object with a promise to have everything loaded or will fail() with an error message argument
          */
         init :function() {
 

@@ -18,18 +18,12 @@ RenderTest.prototype.createPlan = function() {
     return plan;
 };
 
-/**
- * Render few first frames of simple timeline.
- */
-RenderTest.prototype.testRenderFewFramesCanvas = function(queue) {
-    this.renderCore(queue, false);
-};
 
 /**
  * Render few first frames of simple timeline.
  */
 RenderTest.prototype.testRenderFewFramesWebGL = function(queue) {
-    this.renderCore(queue, true);
+    this.renderCore(queue);
 };
 
 
@@ -54,7 +48,7 @@ RenderTest.prototype.testPreviewWarningMessage = function(queue) {
         window.assertEquals(show.previewWarningMessage, "Test blaa blaa");
     }
 
-    var res = this.renderCore(queue, false, config);
+    var res = this.renderCore(queue, config);
     show = res.show;
 
     res.queue.call("Check preview warning message", step3);

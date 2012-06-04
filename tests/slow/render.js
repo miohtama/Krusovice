@@ -14,7 +14,7 @@ function RenderBaseTest() {
  *
  * @param webGL use WebGL rendering
  */
-RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
+RenderBaseTest.prototype.renderCore = function(queue, extraCfg) {
 
     var krusovice = this.krusovice;
     var plan = this.createPlan();
@@ -28,7 +28,7 @@ RenderBaseTest.prototype.renderCore = function(queue, webGL, extraCfg) {
             },
             elem : null,
             realtime : false,
-            webGL : webGL
+            webGL : true
     };
 
     if(extraCfg) {

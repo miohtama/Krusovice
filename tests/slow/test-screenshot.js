@@ -76,7 +76,7 @@ ScreenshotTest.prototype.testRenderScreenshot = function(queue) {
 
     extra.renderStep = renderStep;
 
-    var testdata = this.renderCore(queue, true, extra);
+    var testdata = this.renderCore(queue, extra);
     show = testdata.show;
 
 };

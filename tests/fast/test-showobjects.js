@@ -96,7 +96,8 @@ ShowObjectsTest.prototype.basicSetup = function() {
 
         var renderer = new krusovice.renderers.Three({
                 width: 100,
-                height : 100
+                height : 100,
+                webGL : true
         });
 
         renderer.setup();
