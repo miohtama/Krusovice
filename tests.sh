@@ -1,28 +1,36 @@
 #!/bin/sh
 #
-# Run all the tests - this will kill your Chrome
+# Run all the tests on hacked Chrome
+# - this will kill your Chrome session on the computer so be careful
 #
 
-PWD=`pwd`
-CHROME="$PWD/chrome-wrapper.sh"
 
-# http://code.google.com/p/js-test-driver/source/browse/trunk/JsTestDriver/src/com/google/jstestdriver/browser/CommandLineBrowserRunner.java
-CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# OSX specific Chrome start-up line
+# https://groups.google.com/d/msg/js-test-driver/UfV_xK-qI0w/FhMMQpFAbSwJ
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome;%s;--args;--disable-restore-session-state;--disable-web-security;--homepage;about:blank"
 
-#echo $CHROME
-#$CHROME
+JSTESTDRIVER="JsTestDriver.jar"
 
-# Serve static resources
+URL="http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.4.b.jar"
+
+# Automatically download JsTsetDriver JAR if we lack one
+if [ ! -e $JSTESTDRIVER ] ; then
+    echo "Downloading JsTestDriver"
+    wget -O $JSTESTDRIVER "$URL"
+fi
+
+# Serve static resources using Python's SimpleHTTPServer (JsTestDriver server is broken for basic HTTP stuff)
 python -m SimpleHTTPServer &
 
 HTTP_SERVER_PID=$(echo $!)
 
 killall "Google Chrome"
 echo "Running FAST tests"
-java -jar JsTestDriver-1.3.4-a.jar --verbose --port 9876 --config jsTestDriver.conf --browser "$CHROME" --tests all --reset
+java -jar $JSTESTDRIVER --verbose --port 9876 --config jsTestDriver.conf --browser "$CHROME" --tests all --reset
 
+killall "Google Chrome"
 echo "Running SLOW tests"
-java -Xmx512M -jar JsTestDriver-1.3.4-a.jar --port 9876 --config jsTestDriver-render.conf  --browser "$CHROME" --tests all --reset
+java -Xmx512M -jar $JSTESTDRIVER --port 9876 --config jsTestDriver-render.conf  --browser "$CHROME" --tests all --reset
 
 
 kill $HTTP_SERVER_PID
