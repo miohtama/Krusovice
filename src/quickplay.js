@@ -59,7 +59,7 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
             console.log("createShow()");
 
-            var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, audio.rhytmData, design.transitions);
+            var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, audio.rhythmData, design.transitions);
 
             timeliner.updateFromDesign(design);
 
@@ -72,8 +72,12 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 elem : elem,
                 webGL : true,
                 background : design.background,
-                rhytmData : audio.rhytmData
+                rhythmData : audio.rhythmData
             };
+
+            if(!audio.rhythmData) {
+                throw new Error("audio.rhytmData missing");
+            }
 
             if(!audio.levelData) {
                 throw new Error("audio.levelData missing");
@@ -120,7 +124,7 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         // We need to load song db by start-up loader before we can try to load song
         $.when(startupLoader).done(function() {
 
-            var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs);
+            var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs, false);
 
             songLoader.fail(function(msg) {
                 console.erro("Song loader failed:" + msg);

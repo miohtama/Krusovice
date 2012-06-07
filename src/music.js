@@ -109,8 +109,8 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
         var audioLoader = $.Deferred(), rhythm, levels;
 
-        console.log("loadSongDeferred()");
-        console.log(urls);
+        //console.log("loadSongDeferred()");
+        //console.log(urls);
 
         if(!urls || $.isEmptyObject(urls)) {
             throw new Error("Missing song data urls object");
@@ -126,7 +126,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
                 dataType: 'json',
 
                 success: function(data) {
-                    console.error("ASDFASF");
+                    console.log("Succesfully loaded song JSON data:" + url);
                     done(data);
                     loader.resolve();
                 },
@@ -143,7 +143,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         // Load rhytm data if given
         if(urls.rhythm) {
             rhythm = loadDFDJSON(urls.rhythm, function(data) {
-                audio.rhytmData = data;
+                audio.rhythmData = data;
             });
         } else {
             rhythm = null;
