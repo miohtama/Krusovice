@@ -26,7 +26,7 @@ HTTP_SERVER_PID=$(echo $!)
 
 killall "Google Chrome"
 echo "Running FAST tests"
-java -jar $JSTESTDRIVER --verbose --port 9876 --config jsTestDriver.conf --browser "$CHROME" --tests all --reset
+java -jar $JSTESTDRIVER --port 9876 --config jsTestDriver.conf --browser "$CHROME" --tests all --reset
 
 killall "Google Chrome"
 echo "Running SLOW tests"
