@@ -102,7 +102,7 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      * @return jQuery.Deferred object with callback of function(audio) and audio object has special rhytmData and songData attributes
      *
      */
-    loadSongDeferred : function(audio, urls, prelisten) {
+    loadSongDeferred : function(audio, urls, prelisten, quiet) {
 
         // Deferred loaders of three different data files
         var dfds = [];
@@ -159,15 +159,21 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         }
 
         // http://www.w3.org/TR/html5/media-elements.html#mediaevents
-        $(audio).one("canplay", function() {
+        if(!quiet) {
+
+            $(audio).one("canplay", function() {
+                audioLoader.resolve();
+            });
+
+            $(audio).one("error", function() {
+                audioLoader.reject("Could not load audio: " + urls.song);
+            });
+
+            audio.src = urls.song;
+        } else {
+            // Don't load audio data
             audioLoader.resolve();
-        });
-
-        $(audio).one("error", function() {
-            audioLoader.reject("Could not load audio: " + urls.song);
-        });
-
-        audio.src = urls.song;
+        }
 
         return $.when(audio, rhythm, levels);
     },
@@ -176,12 +182,19 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      * Load a song based on krusovice.Design object.
      *
      * Song can be id (stock) or custom URL.
+     * Returns a deferred object which on complete
      *
-     * Callback will receive
+     * @param design {krusovice.Design} Show design which tells what kind of audio to use
+     *
+     * @param {HTMLAudio} audio Audio object which will contain audio data and rhythm datas
+     *
+     * @param {Boolean} prelisten convert audio URLs to prelisten versions
+     *
+     * @parma {Boolean} quiet Don't actually load audio data (used on the server-side rendering)
      *
      * @return {jQuery.Deferred} object
      */
-    loadSongFromDesign : function(design, audio, callback, prelisten) {
+    loadSongFromDesign : function(design, audio, prelisten, quiet) {
 
         // Data URLs we need to load
         var urls = {};
@@ -209,16 +222,17 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
         if(prelisten) {
             urls.song = this.convertToPrelistenURL(urls.song);
-        } else {
+        } else if(audio) {
 
             //  Check FF / Opera
+            //  need for audio format remapping
             var needOGG = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
             if(needOGG) {
                 urls.song = urls.song.replace(".mp3", ".ogg");
             }
         }
 
-        return this.loadSongDeferred(audio, urls, prelisten);
+        return this.loadSongDeferred(audio, urls, prelisten, quiet);
 
     },
 
