@@ -1,5 +1,6 @@
 /*global define, console, jQuery, document, setTimeout, setInterval, clearInterval */
-define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analysis"], function($, krusovice, analysis) {
+
 "use strict";
 
 /**
@@ -158,8 +159,18 @@ krusovice.Show.prototype = {
 
     /**
      * Rhythm analysis used for post-processing effects
+     *
+     * @type krusovice.RhythmAnalysis
+     *
      */
-    analysis : null,
+    rhythmAnalysis : null,
+
+    /**
+     * Loudness data manipular
+     *
+     * @type {krusovice.LoudnessAnalysis}
+     */
+    levelAnalysis : null,
 
     events :[
         /**
@@ -574,10 +585,16 @@ krusovice.Show.prototype = {
      */
     prepareEffects : function() {
         if(this.rhythmData) {
-            this.analysis = new krusovice.RhythmAnalysis(this.rhythmData);
-            this.analysis.initBeats();
+            this.rhythmAnalysis = new analysis.RhythmAnalysis(this.rhythmData);
+            this.rhythmAnalysis.initBeats();
         } else {
-            this.analysis = null;
+            this.rhythmAnalysis = null;
+        }
+
+        if(this.levelData) {
+            this.levelAnalysis = new analysis.LoudnessAnalysis(this.levelData);
+        } else {
+            this.levelAnalysis = null;
         }
     },
 
@@ -761,9 +778,8 @@ krusovice.Show.prototype = {
             return;
         }
 
-        //var vu = this.getVUEffectStrength(clock);
-        var vu = 0;
-        this.renderer.postProcessStrength = vu;
+        var vu = this.getLoudness(clock);
+        this.renderer.loudness = vu;
 
         this.renderer.render(this.ctx, clock);
     },
@@ -807,8 +823,11 @@ krusovice.Show.prototype = {
         ctx.save();
         ctx.font = "bold 12px sans-serif";
         var text = "Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync;
-        console.log("Frame label:" + text);
         ctx.fillText(text, 20, 20);
+
+        text = "Loudness:" + this.getLoudness(renderClock);
+        ctx.fillText(text, 20, 40);
+
         ctx.restore();
     },
 
@@ -823,7 +842,9 @@ krusovice.Show.prototype = {
         if(!this.animatedObjects) {
             return;
         }
-        var vu = this.getVUEffectStrength(renderClock);
+
+        var vu = this.getLoudness(renderClock);
+
         this.animatedObjects.forEach(function(obj) {
             var state = obj.animate(renderClock);
             obj.render(vu);
@@ -900,55 +921,17 @@ krusovice.Show.prototype = {
 
 
     /**
-     * Beats / VU sensitive strength for a certain time.
+     * VU sensitive strength for a certain time.
      *
      * We use this value to make photos more lively.
      */
-    getVUEffectStrength : function(clock) {
-        // We don't actual have real VU, so we take beat and calculate a fade off based on it
+    getLoudness : function(clock) {
 
-        // Pulse every second if no music
-        if(!this.rhythmData) {
-            var intClock = Math.floor(clock);
-            return 1 - (clock - intClock);
-        }
-
-        var beat = this.analysis.findBeatAtClock(clock, 0);
-
-        if(!beat) {
-            //console.log("No beat for clock:" + clock);
+        if(!this.levelAnalysis) {
             return 0;
         }
 
-        // How fast beats fall off (seconds)
-        //console.log("Got rhytm data");
-        //console.log(this.rhythmData);
-        var tempo;
-        try {
-            tempo = this.rhythmData.tempo.value;
-        } catch(e) {
-            console.error("Song data lacked tempo");
-            console.error(this.rhythmData);
-            console.error(e);
-            tempo = 120;
-        }
-
-        // How fast the beat will fade (seconds)
-        var beatCutOff = 60 / tempo;
-        var beatStart = beat.start / 1000;
-        var f, v;
-
-        if(beat) {
-            f = (clock - beatStart) / beatCutOff;
-
-            //v = f * beat.confidence / this.analysis.maxBeatConfidence;
-            //console.log(beat);
-            //console.log(f);
-            return 1 - f;
-            // return f * beat.confidence / this.analysis.maxBeatConfidence;
-        }
-
-        return 0;
+        return this.levelAnalysis.getLevel(clock);
     },
 
     /**

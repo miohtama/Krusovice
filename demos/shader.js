@@ -93,7 +93,6 @@ function(krusovice, quickplay, music, postprocessing) {
 
         customizeRenderer : function() {
 
-
             krusovice.Show.prototype.prepareRenderer = function() {
 
                 console.log("Custom prepareRenderer()");
@@ -136,7 +135,16 @@ function(krusovice, quickplay, music, postprocessing) {
 
             music.Registry.useLevelData = true;
 
-            quickplay.play("show", project, initOptions);
+            // Display HUD debug data on the image
+            var showOptions = {
+                renderFlags : {
+                    frameLabel : true,
+                    background : true,
+                    scene : true
+                }
+            };
+
+            var show = quickplay.play("show", project, initOptions, showOptions);
 
         },
 

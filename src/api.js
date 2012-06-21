@@ -18,7 +18,7 @@ define("krusovice/api", [
     "krusovice/editdata",
     "krusovice/project",
     "krusovice/loader",
-    "krusovice/rhythmanalysis",
+    "krusovice/analysis",
     "krusovice/timeliner",
     "krusovice/timelinevisualizer",
     "krusovice/show",

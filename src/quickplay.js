@@ -72,7 +72,8 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 elem : elem,
                 webGL : true,
                 background : design.background,
-                rhythmData : audio.rhythmData
+                rhythmData : audio.rhythmData,
+                levelData : audio.levelData
             };
 
             if(!audio.rhythmData) {
