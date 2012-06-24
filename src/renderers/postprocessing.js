@@ -44,6 +44,11 @@ function($, THREE) {
          */
         time : 0,
 
+        /**
+         * 0...1 normalized loudness level for post-processing effects
+         */
+        loudness : 0,
+
         /** All polygons will use special material - mostly used for speed in Stencil tests */
         overrideMaterial : null,
 
@@ -267,12 +272,13 @@ function($, THREE) {
          *
          * @param  {Canvas} frontBuffer Where all the result goes
          */
-        render : function(frontBuffer, time, scene, camera) {
+        render : function(frontBuffer, time, loudness, scene, camera) {
 
             // XXX: Move
             this.scene = scene;
             this.camera = camera;
             this.time = time;
+            this.loudness = loudness;
 
             // color + depth + stencil
             this.renderer.clear(true, true, true);
@@ -291,9 +297,9 @@ function($, THREE) {
 
             var self = this;
 
-            function renderGL(frontBuffer, time) {
+            function renderGL(frontBuffer, time, loudness) {
                 /*jshint validthis:true */
-                self.render(frontBuffer, time, this.scene, this.camera);
+                self.render(frontBuffer, time, loudness, this.scene, this.camera);
             }
 
             krusoviceRenderer.renderGL = renderGL;
@@ -317,6 +323,15 @@ function($, THREE) {
 
             processor.init(this);
             return processor;
+        },
+
+        /**
+         * Copy the contents of a render buffer
+         * @param  {THREE.WebGLRenderTarget} readBuffer
+         * @param  {THREE.WebGLRenderTarget} writeBuffer
+         */
+        copyBuffer : function(readBuffer, writeBuffer) {
+
         }
     };
 
@@ -379,13 +394,21 @@ function($, THREE) {
 
             this.updateUniforms(readBuffer, writeBuffer);
 
-            this.postprocessor.quad2d.material = this.material;
+            this.setMaterial(this.material);
 
             if(writeBuffer) {
                 this.renderer.render(postprocessor.scene2d, postprocessor.camera2d, writeBuffer);
             } else {
                 this.renderer.render(postprocessor.scene2d, postprocessor.camera2d);
             }
+        },
+
+        /**
+         * Set used special render material
+         * @param {[type]} material [description]
+         */
+        setMaterial : function(material) {
+            this.postprocessor.quad2d.material = this.material;
         },
 
         /**
@@ -422,6 +445,11 @@ function($, THREE) {
 
     };
 
+    /**
+     * Render a 2D fragment shader, reading one buffer and writing another.
+     *
+     * @param {Object} shader One of THREE.ShaderExtras shaders
+     */
     function ShaderPass(shader) {
 
         if(shader) {
@@ -439,21 +467,110 @@ function($, THREE) {
     });
 
 
+    /**
+     * Create a Bloom filter pass.
+     *
+     * Mostly copy-paste code from Three.js's BloomPass.js
+     *
+     * @param {[type]} strength   [description]
+     * @param {[type]} kernelSize [description]
+     * @param {[type]} sigma      [description]
+     * @param {[type]} resolution [description]
+     */
+    function BloomPass(strength, kernelSize, sigma, resolution) {
+
+        var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
+
+        strength = (strength !== undefined) ? strength : 1;
+        kernelSize = (kernelSize !== undefined) ? kernelSize : 25;
+        sigma = (sigma !== undefined) ? sigma : 4.0;
+        // XXX: Use higher resolution in HD video creation
+        resolution = (resolution !== resolution) ? resolution : 256;
+
+        this.shader = THREE.ShaderExtras.convolution;
+
+        this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+        this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+
+        // Prepare additive blending stage
+        var screenShader = THREE.ShaderExtras.screen;
+        this.screenUniforms = THREE.UniformsUtils.clone( screenShader.uniforms );
+        this.screenUniforms.opacity.value = strength;
+        this.materialScreen = new THREE.ShaderMaterial( {
+                uniforms: this.screenUniforms,
+                vertexShader: screenShader.vertexShader,
+                fragmentShader: screenShader.fragmentShader,
+                blending: THREE.AdditiveBlending,
+                transparent: true
+        });
+
+        // convolution material
+
+        var convolutionShader = THREE.ShaderExtras.convolution;
+
+        this.convolutionUniforms = THREE.UniformsUtils.clone(convolutionShader.uniforms);
+
+        this.convolutionUniforms.uImageIncrement.value = THREE.BloomPass.blurx;
+        this.convolutionUniforms.cKernel.value = THREE.ShaderExtras.buildKernel(sigma);
+
+        this.materialConvolution = new THREE.ShaderMaterial( {
+            uniforms: this.convolutionUniforms,
+            vertexShader:   "#define KERNEL_SIZE " + kernelSize + ".0\n" + convolutionShader.vertexShader,
+            fragmentShader: "#define KERNEL_SIZE " + kernelSize + "\n"   + convolutionShader.fragmentShader
+        });
+
+        this.blurX = new THREE.Vector2( 0.001953125, 0.0 );
+        this.blurY = new THREE.Vector2( 0.0, 0.001953125 );
+    }
+
+    $.extend(BloomPass.prototype, ShaderPass.prototype, {
+
+        prepare : function() {
+            this.prepare2dEffect(this.shader);
+        },
+
+        // Render pass 1 to renderTargetX
+        applyPass1 : function(readBuffer) {
+            this.convolutionUniforms.tDiffuse.texture = readBuffer;
+            this.convolutionUniforms.uImageIncrement.value = this.blurX;
+            this.setMaterial(this.materialConvolution);
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetX);
+        },
+
+        // Render pass 2 to renderTargetY
+        applyPass2 : function() {
+            // Render quad with blured scene into texture (convolution pass 2)
+            this.convolutionUniforms.tDiffuse.texture = this.renderTargetX;
+            this.convolutionUniforms.uImageIncrement.value = this.blurY;
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetY);
+        },
+
+        finalize : function(writeBuffer) {
+            // Render original scene with superimposed blur to texture
+            // (additive blending
+            this.setMaterial(this.materialScreen);
+            this.screenUniforms.tDiffuse.texture = this.renderTargetY;
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
+        }
+
+    });
+
     function setupPipeline(renderer) {
 
-        var postprocessor = new PostProcessor({ bufferCount : 2});
+        var postprocessor = new PostProcessor({ bufferCount : 3});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
         var sepia = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.sepia);
         var film = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.film);
         var copy = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.screen);
         var fxaa = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.fxaa);
+        var bloom = postprocessor.createPass(BloomPass);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
         function pipeline(postprocessor, buffers) {
 
-            if(buffers.length != 2) {
+            if(buffers.length != 3) {
                 throw new Error("Prior buffer allocation failed");
             }
 
@@ -462,15 +579,20 @@ function($, THREE) {
             // Clean up both buffers for the start
             renderer.clearTarget(buffers[0]);
             renderer.clearTarget(buffers[1]);
-
-            // Draw frame as is
-            postprocessor.setMaskMode("normal");
-            //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
-            postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
+            renderer.clearTarget(buffers[2]);
 
             // Draw photo as is to the buffer
             postprocessor.setMaskMode("normal");
             postprocessor.renderWorld(buffers[0], { photo : true });
+
+            // Do Bloom
+            bloom.applyPass1(buffers[0]);
+            bloom.applyPass2();
+
+            // Draw frame without image part
+            postprocessor.setMaskMode("normal");
+            //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
+            postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
             // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
@@ -493,6 +615,9 @@ function($, THREE) {
             film.setUniform("sIntensity", 0.3);
             film.setUniform("nIntensity", 0.3);
             film.render(buffers[1], buffers[0]);
+
+            // Overlay bloom image
+            bloom.finalize(buffers[0]);
 
             // Mask the target buffer for photo area
             // postprocessor.setMaskMode("fill");

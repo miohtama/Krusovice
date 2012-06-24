@@ -778,10 +778,7 @@ krusovice.Show.prototype = {
             return;
         }
 
-        var vu = this.getLoudness(clock);
-        this.renderer.loudness = vu;
-
-        this.renderer.render(this.ctx, clock);
+        this.renderer.render(this.ctx, clock, this.getLoudness(clock));
     },
 
     /**

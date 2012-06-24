@@ -545,11 +545,11 @@ krusovice.renderers.Three.prototype = {
         this.effectBloom = new THREE.BloomPass(this.postProcessingStrength);
     },
 
-    render : function(frontBuffer, time) {
+    render : function(frontBuffer, time, loudness) {
         if(this.webGL) {
-            this.renderGL(frontBuffer, time);
+            this.renderGL(frontBuffer, time, loudness);
         } else {
-            this.renderCanvas(frontBuffer, time);
+            throw new Error("renderCanvas() no longer supported");
         }
     },
 
