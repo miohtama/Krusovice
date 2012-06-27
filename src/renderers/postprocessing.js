@@ -408,7 +408,7 @@ function($, THREE) {
          * @param {[type]} material [description]
          */
         setMaterial : function(material) {
-            this.postprocessor.quad2d.material = this.material;
+            this.postprocessor.quad2d.material = material;
         },
 
         /**
@@ -487,8 +487,6 @@ function($, THREE) {
         // XXX: Use higher resolution in HD video creation
         resolution = (resolution !== resolution) ? resolution : 256;
 
-        this.shader = THREE.ShaderExtras.convolution;
-
         this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
         this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
 
@@ -526,7 +524,6 @@ function($, THREE) {
     $.extend(BloomPass.prototype, ShaderPass.prototype, {
 
         prepare : function() {
-            this.prepare2dEffect(this.shader);
         },
 
         // Render pass 1 to renderTargetX
@@ -540,6 +537,7 @@ function($, THREE) {
         // Render pass 2 to renderTargetY
         applyPass2 : function() {
             // Render quad with blured scene into texture (convolution pass 2)
+            this.setMaterial(this.materialConvolution);
             this.convolutionUniforms.tDiffuse.texture = this.renderTargetX;
             this.convolutionUniforms.uImageIncrement.value = this.blurY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetY);
