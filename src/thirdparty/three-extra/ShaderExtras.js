@@ -106,6 +106,7 @@ THREE.ShaderExtras = {
                         "void main() {",
 
                                 "vUv = uv - ( ( KERNEL_SIZE - 1.0 ) / 2.0 ) * uImageIncrement;",
+                                // "vUv = vec2( uv.x, 1.0 - uv.y );",
                                 "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
 
                         "}"

@@ -482,13 +482,22 @@ function($, THREE) {
         var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
 
         strength = (strength !== undefined) ? strength : 1;
+
+        // Gaussian blur strength
         kernelSize = (kernelSize !== undefined) ? kernelSize : 25;
-        sigma = (sigma !== undefined) ? sigma : 4.0;
+
+        // How much highlights get highlighted
+        sigma = (sigma !== undefined) ? sigma : 1;
+
         // XXX: Use higher resolution in HD video creation
         resolution = (resolution !== resolution) ? resolution : 256;
 
-        this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
-        this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+        //this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+        //this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+
+        this.renderTargetX = new THREE.WebGLRenderTarget(720, 405, pars);
+        this.renderTargetY = new THREE.WebGLRenderTarget(720, 405, pars);
+
 
         // Prepare additive blending stage
         var screenShader = THREE.ShaderExtras.screen;
@@ -549,6 +558,30 @@ function($, THREE) {
             this.setMaterial(this.materialScreen);
             this.screenUniforms.tDiffuse.texture = this.renderTargetY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
+        },
+
+        // Check buffer aligment
+        testRender : function(readBuffer, writeBuffer) {
+            this.setMaterial(this.materialScreen);
+            this.screenUniforms.tDiffuse.texture = readBuffer;
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
+        },
+
+        testRender2 : function(readBuffer, writeBuffer) {
+
+            this.convolutionUniforms.tDiffuse.texture = readBuffer;
+            this.convolutionUniforms.uImageIncrement.value = new THREE.Vector2(0.003953125, 0.0);
+            this.setMaterial(this.materialConvolution);
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetX);
+
+            this.setMaterial(this.materialConvolution);
+            this.convolutionUniforms.tDiffuse.texture = this.renderTargetX;
+            this.convolutionUniforms.uImageIncrement.value = this.blurY;
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetY);
+
+            this.setMaterial(this.materialScreen);
+            this.screenUniforms.tDiffuse.texture = this.renderTargetY;
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
         }
 
     });
@@ -590,7 +623,7 @@ function($, THREE) {
             // Draw frame without image part
             postprocessor.setMaskMode("normal");
             //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
-            postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
+            // postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
             // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
@@ -605,25 +638,30 @@ function($, THREE) {
             postprocessor.setMaskMode("clip");
 
             // Run sepia filter against masked area buffer 0 -> buffer 1
-            sepia.setUniform("amount", 0.5);
-            sepia.render(buffers[0], buffers[1]);
+            // sepia.setUniform("amount", 0.5);
+            // sepia.render(buffers[0], buffers[1]);
 
             // Run film filter against masked area buffer 1 -> buffer 0
-            film.setUniform("grayscale", 0);
-            film.setUniform("sIntensity", 0.3);
-            film.setUniform("nIntensity", 0.3);
-            film.render(buffers[1], buffers[0]);
+            // film.setUniform("grayscale", 0);
+            // film.setUniform("sIntensity", 0.3);
+            // film.setUniform("nIntensity", 0.3);
+            //film.render(buffers[1], buffers[0]);
+
+            postprocessor.setMaskMode("normal");
+
+
+            postprocessor.renderWorld(buffers[1], {photo: true});
 
             // Overlay bloom image
-            bloom.finalize(buffers[0]);
+            // bloom.finalize(buffers[1]);
+            bloom.testRender2(buffers[0], buffers[1]);
 
             // Mask the target buffer for photo area
             // postprocessor.setMaskMode("fill");
             // postprocessor.renderWorld(buffers[1], { photo : true });
 
             // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
-            postprocessor.setMaskMode("normal");
-            fxaa.render(buffers[0], null);
+            fxaa.render(buffers[1], null);
 
         }
 
