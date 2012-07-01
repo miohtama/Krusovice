@@ -114,6 +114,8 @@ function(krusovice, quickplay, music, postprocessing) {
 
                 postprocessing.setupPipeline(this.renderer);
 
+                $(document.body).append(this.renderer.renderer.domElement);
+
             };
 
         },

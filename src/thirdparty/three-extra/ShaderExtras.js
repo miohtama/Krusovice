@@ -805,7 +805,7 @@ THREE.ShaderExtras = {
 
                 "void main() {",
 
-                        "vec4 color = vec4( 0.0 );",
+                        "vec4 color = vec4( 0.0, 0.0, 0.0, 255.0);",
 
                         "float total = 0.0;",
 
@@ -816,16 +816,157 @@ THREE.ShaderExtras = {
                         "for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
 
                                 "float percent = ( t + offset - 0.5 ) / ITERATIONS;",
-                                "float weight = 1.0 - abs( percent );",
-
-                                "color += texture2D( texture, vUv + delta * percent ) * weight;",
+                                //"float weight = 1.0 - pow(abs(percent), 6.0);",
+                                "float weight = 1.0 - abs(percent);",
+                                "vec4 sample = texture2D( texture, vUv + delta * percent);",
+                                // "weight = (sample.a)/255.0;",
+                                "color.rgb += sample.rgb * weight;",
                                 "total += weight;",
-
                         "}",
-
+                        // "total /= 20.0;",
                         "gl_FragColor = color / total;",
+                        //"gl_FragColor.rgb /= gl_FragColor.a + 0.00001;",
+                "}",
+
+                ].join("\n")
+
+        },
+
+
+        'mooBlur': {
+
+
+                uniforms : {
+
+                        "texture":      { type: "t", value: 0, texture: null },
+                        "delta":        { type: "v2", value:new THREE.Vector2( 1, 1 )  }
+
+                },
+
+                vertexShader: [
+
+                        "varying vec2 vUv;",
+
+                        "void main() {",
+
+                                "vUv = vec2( uv.x, 1.0 - uv.y );",
+                                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+                        "}"
+
+                ].join("\n"),
+
+                fragmentShader: [
+
+                "#define ITERATIONS 10.0",
+
+                "uniform sampler2D texture;",
+                "uniform vec2 delta;",
+
+                "varying vec2 vUv;",
+
+                "float random( vec3 scale, float seed ) {",
+
+                        // use the fragment position for a different seed per-pixel
+
+                        "return fract( sin( dot( gl_FragCoord.xyz + seed, scale ) ) * 43758.5453 + seed );",
 
                 "}",
+
+                "void main() {",
+
+                        "vec4 color = vec4( 0.0, 0.0, 0.0, 0.0);",
+
+                        "float total = 0.0;",
+
+                        // Minimum distance to the nearest opaque pixel
+                        "float distance = 999.0;",
+
+                        // randomize the lookup values to hide the fixed number of samples
+
+                        "float offset = random( vec3( 12.9898, 78.233, 151.7182 ), 0.0 );",
+
+                        "for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
+                                "float percent = ( t + offset - 0.5 ) / ITERATIONS;",
+                                "vec4 sample = texture2D(texture, vUv + delta * percent);",
+                                "if(sample.a > 0.9) {",
+                                "     distance = min(abs(percent), distance);",
+                                "}",
+                        "}",
+
+                        "distance = 1.0 - distance;",
+
+                        "for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
+                                "float percent = ( t + offset - 0.5 ) / ITERATIONS;",
+                                "float weight = 1.0 - abs(percent);",
+                                "vec4 sample = texture2D( texture, vUv + delta * percent);",
+                                "color += sample * weight;",
+                                "total += weight;",
+                        "}",
+
+                        // "total /= 20.0;",
+                        //"gl_FragColor = vec4(1.0, 0.0, 1.0, 0.5);",
+                        // "gl_FragColor.a = 255.0;",
+                        "gl_FragColor = color / total;",
+                        //"gl_FragColor.rgb /= gl_FragColor.a + 0.00001;",
+                        "gl_FragColor.a = distance;",
+                        //"gl_FragColor = vec4(distance, distance, distance, 1.0);",
+                "}"
+
+                ].join("\n")
+
+        },
+
+        'mooBlur2': {
+
+
+                uniforms : {
+
+                        "texture":      { type: "t", value: 0, texture: null },
+                        "delta":        { type: "v2", value:new THREE.Vector2( 1, 1 )  }
+
+                },
+
+                vertexShader: [
+
+                        "varying vec2 vUv;",
+
+                        "void main() {",
+
+                                "vUv = vec2( uv.x, 1.0 - uv.y );",
+                                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+                        "}"
+
+                ].join("\n"),
+
+                fragmentShader: [
+
+                "#define ITERATIONS 10.0",
+
+                "uniform sampler2D texture;",
+                "uniform vec2 delta;",
+
+                "varying vec2 vUv;",
+
+                "float random( vec3 scale, float seed ) {",
+
+                        // use the fragment position for a different seed per-pixel
+
+                        "return fract( sin( dot( gl_FragCoord.xyz + seed, scale ) ) * 43758.5453 + seed );",
+
+                "}",
+
+                "void main() {",
+
+                        // texture is the buffer I rendered before
+                        "vec4 sample = texture2D(texture, vUv);",
+                        // Everything goes to white (1.0) when trying to visualize the
+                        // alpha channel of previously rendered WebGLTarget.
+                        // It should get value 0.3 - slight gray
+                        "gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);",
+                        //"gl_FragColor.a = 0.5;",
+                "}"
 
                 ].join("\n")
 

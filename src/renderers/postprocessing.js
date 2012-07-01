@@ -68,6 +68,7 @@ function($, THREE) {
             }
 
             this.renderer = renderer;
+            this.renderer.autoClear = true;
             this.width = width;
             this.height = height;
             this.passes = [];
@@ -112,7 +113,7 @@ function($, THREE) {
             this.pipeline = pipeline;
 
             var self = this,
-                rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat};
+                rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat};
 
             for(var i=0; i<this.bufferCount; i++) {
                 this.buffers[i] = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
@@ -148,14 +149,22 @@ function($, THREE) {
 
                 context.depthMask(false);
                 context.enable(context.STENCIL_TEST);
-                context.clearStencil(mode == "fill" ? 0 : 1);
+                //context.clearStencil(mode == "fill" ? 0 : 1);
 
                 //context.stencilMask(0xffFFffFF);
 
                 context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE); // fail, zfail, zpass
-                context.stencilFunc(context.ALWAYS, 1, 0xffFFffFF);
 
-                this.overrideMaterial = new THREE.MeshBasicMaterial({ color : mode == "fill" ? 0xff00ff : 0x00ff00 });
+                if(mode == "fill") {
+                    context.stencilFunc(context.ALWAYS, 1, 0xffFFffFF);
+                } else {
+                    context.stencilFunc(context.ALWAYS, 0, 0xffFFffFF);
+                }
+                this.overrideMaterial = new THREE.MeshBasicMaterial({ color : mode == "fill" ? 0xff0000 : 0x00ff00 });
+
+                if(this.stencilDebug) {
+                    this.overrideMaterial.opacity = 0.5;
+                }
 
             }  else if(mode == "clip") {
                 // Only draw the effect on the pixels stenciled before
@@ -213,13 +222,17 @@ function($, THREE) {
          *
          * @oaram {Object} layers { frame : true, photo : true }
          */
-        renderWorld : function(renderTarget, layers) {
+        renderWorld : function(renderTarget, layers, scale) {
 
             //scene.overrideMaterial = this.overrideMaterial;
 
             // Prepare what is visible in this pass
             //
             var scene = this.scene, camera = this.camera;
+
+            if(!scale) {
+                scale = 1.0;
+            }
 
             if(!scene) {
                 throw new Error("Bad scene");
@@ -229,6 +242,7 @@ function($, THREE) {
                 throw new Error("Bad camera");
             }
 
+            // Override rendering properties of world objects
             THREE.SceneUtils.traverseHierarchy(scene, function(object) {
 
                 if(!(object instanceof THREE.Mesh)) {
@@ -251,6 +265,8 @@ function($, THREE) {
                     //console.log("invisible:" + hint);
                     object.visible = false;
                 }
+
+                object.scale = new THREE.Vector3(scale, scale, scale);
             });
 
             scene.overrideMaterial = this.overrideMaterial;
@@ -281,12 +297,12 @@ function($, THREE) {
             this.loudness = loudness;
 
             // color + depth + stencil
-            this.renderer.clear(true, true, true);
+            // this.renderer.clear(true, true, true);
 
             this.pipeline(this, this.buffers);
 
             // Dump WebGL canvas on 2D canvas
-            frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
+            // frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         },
 
         /**
@@ -350,6 +366,8 @@ function($, THREE) {
 
         uniforms : null,
 
+        blending : null,
+
         /** THREE.js material used on 2D scene quad surface */
         material : null,
 
@@ -376,10 +394,15 @@ function($, THREE) {
             }
 
             this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+
+            // var transparent = this.blending ? true : false;
+
             this.material = new THREE.ShaderMaterial( {
                 uniforms: this.uniforms,
                 vertexShader: shader.vertexShader,
-                fragmentShader: shader.fragmentShader
+                fragmentShader: shader.fragmentShader,
+                blending : this.blending,
+                transparent : false
             });
         },
 
@@ -421,6 +444,9 @@ function($, THREE) {
             //
             if(this.material.uniforms.tDiffuse) {
                 this.material.uniforms.tDiffuse.texture = readBuffer;
+            } else if(this.material.uniforms.texture) {
+                // triangleBlur
+                this.material.uniforms.texture.texture = readBuffer;
             }
 
             if(this.material.uniforms.time !== undefined) {
@@ -472,12 +498,14 @@ function($, THREE) {
      *
      * Mostly copy-paste code from Three.js's BloomPass.js
      *
+     * https://github.com/mrdoob/three.js/issues/2128
+     *
      * @param {[type]} strength   [description]
      * @param {[type]} kernelSize [description]
      * @param {[type]} sigma      [description]
      * @param {[type]} resolution [description]
      */
-    function BloomPass(strength, kernelSize, sigma, resolution) {
+    function BloomPass(strength, kernelSize, sigma, resolution, width, height) {
 
         var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
 
@@ -492,11 +520,11 @@ function($, THREE) {
         // XXX: Use higher resolution in HD video creation
         resolution = (resolution !== resolution) ? resolution : 256;
 
-        //this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
-        //this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+        this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars);
+        this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars);
 
-        this.renderTargetX = new THREE.WebGLRenderTarget(720, 405, pars);
-        this.renderTargetY = new THREE.WebGLRenderTarget(720, 405, pars);
+        // this.renderTargetX = new THREE.WebGLRenderTarget(720, 405, pars);
+        // this.renderTargetY = new THREE.WebGLRenderTarget(720, 405, pars);
 
 
         // Prepare additive blending stage
@@ -526,8 +554,8 @@ function($, THREE) {
             fragmentShader: "#define KERNEL_SIZE " + kernelSize + "\n"   + convolutionShader.fragmentShader
         });
 
-        this.blurX = new THREE.Vector2( 0.001953125, 0.0 );
-        this.blurY = new THREE.Vector2( 0.0, 0.001953125 );
+        this.blurX = new THREE.Vector2( 1/256, 0.0 );
+        this.blurY = new THREE.Vector2( 0.0, 1/256 );
     }
 
     $.extend(BloomPass.prototype, ShaderPass.prototype, {
@@ -570,7 +598,7 @@ function($, THREE) {
         testRender2 : function(readBuffer, writeBuffer) {
 
             this.convolutionUniforms.tDiffuse.texture = readBuffer;
-            this.convolutionUniforms.uImageIncrement.value = new THREE.Vector2(0.003953125, 0.0);
+            this.convolutionUniforms.uImageIncrement.value = this.blurX;
             this.setMaterial(this.materialConvolution);
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetX);
 
@@ -586,6 +614,44 @@ function($, THREE) {
 
     });
 
+    /**
+     * Render triangle blur in x and y directions on the image
+     */
+    function BlurPass() {
+        this.shader = THREE.ShaderExtras.triangleBlur;
+        this.blending = null;
+    }
+
+    $.extend(BlurPass.prototype, ShaderPass.prototype, {
+
+        render : function (readBuffer, immediateBuffer, writeBuffer, strength) {
+
+
+            var postprocessor = this.postprocessor;
+
+            var blurAmountX = strength / postprocessor.width;
+            var blurAmountY = strength / postprocessor.height;
+
+            // Apply X blur
+            this.setUniform("delta", new THREE.Vector2(blurAmountX, 0));
+            this.setUniform("texture", readBuffer);
+            this.render2dEffect(readBuffer, immediateBuffer);
+
+            // Apply Y blur
+            this.setUniform("delta", new THREE.Vector2(0, blurAmountY));
+            this.setUniform("texture", immediateBuffer);
+            this.render2dEffect(immediateBuffer, writeBuffer);
+            //
+            //
+            //this.render2dEffect(readBuffer, null);
+
+            //this.setMaterial(this.material);
+            //this.renderer.render(postprocessor.scene2d, postprocessor.camera2d, writeBuffer);
+
+        }
+    });
+
+
     function setupPipeline(renderer) {
 
         var postprocessor = new PostProcessor({ bufferCount : 3});
@@ -594,49 +660,68 @@ function($, THREE) {
         var sepia = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.sepia);
         var film = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.film);
         var copy = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.screen);
+        var blur = postprocessor.createPass(BlurPass);
         var fxaa = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.fxaa);
         var bloom = postprocessor.createPass(BloomPass);
+        var fill = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.mooBlur2);
+        fill.blending = THREE.AdditiveBlending;
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
+        // http://localhost:8000/demos/shader.html
         function pipeline(postprocessor, buffers) {
 
             if(buffers.length != 3) {
                 throw new Error("Prior buffer allocation failed");
             }
 
+            function clear(buf) {
+                // For debugging purposes we set clear color alpha
+                renderer.setClearColorHex(0xff00ff, 1.0);
+                renderer.clearTarget(buf, true, true, true);
+            }
+
             var renderer = postprocessor.renderer;
 
             // Clean up both buffers for the start
-            renderer.clearTarget(buffers[0]);
-            renderer.clearTarget(buffers[1]);
-            renderer.clearTarget(buffers[2]);
+            //
+            //
+            clear(buffers[0]);
+            clear(buffers[1]);
+            clear(buffers[2]);
+
+            //renderer.setClearColorHex(0x00ff00, 1.0);
+            //renderer.clear(true, true, true);
+
+
+            // Don't do Z-index test for anything further
+            var context = postprocessor.renderer.context;
+            context.depthFunc(context.ALWAYS);
+            context.depthMask(false);
+
 
             // Draw photo as is to the buffer
             postprocessor.setMaskMode("normal");
-            postprocessor.renderWorld(buffers[0], { photo : true });
+            //postprocessor.renderWorld(buffers[0], { photo : true }, 1.2);
 
             // Do Bloom
-            bloom.applyPass1(buffers[0]);
-            bloom.applyPass2();
+            //bloom.applyPass1(buffers[0]);
+            //bloom.applyPass2();
 
             // Draw frame without image part
             postprocessor.setMaskMode("normal");
             //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
             // postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
-            // Don't do Z-index test for anything further
-            var context = postprocessor.renderer.context;
-            context.depthFunc(context.ALWAYS);
 
             // Create target mask to operate only on photo content, not its frame
+            /*
             postprocessor.setMaskMode("fill");
             postprocessor.renderWorld(buffers[0], { photo : true });
             postprocessor.renderWorld(buffers[1], { photo : true });
 
             // Operate 2D filters only on the area masked by clip
             postprocessor.setMaskMode("clip");
-
             // Run sepia filter against masked area buffer 0 -> buffer 1
             // sepia.setUniform("amount", 0.5);
             // sepia.render(buffers[0], buffers[1]);
@@ -645,23 +730,46 @@ function($, THREE) {
             // film.setUniform("grayscale", 0);
             // film.setUniform("sIntensity", 0.3);
             // film.setUniform("nIntensity", 0.3);
-            //film.render(buffers[1], buffers[0]);
+            // film.render(buffers[1], buffers[0]);
 
             postprocessor.setMaskMode("normal");
-
-
-            postprocessor.renderWorld(buffers[1], {photo: true});
-
+             */
             // Overlay bloom image
             // bloom.finalize(buffers[1]);
-            bloom.testRender2(buffers[0], buffers[1]);
+            // postprocessor.renderWorld(buffers[2], {photo: false, frame : true});
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.2);
+
+            postprocessor.stencilDebug = false;
+            context.clearStencil(1);
+            postprocessor.setMaskMode("fill");
+            postprocessor.renderWorld(buffers[0], { photo : true }, 1.1);
+            postprocessor.renderWorld(buffers[1], { photo : true }, 1.1);
+            postprocessor.renderWorld(buffers[2], { photo : true }, 1.1);
+
+
+            //renderer.clearTarget(buffers[0], false, true, true);
+            postprocessor.setMaskMode("negative-fill");
+            postprocessor.renderWorld(buffers[0], { photo : true }, 1.0);
+            postprocessor.renderWorld(buffers[1], { photo : true });
+            postprocessor.renderWorld(buffers[2], { photo : true });
+            postprocessor.setMaskMode("clip");
+
+            //fill.render(buffers[0], buffers[1]);
+            blur.render(buffers[0], buffers[1], buffers[2], 30);
+
+            //postprocessor.setMaskMode("normal");
+            //blur.render(buffers[0], buffers[1]);
 
             // Mask the target buffer for photo area
             // postprocessor.setMaskMode("fill");
             // postprocessor.renderWorld(buffers[1], { photo : true });
 
             // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
+            postprocessor.setMaskMode("normal");
+
+            postprocessor.renderWorld(buffers[1], {photo: true, frame : false});
             fxaa.render(buffers[1], null);
+            // fxaa.render(buffers[0], null);
 
         }
 

@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <title>WebGL Render to alpha channel test</title>
+
+  <style>
+      * { margin: 0; padding: 0; }
+    table { margin: 0 auto; }
+    thead th { text-align: center; }
+  </style>
+
+  <script id="vertex_shader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    void main( void ){
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }
+  </script>
+
+  <script id="fragment_shader_alpha_mask" type="x-shader/x-fragment">
+    void main( void ){
+      gl_FragColor = vec4( 1.0, 0.0, 1.0, 1.0 ); // *** foreground ***
+    }
+  </script>
+
+  <script id="fragment_shader_render_texture" type="x-shader/x-fragment">
+    uniform sampler2D tex;
+    varying vec2 vUv;
+
+    void main( void ){
+        gl_FragColor = texture2D( tex, vUv );
+    }
+  </script>
+
+  <script id="fragment_shader_render_alpha_channel" type="x-shader/x-fragment">
+    uniform sampler2D tex;
+    varying vec2 vUv;
+
+    void main( void ){
+        vec4 color = texture2D( tex, vUv );
+
+        gl_FragColor = vec4( color.a, color.a, color.a, 1.0 );
+    }
+  </script>
+
+  <script src="../src/thirdparty/require.js"></script>
+  <script type="text/javascript">
+
+            require.config({
+                paths : {
+                    krusovice : "../src"
+                }
+            });
+  </script>
+  <script src="test.js"></script>
+
+</head>
+<body>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Texture</th>
+        <th>Alpha channel</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="container" colspan="2"></td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
