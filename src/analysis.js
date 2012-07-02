@@ -267,7 +267,7 @@ $.extend(LoudnessAnalysis.prototype, {
        var triplet = this.data.peaks[index];
 
        // decay
-       return triplet[1];
+       return triplet[0];
    }
 
 });

@@ -465,6 +465,12 @@ function($, THREE) {
             this.material.uniforms[name].value = value;
         },
 
+
+        setTexture : function(name, tex) {
+            this.material.uniforms[name].texture = tex;
+        },
+
+
         render : function(source, target) {
             this.render2dEffect(source, target);
         }
@@ -619,7 +625,6 @@ function($, THREE) {
      */
     function BlurPass() {
         this.shader = THREE.ShaderExtras.triangleBlur;
-        this.blending = null;
     }
 
     $.extend(BlurPass.prototype, ShaderPass.prototype, {
@@ -628,6 +633,13 @@ function($, THREE) {
 
 
             var postprocessor = this.postprocessor;
+
+
+            var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
+
+            strength = strength * capped;
+
+            console.log(strength);
 
             var blurAmountX = strength / postprocessor.width;
             var blurAmountY = strength / postprocessor.height;
@@ -651,6 +663,21 @@ function($, THREE) {
         }
     });
 
+    function BlenderPass() {
+        this.shader = THREE.ShaderExtras.mooBlend;
+    }
+
+    $.extend(BlenderPass.prototype, ShaderPass.prototype, {
+
+        render : function (tex1, tex2, writeBuffer) {
+
+            this.setMaterial(this.material);
+            this.setTexture("tDiffuse1", tex1);
+            this.setTexture("tDiffuse2", tex2);
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
+        }
+    });
+
 
     function setupPipeline(renderer) {
 
@@ -664,6 +691,8 @@ function($, THREE) {
         var fxaa = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.fxaa);
         var bloom = postprocessor.createPass(BloomPass);
         var fill = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.mooBlur2);
+        var blend = postprocessor.createPass(BlenderPass);
+
         fill.blending = THREE.AdditiveBlending;
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
@@ -677,7 +706,7 @@ function($, THREE) {
 
             function clear(buf) {
                 // For debugging purposes we set clear color alpha
-                renderer.setClearColorHex(0xff00ff, 1.0);
+                renderer.setClearColorHex(0xff00ff, 0.0);
                 renderer.clearTarget(buf, true, true, true);
             }
 
@@ -737,25 +766,25 @@ function($, THREE) {
             // Overlay bloom image
             // bloom.finalize(buffers[1]);
             // postprocessor.renderWorld(buffers[2], {photo: false, frame : true});
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.2);
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.05);
 
             postprocessor.stencilDebug = false;
             context.clearStencil(1);
             postprocessor.setMaskMode("fill");
-            postprocessor.renderWorld(buffers[0], { photo : true }, 1.1);
-            postprocessor.renderWorld(buffers[1], { photo : true }, 1.1);
-            postprocessor.renderWorld(buffers[2], { photo : true }, 1.1);
+            postprocessor.renderWorld(buffers[0], { photo : true }, 1.025);
+            postprocessor.renderWorld(buffers[1], { photo : true }, 1.025);
+            postprocessor.renderWorld(buffers[2], { photo : true }, 1.025);
 
 
             //renderer.clearTarget(buffers[0], false, true, true);
             postprocessor.setMaskMode("negative-fill");
-            postprocessor.renderWorld(buffers[0], { photo : true }, 1.0);
+            postprocessor.renderWorld(buffers[0], { photo : true }, 0.9);
             postprocessor.renderWorld(buffers[1], { photo : true });
             postprocessor.renderWorld(buffers[2], { photo : true });
             postprocessor.setMaskMode("clip");
 
             //fill.render(buffers[0], buffers[1]);
-            blur.render(buffers[0], buffers[1], buffers[2], 30);
+            blur.render(buffers[0], buffers[1], buffers[2], 10);
 
             //postprocessor.setMaskMode("normal");
             //blur.render(buffers[0], buffers[1]);
@@ -767,7 +796,11 @@ function($, THREE) {
             // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
             postprocessor.setMaskMode("normal");
 
-            postprocessor.renderWorld(buffers[1], {photo: true, frame : false});
+            clear(buffers[0]);
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : false});
+
+            blend.render(buffers[0], buffers[2], buffers[1]);
+
             fxaa.render(buffers[1], null);
             // fxaa.render(buffers[0], null);
 

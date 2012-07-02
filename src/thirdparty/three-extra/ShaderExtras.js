@@ -894,7 +894,7 @@ THREE.ShaderExtras = {
                                 "}",
                         "}",
 
-                        "distance = 1.0 - distance;",
+                        "distance = 1.0 - pow(2, 1.0 - distance);",
 
                         "for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
                                 "float percent = ( t + offset - 0.5 ) / ITERATIONS;",
@@ -967,6 +967,59 @@ THREE.ShaderExtras = {
                         "gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);",
                         //"gl_FragColor.a = 0.5;",
                 "}"
+
+                ].join("\n")
+
+        },
+
+
+        'mooBlend': {
+
+                uniforms: {
+
+                        tDiffuse1: { type: "t", value: 0, texture: null },
+                        tDiffuse2: { type: "t", value: 1, texture: null },
+                        mixRatio:  { type: "f", value: 0.3 },
+                        opacity:   { type: "f", value: 1.0 }
+
+                },
+
+                vertexShader: [
+
+                        "varying vec2 vUv;",
+
+                        "void main() {",
+
+                                "vUv = vec2( uv.x, 1.0 - uv.y );",
+                                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+                        "}"
+
+                ].join("\n"),
+
+                fragmentShader: [
+
+                        "uniform float opacity;",
+                        "uniform float mixRatio;",
+
+                        "uniform sampler2D tDiffuse1;",
+                        "uniform sampler2D tDiffuse2;",
+
+                        "varying vec2 vUv;",
+
+                        "void main() {",
+
+                                "vec4 texel1 = texture2D( tDiffuse1, vUv );",
+                                "vec4 texel2 = texture2D( tDiffuse2, vUv );",
+                                "float b = texel2.a;",
+                                "float w1 = 1.0 - b;",
+                                "float w2 = b;",
+                                "float total = w1 + w2;",
+                                "vec4 sum = texel1*w1 + texel2*w2;",
+                                "gl_FragColor = sum;",
+                                "gl_FragColor.a = max(texel1.a, texel2.a);",
+                                "",
+                        "}"
 
                 ].join("\n")
 
