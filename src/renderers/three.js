@@ -569,8 +569,17 @@ krusovice.renderers.Three.prototype = {
 
         this.renderer.render(scene, camera, time);
 
+        //frontBuffer.clear();
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         // blit to actual image output from THREE <canvas> renderer internal buffer
+    },
+
+    /**
+     * Direct access to the renderer <canvas> for providing 2D overlay drawing.
+     *
+     */
+    getCanvas : function() {
+        return this.renderer.domElement;
     },
 
     /**

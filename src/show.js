@@ -76,7 +76,7 @@ krusovice.Show.prototype = {
     /**
      * @cfg {Object} Use WebGL renderer: true, false or "auto"
      */
-    webGL : "auto",
+    webGL : true,
 
     /**
      * @cfg {Boolean} preview
@@ -320,7 +320,6 @@ krusovice.Show.prototype = {
      */
     prepare : function() {
 
-        this.webGL = krusovice.utils.useWebGL(this.webGL);
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();
@@ -448,28 +447,32 @@ krusovice.Show.prototype = {
     },
 
     /**
-     * Create a <canvas> and place it in the parent container
+     * Put renderer <canvas> background element to the show container.
+     *
+     * Also get context handle we use to render 2d stuff.
      */
     prepareCanvas : function() {
 
-        if(!this.canvas) {
-           console.log("Creating show <canvas>");
-            var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
-            this.canvas = $canvas.get(0);
-        }
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         if(!this.ctx) {
             this.ctx = this.canvas.getContext("2d");
         }
 
+        if(!this.ctx) {
+            throw new Error("Could not get 2D context for the canvas");
+        }
+
+        // Use jQuery to place <canvas> to the show container
         if(this.elem !== null) {
             this.elem.find("canvas").remove();
             this.elem.append(this.canvas);
         }
 
-        // XXX: We support currently only one show per page
+        // Provide id for CSS styling
         this.canvas.setAttribute("id", "show-canvas");
-
     },
 
     /**

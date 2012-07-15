@@ -113,6 +113,12 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         // Load <audio> element for song playback
         audio = document.createElement("audio");
         audio.controls = true;
+
+        // Apply audio options
+        if(showOptions.audio) {
+            $.extend(audio, showOptions.audio);
+        }
+
         elem.append(audio);
 
         var startup = new krusovice.Startup(initOptions);

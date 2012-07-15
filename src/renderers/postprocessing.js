@@ -302,7 +302,7 @@ function($, THREE) {
             this.pipeline(this, this.buffers);
 
             // Dump WebGL canvas on 2D canvas
-            // frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
+            frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         },
 
         /**
@@ -631,9 +631,7 @@ function($, THREE) {
 
         render : function (readBuffer, immediateBuffer, writeBuffer, strength) {
 
-
             var postprocessor = this.postprocessor;
-
 
             var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
 
@@ -678,6 +676,30 @@ function($, THREE) {
         }
     });
 
+    function superBlur(postprocessor, buffers, context, blur) {
+        // XXX: Work-in-progress code to test blur on larger arae
+
+        postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.05);
+
+        postprocessor.stencilDebug = false;
+        context.clearStencil(1);
+        postprocessor.setMaskMode("fill");
+        postprocessor.renderWorld(buffers[0], { photo : true }, 1.025);
+        postprocessor.renderWorld(buffers[1], { photo : true }, 1.025);
+        postprocessor.renderWorld(buffers[2], { photo : true }, 1.025);
+
+
+        //renderer.clearTarget(buffers[0], false, true, true);
+        postprocessor.setMaskMode("negative-fill");
+        postprocessor.renderWorld(buffers[0], { photo : true }, 0.9);
+        postprocessor.renderWorld(buffers[1], { photo : true });
+        postprocessor.renderWorld(buffers[2], { photo : true });
+        postprocessor.setMaskMode("clip");
+
+        //fill.render(buffers[0], buffers[1]);
+        blur.render(buffers[0], buffers[1], buffers[2], 10);
+    }
+
 
     function setupPipeline(renderer) {
 
@@ -713,21 +735,14 @@ function($, THREE) {
             var renderer = postprocessor.renderer;
 
             // Clean up both buffers for the start
-            //
-            //
             clear(buffers[0]);
             clear(buffers[1]);
             clear(buffers[2]);
-
-            //renderer.setClearColorHex(0x00ff00, 1.0);
-            //renderer.clear(true, true, true);
-
 
             // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
             context.depthFunc(context.ALWAYS);
             context.depthMask(false);
-
 
             // Draw photo as is to the buffer
             postprocessor.setMaskMode("normal");
@@ -737,10 +752,8 @@ function($, THREE) {
             //bloom.applyPass1(buffers[0]);
             //bloom.applyPass2();
 
-            // Draw frame without image part
-            postprocessor.setMaskMode("normal");
             //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
-            // postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
+            // Postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
 
 
             // Create target mask to operate only on photo content, not its frame
@@ -766,28 +779,7 @@ function($, THREE) {
             // Overlay bloom image
             // bloom.finalize(buffers[1]);
             // postprocessor.renderWorld(buffers[2], {photo: false, frame : true});
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.05);
-
-            postprocessor.stencilDebug = false;
-            context.clearStencil(1);
-            postprocessor.setMaskMode("fill");
-            postprocessor.renderWorld(buffers[0], { photo : true }, 1.025);
-            postprocessor.renderWorld(buffers[1], { photo : true }, 1.025);
-            postprocessor.renderWorld(buffers[2], { photo : true }, 1.025);
-
-
-            //renderer.clearTarget(buffers[0], false, true, true);
-            postprocessor.setMaskMode("negative-fill");
-            postprocessor.renderWorld(buffers[0], { photo : true }, 0.9);
-            postprocessor.renderWorld(buffers[1], { photo : true });
-            postprocessor.renderWorld(buffers[2], { photo : true });
-            postprocessor.setMaskMode("clip");
-
-            //fill.render(buffers[0], buffers[1]);
-            blur.render(buffers[0], buffers[1], buffers[2], 10);
-
             //postprocessor.setMaskMode("normal");
-            //blur.render(buffers[0], buffers[1]);
 
             // Mask the target buffer for photo area
             // postprocessor.setMaskMode("fill");
@@ -795,13 +787,13 @@ function($, THREE) {
 
             // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
             postprocessor.setMaskMode("normal");
-
-            clear(buffers[0]);
             postprocessor.renderWorld(buffers[0], {photo: true, frame : false});
+            blur.render(buffers[0], buffers[1]);
 
-            blend.render(buffers[0], buffers[2], buffers[1]);
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
 
-            fxaa.render(buffers[1], null);
+            blend.render(buffers[0], buffers[1], buffers[2]);
+            fxaa.render(buffers[2], null);
             // fxaa.render(buffers[0], null);
 
         }

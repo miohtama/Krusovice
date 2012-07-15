@@ -114,7 +114,7 @@ function(krusovice, quickplay, music, postprocessing) {
 
                 postprocessing.setupPipeline(this.renderer);
 
-                $(document.body).append(this.renderer.renderer.domElement);
+                //$(document.body).append(this.renderer.renderer.domElement);
 
             };
 
@@ -143,11 +143,15 @@ function(krusovice, quickplay, music, postprocessing) {
                     frameLabel : true,
                     background : true,
                     scene : true
+                },
+
+                audio : {
+                    volume : 0
                 }
+
             };
 
             var show = quickplay.play("show", project, initOptions, showOptions);
-
         },
 
         run : function() {
