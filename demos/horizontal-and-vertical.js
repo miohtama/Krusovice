@@ -1,7 +1,7 @@
 /*global jQuery, document, setTimeout, console, $ */
 
 /**
- * Test show with one portrait and one landscape image.
+ * Test show with one portrait and one landscape image and see they get proper resizes to fit on the screen.
  */
 function getHorizontalAndVerticalDesign() {
 

@@ -1,0 +1,54 @@
+<html>
+        <!-- Manual inspect timing output -->
+<head>
+    <script src="../src/thirdparty/require.js"></script>
+    <script type="text/javascript">
+
+        require.config({
+            paths : {
+                krusovice : "../src"
+            }
+        });
+    </script>
+
+    <link href="../media/visualizer.css" rel="stylesheet"></link>
+
+    <script type="text/javascript" src="timing-tester.js"></script>
+
+<style>
+
+    #show {
+    }
+
+    #show canvas {
+        border: 1px solid black;
+    }
+
+    #visualizer-wrapper {
+        width: 800px;
+        height: 300px;
+        margin-left: 10px;
+        border: 1px solid black;
+        overflow-x: scroll;
+    }
+
+    audio {
+        margin-top: 10px;
+        width: 800px;
+        display: block;
+    }
+
+</style>
+</head>
+
+<body>
+    <h1>Krusovice Timing Demo</h1>
+
+    <div id="visualizer-wrapper">
+        <div id="visualizer"></div>
+    </div>
+
+    <div id="show"></div>
+
+</body>
+</html>

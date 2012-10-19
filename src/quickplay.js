@@ -34,6 +34,11 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * Automatically start playback.
      *
+     * Extra initOptions
+     *     - prelistingSongs
+     *     - playCallback
+     *
+     *
      * @param {String} elementId Wrapping div id
      *
      * @param {Object} initOptions As would be passed to krusovice.Startup() + additional option prelistenSongs if small encoding version load is tried
@@ -52,6 +57,22 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
         if(!showOptions) {
             showOptions = {};
+        }
+
+        // Default way of starting the playback
+        function playDefault(show, audio, plan, config) {
+
+            // Sync with audio clock
+            show.bindToAudio(audio);
+
+            // Auto-start
+            $(show).bind("loadend", function() {
+                console.log("Rendering the show");
+                audio.play();
+            });
+
+            setupFadeOut(show, audio);
+
         }
 
         // Create show timeline and playback object after we have the song and its music data
@@ -91,16 +112,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
             show = new krusovice.Show(cfg);
 
-            // Sync with audio clock
-            show.bindToAudio(audio);
+            var play = initOptions.playCallback || playDefault;
 
-            // Auto-start
-            $(show).bind("loadend", function() {
-                console.log("Rendering the show");
-                audio.play();
-            });
-
-            setupFadeOut(show, audio);
+            play(show, audio, timeline, cfg);
 
             show.prepare();
         }
