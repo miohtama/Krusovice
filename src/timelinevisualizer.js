@@ -1,6 +1,7 @@
 /*global define, console, jQuery, document, setTimeout */
 
-define("krusovice/timelinevisualizer", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/timelinevisualizer", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analyses"],
+    function($, krusovice, analyses) {
 "use strict";
 
 /**
@@ -32,6 +33,11 @@ krusovice.TimelineVisualizer.prototype = {
      * @cfg {Object} rhythmData Rhythm data JSON from Echo Nest Remix API or null if no music
      */
     rhythmData : null,
+
+    /**
+     * @cfg {Object} levelData Level data JSON from levels.py
+     */
+    levelData : null,
 
     /**
      * @cfg {Number} secondsPerPixel How long timeline is covered by single pixel on the timeline. Modify this to change the zoom level.
@@ -136,7 +142,7 @@ krusovice.TimelineVisualizer.prototype = {
         var bars = this.rhythmData.bars;
         var barsHit;
 
-        var analysis = new krusovice.RhythmAnalysis(this.rhythmData);
+        var analysis = new analyses.RhythmAnalysis(this.rhythmData);
 
         context.lineWidth = 1;
 
@@ -179,9 +185,57 @@ krusovice.TimelineVisualizer.prototype = {
 
         }
 
-
     },
 
+
+    /**
+     * Show levels data on timeline
+     */
+    createLevelsLine : function() {
+
+        var i;
+
+        var currentClock;
+
+        var line = this.createDataLine();
+
+        var canvas = line[0];
+        var context = line[1];
+
+        if(!this.levelData) {
+            // Data not avail
+            console.log("Missing levels data for levels line");
+            return;
+        } else {
+            console.log("Rendering levels line");
+        }
+
+        var analysis = new analyses.LoudnessAnalysis(this.levelData);
+
+        context.lineWidth = 1;
+        context.strokeStyle = "#ff0000";
+
+        // Render each pixel of the timeline image
+        for(i=0; i<this.lineLength; i++) {
+
+            currentClock = i*this.secondsPerPixel;
+
+            var currentLevel = analysis.getLevel(currentClock);
+
+            var height =  this.lineHeight * currentLevel;
+
+            // canvas assumes 0.5 is in the middle of pixel
+            // hurray for subpixel mess
+            context.beginPath();
+            context.moveTo(i + 0.5, this.lineHeight - height);
+            context.lineTo(i + 0.5, this.lineHeight);
+            context.stroke();
+
+        }
+
+        return canvas;
+
+    },
 
     /**
      * Show beat data on timeline
@@ -389,9 +443,12 @@ krusovice.TimelineVisualizer.prototype = {
 
         var clock = this.createClockLine();
         var beats = this.createBeatLine();
+        var levels = this.createLevelsLine();
         var elements = this.createElementLine();
+
         elem.append(clock);
         elem.append(beats);
+        elem.append(levels);
         elem.append(elements);
 
         this.positionIndicator = this.createPositionIndicator();
@@ -473,14 +530,10 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
     this.visualization = visualization;
 
     if(typeof(src) == "string") {
-
         // http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video-and-audio/
         this.audio = document.createElement("audio");
-
         this.audio.controls = true;
-
         this.audio.setAttribute('src', src);
-
     } else {
         this.audio = src;
     }

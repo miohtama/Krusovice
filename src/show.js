@@ -1,5 +1,5 @@
 /*global define, console, jQuery, document, setTimeout, setInterval, clearInterval */
-define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analysis"], function($, krusovice, analysis) {
+define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analyses"], function($, krusovice, analyses) {
 
 "use strict";
 
@@ -585,14 +585,14 @@ krusovice.Show.prototype = {
      */
     prepareEffects : function() {
         if(this.rhythmData) {
-            this.rhythmAnalysis = new analysis.RhythmAnalysis(this.rhythmData);
+            this.rhythmAnalysis = new analyses.RhythmAnalysis(this.rhythmData);
             this.rhythmAnalysis.initBeats();
         } else {
             this.rhythmAnalysis = null;
         }
 
         if(this.levelData) {
-            this.levelAnalysis = new analysis.LoudnessAnalysis(this.levelData);
+            this.levelAnalysis = new analyses.LoudnessAnalysis(this.levelData);
         } else {
             this.levelAnalysis = null;
         }

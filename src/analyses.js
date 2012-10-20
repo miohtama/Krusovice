@@ -1,5 +1,6 @@
 /**
- * Wrapper around JSON exported Echo Nest Remix data
+ * Helper classes to deal with sound analysis JSON data.
+ * Exported by Echo Nest Remix or custom scripts.
  *
  * Note that all clocks here are in milliseconds, not seconds
  * (start, duration).
@@ -8,7 +9,7 @@
 
 /*global define, window, console, jQuery, document, setTimeout */
 
-define("krusovice/analysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/analyses", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";
 
 /**
@@ -18,11 +19,11 @@ define("krusovice/analysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/c
  */
 krusovice.RhythmAnalysis = function(data) {
 
-        if(!data) {
-                throw "Rhythm data must be given";
-        }
+    if(!data) {
+        throw "Rhythm data must be given";
+    }
 
-        this.data = data;
+    this.data = data;
 
 };
 
@@ -78,24 +79,24 @@ krusovice.RhythmAnalysis.prototype = {
 
         var beat = 0;
 
-                var i = 0;
+        var i = 0;
 
-                clock *= 1000;
+        clock *= 1000;
 
-                var confidenceThreshold = this.minBeatConfidence;
+        var confidenceThreshold = this.minBeatConfidence;
 
-                for(i=0; i<this.data.beats.length; i++) {
+        for(i=0; i<this.data.beats.length; i++) {
             var t = this.data.beats[i];
-                        if(t.confidence < confidenceThreshold) {
+            if(t.confidence < confidenceThreshold) {
                 continue;
             }
 
-                        if(t.start > clock) {
-                                beat = t;
-                                break;
-                        }
+            if(t.start > clock) {
+                beat = t;
+                break;
+            }
 
-                }
+        }
 
         return beat;
     },
