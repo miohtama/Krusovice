@@ -1,0 +1,5 @@
+# command to run validation + tests against the code base
+script: tests.sh
+
+env:
+  - TRAVIS=true
