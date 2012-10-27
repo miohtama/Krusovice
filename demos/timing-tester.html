@@ -5,12 +5,15 @@
     <meta charset='utf-8'>
 
     <script src="../src/thirdparty/require.js"></script>
+    <script src="../src/thirdparty/shim.js"></script>
     <script type="text/javascript">
-
         require.config({
             paths : {
-                krusovice : "../src"
-            }
+                krusovice : "../src",
+                audia : "../src/thirdparty/audia"
+            },
+
+            shim : requireShim
         });
     </script>
 
@@ -33,12 +36,17 @@
         margin-left: 10px;
         border: 1px solid black;
         overflow-x: scroll;
+        float: left;
     }
 
     audio {
         margin-top: 10px;
         width: 800px;
         display: block;
+    }
+
+    #spectrum {
+        float: left;
     }
 
 </style>
@@ -50,6 +58,10 @@
     <div id="visualizer-wrapper">
         <div id="visualizer"></div>
     </div>
+
+    <canvas id="spectrum" width="200" height="200"></canvas>
+
+    <div style="clear: both"><!-- --></div>
 
     <div id="show"></div>
 

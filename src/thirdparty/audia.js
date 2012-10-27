@@ -1,10 +1,3 @@
-
-define(function() {
-
-// http://www.lostdecadegames.com/audia-is-a-library-for-simplifying-the-web-audio-api/
-
-// https://github.com/richtaur/audia/blob/master/audia.js
-
 /*
 Audia: <audio> implemented using the Web Audio API
 by Matt Hackett of Lost Decade Games
@@ -56,8 +49,8 @@ var Audia = (function () {
 
                 object.dispatchEvent("canplay"/*, TODO*/);
                 object.dispatchEvent("canplaythrough"/*, TODO*/);
-                debugger;
                 object.dispatchEvent("load"/*, TODO*/);
+
                 object._autoplay && object.play();
             };
 
@@ -103,7 +96,6 @@ var Audia = (function () {
 
             // Setup
             this._listenerId = 0;
-            this._listenerKey = 0;
             this._listeners = {};
 
             // Audio properties
@@ -123,6 +115,9 @@ var Audia = (function () {
             this._seeking = false;
             this._src = "";
             this._volume = 1;
+
+            this._timeUpdateInterval = 50; // Millseconds how often timeupdate is posted
+            this._timeUpdateIntervalHandler = null;
 
             // Create gain node
             this.gainNode = audioContext.createGainNode();
@@ -149,10 +144,20 @@ var Audia = (function () {
         // play()
         Audia.prototype.play = function () {
             // TODO: restart from this.currentTime
+            var self = this;
             this._paused = false;
 
             refreshBufferSource(this);
             this.bufferSource.noteOn(0);
+
+            function updateCB() {
+                self._updateTime();
+            }
+
+            // Start emulating timeupdate events
+            if(this._timeUpdateInterval) {
+                this._timeUpdateIntervalHandler = window.setInterval(updateCB, this._timeUpdateInterval);
+            }
         };
 
         // pause()
@@ -161,6 +166,11 @@ var Audia = (function () {
             this._paused = true;
 
             this.bufferSource.noteOff(0);
+
+            if(this._timeUpdateIntervalHandler) {
+                window.clearInterval(this.__timeUpdateIntervalHandler);
+                this._timeUpdateIntervalHandler = null;
+            }
         };
 
         // stop()
@@ -171,12 +181,13 @@ var Audia = (function () {
             this.currentTime = 0;
         };
 
+        Audia.prototype._updateTime = function () {
+            this.dispatchEvent("timeupdate", []);
+        };
+
         // addEventListener()
         Audia.prototype.addEventListener = function (eventName, callback/*, capture*/) {
-            if(eventName == "load") {
-                debugger;
-            }
-            this._listeners[++this._listenerKey] = {
+            this._listeners[++this._listenerId] = {
                 eventName: eventName,
                 callback: callback
             };
@@ -234,7 +245,15 @@ var Audia = (function () {
 
         // currentTime (Number)
         Object.defineProperty(Audia.prototype, "currentTime", {
-            get: function () { return this._currentTime; },
+            get: function () {
+
+                // Ask Web Audio API how long we have been playing
+                if(this.bufferSource && this.bufferSource.context) {
+                    return this.bufferSource.context.currentTime;
+                }
+
+                return this._currentTime;
+            },
             set: function (value) {
                 this._currentTime = value;
                 // TODO
@@ -521,9 +540,17 @@ var Audia = (function () {
             get: function () { return this._audioNode.volume; },
             set: function (value) {
                 if (Audia.preventErrors) {
-                    var value = clamp(value, 0, 1);
+                    value = clamp(value, 0, 1);
                 }
                 this._audioNode.volume = value;
+            }
+        });
+
+        // timeUpdateInterval (Number)
+        Object.defineProperty(Audia.prototype, "timeUpdateInterval", {
+            get: function () { return this._timeUpdateInterval; },
+            set: function (value) {
+                this._timeUpdateInterval= value;
             }
         });
 
@@ -597,15 +624,14 @@ var Audia = (function () {
         (function (eventName) {
             var fauxPrivateName = "_on" + eventName;
             Audia.prototype[fauxPrivateName] = null;
-
             Object.defineProperty(Audia.prototype, "on" + eventName, {
                 get: function () { return this[fauxPrivateName]; },
                 set: function (value) {
-
                     // Remove the old listener
                     if (this[fauxPrivateName]) {
                         this.removeEventListener(eventName, this[fauxPrivateName], false);
                     }
+
                     // Only set functions
                     if (typeof value == "function") {
                         this[fauxPrivateName] = value;
@@ -621,8 +647,3 @@ var Audia = (function () {
     return Audia;
 
 })();
-
-return Audia;
-
-});
-

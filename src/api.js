@@ -1,4 +1,5 @@
-/*global define, window, console, jQuery, document, setTimeout */
+/*global define, window, console, jQuery, document, setTimeout, requirejs */
+
 
 define("krusovice/api", [
 

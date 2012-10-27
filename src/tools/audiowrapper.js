@@ -7,7 +7,7 @@
 
 /*global require, define, window, console, atob, unescape, ArrayBuffer, Uint8Array, jQuery, document, setTimeout */
 
-define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/audia"], function($, Audia) {
+define(["audia"], function(Audia) {
 
     "use strict";
 
@@ -22,13 +22,18 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/audia"], function($
         return !!window.webkitAudioContext;
     }
 
+    function isWebAudio(audio) {
+        return audio instanceof Audia;
+    }
+
     //
     // Module API
     //
 
     return {
         AudioBufferWrapper : Audia,
-        hasAudioBufferSupport : hasAudioBufferSupport
+        hasAudioBufferSupport : hasAudioBufferSupport,
+        isWebAudio : isWebAudio
     };
 
 });

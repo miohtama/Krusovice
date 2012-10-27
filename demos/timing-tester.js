@@ -4,10 +4,11 @@ require([
     "krusovice/api",
     "krusovice/quickplay",
     "krusovice/music",
+    "krusovice/tools/audiowrapper",
+    "krusovice/analyses",
     "krusovice/renderers/postprocessing",
-    "krusovice/thirdparty/Audia",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay, music, postprocessing, Audia) {
+function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
 
     "use strict";
 
@@ -127,7 +128,7 @@ function(krusovice, quickplay, music, postprocessing, Audia) {
         },
 
         updateAudioMode : function(audio) {
-            if(audio instanceof Audia) {
+            if(audiowrapper.isWebAudio(audio)) {
                 $("#audio-mode").text("Audia + AudioBuffer");
             } else {
                 $("#audio-mode").text("HTML5 <audio>");
@@ -190,6 +191,18 @@ function(krusovice, quickplay, music, postprocessing, Audia) {
                     console.log("Rendering the show");
                     audio.play();
                 });
+
+                // Show real time spectrum analysis using Web Audio API
+                if(audiowrapper.isWebAudio(audio)) {
+                    audio.addEventListener("load", function() {
+                        var spectrumCanvas = document.getElementById("spectrum");
+                        var spectrum = new analyses.RealTimeSpectrumAnalysis({
+                            canvas : spectrumCanvas
+                        });
+                        spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
+                        spectrum.start();
+                    });
+                }
 
                 self.updateAudioMode(audio);
             }

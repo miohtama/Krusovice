@@ -162,13 +162,12 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         if(!quiet) {
 
             audio.addEventListener("load", function() {
-                debugger;
                 audioLoader.resolve();
             });
 
-            audio.error = function() {
+            audio.addEventListener("error", function() {
                 audioLoader.reject("Could not load audio: " + urls.song);
-            };
+            });
 
             audio.src = urls.song;
         } else {

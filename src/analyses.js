@@ -279,11 +279,8 @@ $.extend(LoudnessAnalysis.prototype, {
  * http://0xfe.blogspot.fi/2011/08/web-audio-spectrum-analyzer.html
  */
 function RealTimeSpectrumAnalysis(config) {
+    config = config || {};
     $.extend(this, config);
-    this.fft = this.actx.createAnalyser();
-    this.fft.fftSize = this.points; // 15 different bands
-    this.fft.smoothingTimeConstant = this.smoothing;
-    this.data = new Uint8Array(this.fft.frequencyBinCount);
 }
 
 $.extend(RealTimeSpectrumAnalysis.prototype, {
@@ -312,9 +309,9 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
         var data = this.data;
 
         // Get the frequency-domain data
-        this.analyzer.getByteFrequencyData(data);
+        this.fft.getByteFrequencyData(data);
 
-        // Update also visual output
+        // Update also visual output if wanted
         if(this.canvas) {
             this.drawBars(this.canvas);
         }
@@ -322,24 +319,35 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
     },
 
     /**
-     * http://code.google.com/p/chromium/source/browse/trunk/samples/audio/MediaElementAudioSourceNode.html?r=3147
+     * Bind spectrum analysis to Web Audio context
      *
-     * @param  {[type]} audio [description]
-     * @return {[type]}       [description]
+     * Plug FFT analyser in the audio node tree between source and dst.
+     *
+     * @param  {Object} source Audio source
+     * @param {Object} destination Audio sink
+     * @param {Object} actx AudioContext
      */
-    bindToAudio : function(audio) {
+    bindToAudioContext : function(source, destination, actx) {
+        this.fft = actx.createAnalyser();
+        this.fft.fftSize = this.points; // 15 different bands
+        this.fft.smoothingTimeConstant = this.smoothing;
+        this.data = new Uint8Array(this.fft.frequencyBinCount);
+
+        var node = this.fft;
+        source.connect(node);
+        //node.connect(destination);
     },
 
     start : function() {
         var self = this;
-        if (!this.intervalId) {
-        this.intervalId = window.setInterval(
-            function() { self.update(); }, self.rate);
-        }
+        this.intervalId = window.setInterval(function() { self.update(); }, self.rate);
     },
 
     stop : function() {
-
+        if(this.intervalId) {
+            window.clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
     },
 
     getBand : function(point, width) {
@@ -349,27 +357,38 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
      * Visualize spectrum analyser on its own <canvas> element
      */
     drawBars : function(canvas) {
-
-        var ctx = canvas.getContext();
+        var i;
+        var ctx = canvas.getContext("2d");
+        if(!ctx) {
+            console.error("Could not get canvas context");
+            console.log(ctx);
+            return;
+        }
 
         // Clear the canvas
-        ctx.clearRect(0, 0, this.width, this.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgb(0, 0, 0)";
 
         var data = this.data;
+        for(i=0; i<data.length; i++) {
+            if(data[i] != 0) {
+                console.log(data[i]);
+                break;
+            }
+        }
 
         var length = data.length;
 
-        if (this.valid_points > 0) length = this.valid_points;
+        var valid_points = 1025;
 
-        // Clear canvas then redraw graph.
-        this.ctx.clearRect(0, 0, this.width, this.height);
+        if (valid_points > 0) length = valid_points;
 
         var bar_spacing = 3;
 
         // Break the samples up into bins
         var bin_size = Math.floor(length / this.bins);
 
-        for (var i=0; i < this.num_bins; ++i) {
+        for (i=0; i <this.bins; ++i) {
             var sum = 0;
             for (var j=0; j < bin_size; ++j) {
                 sum += data[(i * bin_size) + j];
@@ -379,10 +398,10 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
             var average = sum / bin_size;
 
             // Draw the bars on the canvas
-            var bar_width = this.width / this.num_bins;
-            var scaled_average = (average / 256) * this.height;
+            var bar_width = canvas.width / this.bins;
+            var scaled_average = (average / 256) * canvas.height;
 
-            ctx.fillRect(i * bar_width, this.height, bar_width - bar_spacing, - scaled_average);
+            ctx.fillRect(i * bar_width, canvas.height, bar_width - bar_spacing, - scaled_average);
         }
     }
 });

@@ -998,7 +998,6 @@ krusovice.Show.prototype = {
         function onTimeUpdate() {
 
             //console.log("timeupdate");
-
             var ctime = audio.currentTime;
             ctime -= self.musicStartTime;
             self.onClock(ctime);
@@ -1030,8 +1029,6 @@ krusovice.Show.prototype = {
         }
         $(audio).bind("seekend", $.proxy(onSeekEnd, this));
         */
-
-
 
         /*
          * HAVE_NOTHING (0) No data available
