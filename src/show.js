@@ -1012,10 +1012,9 @@ krusovice.Show.prototype = {
             }
         }
 
-        //
-        $(audio).bind("timeupdate", onTimeUpdate);
-        $(audio).bind("play", $.proxy(this.play, this));
-        $(audio).bind("pause", $.proxy(this.stop, this));
+        audio.addEventListener("timeupdate", onTimeUpdate);
+        audio.addEventListener("play", $.proxy(this.play, this));
+        audio.addEventListener("pause", $.proxy(this.stop, this));
 
 
         // User has moved time slider in Audio
@@ -1048,14 +1047,20 @@ krusovice.Show.prototype = {
 
         // http://www.chipwreck.de/blog/2010/03/01/html-5-video-dom-attributes-and-events/
         if(loadAsResource) {
-            if(audio.readyState < 4) {
+            /*if(audio.readyState != undefined audio.readyState < 4) {
                 //
                 $(audio).bind("canplaythrough", function() {
                     self.loader.mark("audio", 1);
                 });
 
                 this.loader.add("audio", 1);
-            }
+            }*/
+
+            audio.addEventListener("canplaythrough", function() {
+                self.loader.mark("audio", 1);
+            });
+
+            this.loader.add("audio", 1);
         }
 
         return audio;

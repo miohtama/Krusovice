@@ -273,9 +273,125 @@ $.extend(LoudnessAnalysis.prototype, {
 
 });
 
+/**
+ * Real-time spectrum FFT for on-going audio playback.
+ *
+ * http://0xfe.blogspot.fi/2011/08/web-audio-spectrum-analyzer.html
+ */
+function RealTimeSpectrumAnalysis(config) {
+    $.extend(this, config);
+    this.fft = this.actx.createAnalyser();
+    this.fft.fftSize = this.points; // 15 different bands
+    this.fft.smoothingTimeConstant = this.smoothing;
+    this.data = new Uint8Array(this.fft.frequencyBinCount);
+}
+
+$.extend(RealTimeSpectrumAnalysis.prototype, {
+
+    data : null,
+
+    bins : 30,
+
+    points : 2048,
+
+    smoothing : 0.75,
+
+    average : 0,
+
+    /** millisecs how often we are updates */
+    rate : 50,
+
+    /** <canvas> were we dump visual output for debugging */
+    canvas : null,
+
+    /**
+     * Call regularly to update the data buffer
+     */
+    update : function() {
+
+        var data = this.data;
+
+        // Get the frequency-domain data
+        this.analyzer.getByteFrequencyData(data);
+
+        // Update also visual output
+        if(this.canvas) {
+            this.drawBars(this.canvas);
+        }
+
+    },
+
+    /**
+     * http://code.google.com/p/chromium/source/browse/trunk/samples/audio/MediaElementAudioSourceNode.html?r=3147
+     *
+     * @param  {[type]} audio [description]
+     * @return {[type]}       [description]
+     */
+    bindToAudio : function(audio) {
+    },
+
+    start : function() {
+        var self = this;
+        if (!this.intervalId) {
+        this.intervalId = window.setInterval(
+            function() { self.update(); }, self.rate);
+        }
+    },
+
+    stop : function() {
+
+    },
+
+    getBand : function(point, width) {
+    },
+
+    /**
+     * Visualize spectrum analyser on its own <canvas> element
+     */
+    drawBars : function(canvas) {
+
+        var ctx = canvas.getContext();
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, this.width, this.height);
+
+        var data = this.data;
+
+        var length = data.length;
+
+        if (this.valid_points > 0) length = this.valid_points;
+
+        // Clear canvas then redraw graph.
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        var bar_spacing = 3;
+
+        // Break the samples up into bins
+        var bin_size = Math.floor(length / this.bins);
+
+        for (var i=0; i < this.num_bins; ++i) {
+            var sum = 0;
+            for (var j=0; j < bin_size; ++j) {
+                sum += data[(i * bin_size) + j];
+            }
+
+            // Calculate the average frequency of the samples in the bin
+            var average = sum / bin_size;
+
+            // Draw the bars on the canvas
+            var bar_width = this.width / this.num_bins;
+            var scaled_average = (average / 256) * this.height;
+
+            ctx.fillRect(i * bar_width, this.height, bar_width - bar_spacing, - scaled_average);
+        }
+    }
+});
+
+
 return {
     RhythmAnalysis : krusovice.RhythmAnalysis,
-    LoudnessAnalysis : LoudnessAnalysis
+    LoudnessAnalysis : LoudnessAnalysis,
+    RealTimeSpectrumAnalysis : RealTimeSpectrumAnalysis
 };
 
 });

@@ -1,7 +1,13 @@
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
-require(["krusovice/api", "krusovice/quickplay", "krusovice/music", "krusovice/renderers/postprocessing", "../src/thirdparty/domready!"],
-function(krusovice, quickplay, music, postprocessing) {
+require([
+    "krusovice/api",
+    "krusovice/quickplay",
+    "krusovice/music",
+    "krusovice/renderers/postprocessing",
+    "krusovice/thirdparty/Audia",
+    "../src/thirdparty/domready!"],
+function(krusovice, quickplay, music, postprocessing, Audia) {
 
     "use strict";
 
@@ -120,12 +126,22 @@ function(krusovice, quickplay, music, postprocessing) {
 
         },
 
+        updateAudioMode : function(audio) {
+            if(audio instanceof Audia) {
+                $("#audio-mode").text("Audia + AudioBuffer");
+            } else {
+                $("#audio-mode").text("HTML5 <audio>");
+            }
+        },
+
         /**
          * Reconstruct Show
          *
          * @param {krusovice.Design} design
          */
         playShow : function() {
+
+            var self = this;
 
             var design = this.createDesign();
 
@@ -167,13 +183,15 @@ function(krusovice, quickplay, music, postprocessing) {
                 var player = new krusovice.TimelinePlayer(visualizer, audio);
 
                 // Sync with audio clock
-                show.bindToAudio(audio);
+                show.bindToAudio(audio, true);
 
                 // Auto-start
                 $(show).bind("loadend", function() {
                     console.log("Rendering the show");
                     audio.play();
                 });
+
+                self.updateAudioMode(audio);
             }
 
             initOptions.playCallback = playWithVisualizer;

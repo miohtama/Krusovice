@@ -544,14 +544,14 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
 
     var audio = this.audio;
 
-    $(this.audio).bind("load", function() {
+    this.audio.addEventListener("load", function() {
         if(musicStartTime) {
             audio.currentTime = musicStartTime;
         }
         console.log("Loaded:" + src);
     });
 
-    $(this.audio).bind("play", function() {
+    this.audio.addEventListener("play", function() {
         console.log("Trying to set start time:" + musicStartTime);
         try {
             audio.currentTime = musicStartTime;
@@ -560,7 +560,7 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
         }
     });
 
-    $(this.audio).bind("canplaythrough", function() {
+    this.audio.addEventListener("canplaythrough", function() {
 
         if(musicStartTime) {
             console.log("Setting start time:" + musicStartTime);
@@ -573,13 +573,13 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
         console.log("canplay:" + src);
     });
 
-    $(this.audio).bind("Error", function() {
-        console.log("Error:" + src);
+    this.audio.addEventListener("error", function() {
+        console.error("Error:" + src);
     });
 
 
-    $(this.audio).bind("timeupdate", $.proxy(this.onTimeUpdate, this));
-    $(this.audio).bind("stop", $.proxy(this.stop, this));
+    this.audio.addEventListener("timeupdate", $.proxy(this.onTimeUpdate, this));
+    this.audio.addEventListener("stop", $.proxy(this.stop, this));
 
 };
 

@@ -7,7 +7,7 @@
  */
 
 /*global define, console, jQuery, document, setTimeout */
-define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api"], function($, krusovice) {
+define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api", "krusovice/tools/audiowrapper"], function($, krusovice, audiowrapper) {
     "use strict";
 
 
@@ -68,7 +68,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             // Auto-start
             $(show).bind("loadend", function() {
                 console.log("Rendering the show");
-                audio.play();
+                $(audio).bind("canplay", function() {
+                    audio.play();
+                });
             });
 
             setupFadeOut(show, audio);
@@ -125,9 +127,13 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         }
 
         // Load <audio> element for song playback
-        audio = document.createElement("audio");
-        audio.controls = true;
-        elem.append(audio);
+        if(!audiowrapper.hasAudioBufferSupport()) {
+            audio = document.createElement("audio");
+            audio.controls = true;
+            elem.append(audio);
+        } else {
+            audio = new audiowrapper.AudioBufferWrapper();
+        }
 
         var startup = new krusovice.Startup(initOptions);
         var startupLoader = startup.init();

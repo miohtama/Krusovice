@@ -161,13 +161,14 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         // http://www.w3.org/TR/html5/media-elements.html#mediaevents
         if(!quiet) {
 
-            $(audio).one("canplay", function() {
+            audio.addEventListener("load", function() {
+                debugger;
                 audioLoader.resolve();
             });
 
-            $(audio).one("error", function() {
+            audio.error = function() {
                 audioLoader.reject("Could not load audio: " + urls.song);
-            });
+            };
 
             audio.src = urls.song;
         } else {
