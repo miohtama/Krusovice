@@ -1,0 +1,3 @@
+[submodule "src/thirdparty/remix"]
+	path = src/thirdparty/remix
+	url = git://github.com/echonest/remix.js.git
