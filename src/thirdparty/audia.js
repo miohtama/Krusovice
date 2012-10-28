@@ -153,6 +153,10 @@ var Audia = (function () {
             this._paused = false;
 
             refreshBufferSource(this);
+
+            // We need to do our own book-keeping how long the sample has been playing
+            this.startTimestamp = this.bufferSource.context.currentTime;
+
             this.bufferSource.noteOn(0);
 
             function updateCB() {
@@ -163,6 +167,9 @@ var Audia = (function () {
             if(this._timeUpdateInterval) {
                 this._timeUpdateIntervalHandler = window.setInterval(updateCB, this._timeUpdateInterval);
             }
+
+            this.dispatchEvent("play", []);
+
         };
 
         // pause()
@@ -252,9 +259,13 @@ var Audia = (function () {
         Object.defineProperty(Audia.prototype, "currentTime", {
             get: function () {
 
+                if(!this.startTimestamp) {
+                    return 0;
+                }
+
                 // Ask Web Audio API how long we have been playing
                 if(this.bufferSource && this.bufferSource.context) {
-                    return this.bufferSource.context.currentTime;
+                    return this.bufferSource.context.currentTime - this.startTimestamp;
                 }
 
                 return this._currentTime;
@@ -452,13 +463,6 @@ var Audia = (function () {
             get: function () { return this._audioNode.src; }
         });
 
-        // currentTime (Number)
-        Object.defineProperty(Audia.prototype, "currentTime", {
-            get: function () { return this._audioNode.currentTime; },
-            set: function (value) {
-                this._audioNode.currentTime = value;
-            }
-        });
 
         // defaultPlaybackRate (Number) (default: 1)
         Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {

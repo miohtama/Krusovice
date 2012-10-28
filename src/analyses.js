@@ -370,12 +370,6 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
         ctx.fillStyle = "rgb(0, 0, 0)";
 
         var data = this.data;
-        for(i=0; i<data.length; i++) {
-            if(data[i] != 0) {
-                console.log(data[i]);
-                break;
-            }
-        }
 
         var length = data.length;
 

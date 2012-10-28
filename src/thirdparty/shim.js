@@ -14,6 +14,11 @@ var requireShim = {
 
     'krusovice/thirdparty/remix/src/js/filter': {
         deps : ["krusovice/thirdparty/remix/src/js/utils"]
+    },
+
+    'krusovice/thirdparty/remix/src/js/manager': {
+        deps : ["krusovice/thirdparty/remix/src/js/filter"]
     }
+
 
 };

@@ -976,7 +976,7 @@ krusovice.Show.prototype = {
 
 
     /**
-     * Bind this show to HTML5 <audio> player.
+     * Bind this show to HTML5 <audio> as clock source.
      *
      * The show will listen to events from the audio object and
      * will use its clock to adjust own playback.

@@ -1,3 +1,14 @@
+/**
+  * Show timing tester
+  *
+  * - WebGL reactive effect pipelien
+  *
+  * - Echo Nest API Javascript uploads
+  *
+  * - Spectrum analysis
+  *
+  */
+
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
 
 require([
@@ -41,13 +52,17 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
 
     /**
-     * Shader demo
+     * Module namespace
      */
     var timingtester = {
 
         audio : null,
 
         show : null,
+
+        visualizer : null,
+
+        player : null,
 
         createDesign : function() {
 
@@ -103,6 +118,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             return design;
         },
 
+        // Setup special webGL effect pipeline
         customizeRenderer : function() {
 
             krusovice.Show.prototype.prepareRenderer = function() {
@@ -132,12 +148,26 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
         },
 
+        // Show what audio backend we are using
         updateAudioMode : function(audio) {
             if(audiowrapper.isWebAudio(audio)) {
                 $("#audio-mode").text("Audia + AudioBuffer");
             } else {
                 $("#audio-mode").text("HTML5 <audio>");
             }
+        },
+
+
+        // Bind real-time spectrum analyzer to the audio playback
+        bindSpectrum : function(audio) {
+            var spectrumCanvas = document.getElementById("spectrum");
+            var spectrum = new analyses.RealTimeSpectrumAnalysis({
+                canvas : spectrumCanvas,
+                bins : 8,
+                smoothing : 0.5
+            });
+            spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
+            spectrum.start();
         },
 
         /**
@@ -168,7 +198,6 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 }
             };
 
-
             // Default way of starting the playback
             function playWithVisualizer(show, audio, plan, config) {
 
@@ -183,15 +212,25 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                     levelData:config.levelData
                 });
 
+                self.visualizer = visualizer;
+
                 visualizer.secondsPerPixel = 0.02;
                 visualizer.lineLength = 2000;
                 visualizer.render(div);
 
                 var player = new krusovice.TimelinePlayer(visualizer, audio);
+                self.player = player;
 
                 // Make show loader to load the audio file if it
                 // is remote file (src set)
                 show.bindToAudio(audio, !!audio.src);
+
+                // Show real time spectrum analysis using Web Audio API
+                if(audiowrapper.isWebAudio(audio)) {
+                    audio.addEventListener("play", function() {
+                        self.bindSpectrum(audio);
+                    });
+                }
 
                 // Auto-start
                 $(show).bind("loadend", function() {
@@ -202,19 +241,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                     }
                 });
 
-                // Show real time spectrum analysis using Web Audio API
-                if(audiowrapper.isWebAudio(audio)) {
-                    audio.addEventListener("play", function() {
-                        var spectrumCanvas = document.getElementById("spectrum");
-                        var spectrum = new analyses.RealTimeSpectrumAnalysis({
-                            canvas : spectrumCanvas,
-                            bins : 8,
-                            smoothing : 0.5
-                        });
-                        spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
-                        spectrum.start();
-                    });
-                }
+
 
                 self.updateAudioMode(audio);
 
@@ -236,6 +263,8 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             var file = $("#upload").get(0).files[0];
             var apiKey = window.localStorage.apiKey;
             var audio = new audiowrapper.AudioBufferWrapper();
+
+            audio.volume = 0.2;
 
             this.nuke();
 
@@ -259,8 +288,25 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
         // Remove old UI elements
         nuke : function() {
-            this.audio = null;
-            $(".timeline").remove();
+            this.stop();
+            $("#visualizer-wrapper").html("<div id='visualizer'><!-- --></div>");
+        },
+
+        stop : function() {
+          if(this.show) {
+                this.show.stop();
+                this.show = null;
+            }
+
+            if(this.audio) {
+                this.audio.stop();
+                this.audio = null;
+            }
+
+            if(this.player) {
+                this.player.stop();
+                this.player = null;
+            }
         },
 
         run : function() {
@@ -269,15 +315,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             //this.playShow();
 
             $("#stop").click(function() {
-                if(self.show) {
-                    self.show.stop();
-                    self.show = null;
-                }
-
-                if(self.audio) {
-                    self.audio.stop();
-                    self.audio = null;
-                }
+                self.stop();
             });
 
             $("#upload").change(function() {
