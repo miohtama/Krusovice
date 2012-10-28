@@ -36,7 +36,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * Extra initOptions
      *     - prelistingSongs
-     *     - playCallback
+     *     - playCallback: function
+     *     - audio: Audia instance
+     *     - ignoreRhythmData: Boolean
      *
      *
      * @param {String} elementId Wrapping div id
@@ -99,13 +101,14 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 levelData : audio.levelData
             };
 
-            if(!audio.rhythmData) {
+            if(!audio.rhythmData && !initOptions.ignoreRhythmData) {
                 throw new Error("audio.rhytmData missing");
             }
 
+            /*
             if(!audio.levelData) {
                 throw new Error("audio.levelData missing");
-            }
+            }*/
 
             $.extend(cfg, showOptions);
 
@@ -126,13 +129,19 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        // Load <audio> element for song playback
-        if(!audiowrapper.hasAudioBufferSupport()) {
-            audio = document.createElement("audio");
-            audio.controls = true;
-            elem.append(audio);
+        if(!initOptions.audio) {
+
+            // Load <audio> element for song playback
+            if(!audiowrapper.hasAudioBufferSupport()) {
+                audio = document.createElement("audio");
+                audio.controls = true;
+                elem.append(audio);
+            } else {
+                audio = new audiowrapper.AudioBufferWrapper();
+            }
+
         } else {
-            audio = new audiowrapper.AudioBufferWrapper();
+            audio = initOptions.audio;
         }
 
         var startup = new krusovice.Startup(initOptions);
@@ -146,7 +155,6 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         $.when(startupLoader).done(function() {
 
             var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs, false);
-
             songLoader.fail(function(msg) {
                 console.erro("Song loader failed:" + msg);
             });

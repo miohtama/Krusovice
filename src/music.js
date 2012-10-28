@@ -26,8 +26,8 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
         console.log("Loading song data bank:" + url);
 
         var dfd = $.getJSON(url, function(data) {
-            console.log("Got song data");
-            console.log(data);
+            //console.log("Got song data");
+            //console.log(data);
             self.processData(data, mediaURL);
             callback();
         });
@@ -81,6 +81,28 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
      */
     loadSong : function(songURL, rhythmURL, audio, callback, prelisten) {
         throw new Error("Use loadSongDeferred()");
+    },
+
+    /**
+     * Load locally opened MP3 file.
+     *
+     * Assume
+     *
+     * 1) audio is instance of Audia class
+     *
+     * 2) audio.rhythmData is set to Echo Nest API data before hand
+     *
+     */
+    loadSongLocal : function(audio) {
+        var audioLoader = $.Deferred();
+
+        // XXX: a hack
+        function resolve() {
+            audioLoader.resolve();
+        }
+        window.setTimeout(resolve, 5);
+
+        return $.when(audioLoader);
     },
 
     /**
@@ -198,6 +220,13 @@ krusovice.music.Registry = $.extend(true, {}, utils.Registry, {
 
         // Data URLs we need to load
         var urls = {};
+
+        if(design.songData.audio) {
+            if(!audio.rhythmData) {
+                // throw new Error("Please supply rhythm data for locally loaded audio files");
+            }
+            return this.loadSongLocal();
+        }
 
         if(design.songData && design.songData.url) {
             urls.song = design.songData.url;

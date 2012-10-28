@@ -26,6 +26,53 @@ define(["audia"], function(Audia) {
         return audio instanceof Audia;
     }
 
+    // Load a MP3 file from file system
+    function loadLocalAudioFile(audio, file, done) {
+
+        var reader = new FileReader(file);
+        var object = audio;
+
+        console.log("Reading local audio file");
+        console.log(file);
+
+        // Grab audioContext from Audia internals
+        var audioContext = audio.audioContext;
+        if(!audioContext) {
+            throw new Error("Could not peek into Audia's audioContext");
+        }
+
+        var onLoad = function (buffer) {
+            // Duration
+            if (buffer.duration !== object._duration) {
+                object._duration = buffer.duration;
+                object.dispatchEvent("durationchange"/*, TODO*/);
+            }
+
+            object.dispatchEvent("canplay"/*, TODO*/);
+            object.dispatchEvent("canplaythrough"/*, TODO*/);
+            object.dispatchEvent("load"/*, TODO*/);
+
+            if(object._autoplay) {
+                object.play();
+            }
+
+            done();
+        };
+
+        reader.onload = function (oFREvent) {
+            var data = oFREvent.target.result;
+            audioContext.decodeAudioData(data, function (buffer) {
+                audio.buffer = buffer;
+                onLoad(buffer);
+            });
+        };
+
+
+        // Read file as binary data
+        reader.readAsArrayBuffer(file);
+    }
+
+
     //
     // Module API
     //
@@ -33,7 +80,8 @@ define(["audia"], function(Audia) {
     return {
         AudioBufferWrapper : Audia,
         hasAudioBufferSupport : hasAudioBufferSupport,
-        isWebAudio : isWebAudio
+        isWebAudio : isWebAudio,
+        loadLocalAudioFile : loadLocalAudioFile
     };
 
 });

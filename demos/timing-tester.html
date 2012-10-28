@@ -49,26 +49,50 @@
         float: left;
     }
 
+    #controls {
+        display: block;
+    }
+
 </style>
 </head>
 
 <body>
     <h1>Krusovice Timing Demo</h1>
 
+    <h2>Load local MP3 file</h2>
+    <p><label for="apiKey">Echo Nest API Key:</label> <input type="text" id="api-key"/></p>
+    <p><input type="file" id="upload"/></p>
+
+    <div id="controls">
+    <button id="play">
+        Play
+    </button>
+
+    <button id="stop">
+        Please stop it!
+    </button>
+    </div>
+
     <div id="visualizer-wrapper">
         <div id="visualizer"></div>
     </div>
-
-    <canvas id="spectrum" width="200" height="200"></canvas>
 
     <div style="clear: both"><!-- --></div>
 
     <div id="show"></div>
 
+    <canvas id="spectrum" width="800" height="400"></canvas>
+
+    <div style="clear: both"><!-- --></div>
+
     <div>
         <b>Audio mode:</b>
         <span id="audio-mode" />
     </div>
+
+    <p>You need to run Chrome as</p>
+
+    <pre>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security -–allow-file-access-from-files</pre>
 
 </body>
 </html>

@@ -14,6 +14,17 @@ This is a rewrite and clean-up of previous slideshow9000 attempt.
 Music rhythm data is extracted using Echo Nest Remix API.
 Rhythm data must be pregenerated prior real-time photo show run.
 
+
+Installation
+-------------
+
+Example::
+
+    git clone git@github.com:miohtama/Krusovice.git
+    git submodule update --init
+
+We will pull remix.js for Echo Nest Javascript access in.
+
 Componets
 ------------
 

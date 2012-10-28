@@ -7,8 +7,9 @@ require([
     "krusovice/tools/audiowrapper",
     "krusovice/analyses",
     "krusovice/renderers/postprocessing",
+    "krusovice/tools/echonest",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
+function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, echonest) {
 
     "use strict";
 
@@ -43,6 +44,10 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
      * Shader demo
      */
     var timingtester = {
+
+        audio : null,
+
+        show : null,
 
         createDesign : function() {
 
@@ -140,11 +145,11 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
          *
          * @param {krusovice.Design} design
          */
-        playShow : function() {
+        playShow : function(design, audio, autoplay) {
 
             var self = this;
 
-            var design = this.createDesign();
+            design = design || this.createDesign();
 
             var project = new krusovice.Project({
                 width : 720,
@@ -152,7 +157,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
                 design : design
             });
 
-            music.Registry.useLevelData = true;
+            music.Registry.useLevelData = false;
 
             // Display HUD debug data on the image
             var showOptions = {
@@ -168,6 +173,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
             function playWithVisualizer(show, audio, plan, config) {
 
                 // Create visualization
+                self.show = show;
 
                 var div = document.getElementById("visualizer");
 
@@ -183,21 +189,27 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
 
                 var player = new krusovice.TimelinePlayer(visualizer, audio);
 
-                // Sync with audio clock
-                show.bindToAudio(audio, true);
+                // Make show loader to load the audio file if it
+                // is remote file (src set)
+                show.bindToAudio(audio, !!audio.src);
 
                 // Auto-start
                 $(show).bind("loadend", function() {
                     console.log("Rendering the show");
-                    audio.play();
+
+                    if(autoplay) {
+                        audio.play();
+                    }
                 });
 
                 // Show real time spectrum analysis using Web Audio API
                 if(audiowrapper.isWebAudio(audio)) {
-                    audio.addEventListener("load", function() {
+                    audio.addEventListener("play", function() {
                         var spectrumCanvas = document.getElementById("spectrum");
                         var spectrum = new analyses.RealTimeSpectrumAnalysis({
-                            canvas : spectrumCanvas
+                            canvas : spectrumCanvas,
+                            bins : 8,
+                            smoothing : 0.5
                         });
                         spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
                         spectrum.start();
@@ -205,18 +217,88 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing) {
                 }
 
                 self.updateAudioMode(audio);
+
+                // Safe reference for stopping
+                self.audio = audio;
             }
 
             initOptions.playCallback = playWithVisualizer;
+            initOptions.audio = audio;
+            initOptions.ignoreRhythmData = true;
 
             var show = quickplay.play("show", project, initOptions, showOptions);
 
         },
 
+        // Upload file input callback
+        upload : function() {
+            var self = this;
+            var file = $("#upload").get(0).files[0];
+            var apiKey = window.localStorage.apiKey;
+            var audio = new audiowrapper.AudioBufferWrapper();
+
+            this.nuke();
+
+            function done(data) {
+                console.log("Done!!!");
+            }
+
+            function loaded() {
+                console.log("Local audio file loaded");
+                var design = self.createDesign();
+                delete design.songId;
+                design.songData = {};
+                design.songData.audio = audio;
+                self.playShow(design, audio, true);
+            }
+
+            audiowrapper.loadLocalAudioFile(audio, file, loaded);
+
+            //echonest.analyzeFile(apiKey, file, done);
+        },
+
+        // Remove old UI elements
+        nuke : function() {
+            this.audio = null;
+            $(".timeline").remove();
+        },
+
         run : function() {
+            var self = this;
             this.customizeRenderer();
-            this.playShow();
+            //this.playShow();
+
+            $("#stop").click(function() {
+                if(self.show) {
+                    self.show.stop();
+                    self.show = null;
+                }
+
+                if(self.audio) {
+                    self.audio.stop();
+                    self.audio = null;
+                }
+            });
+
+            $("#upload").change(function() {
+                self.upload();
+            });
+
+            // Rememeber API key in local storage
+            $("#api-key").change(function() {
+                window.localStorage.apiKey = $("#api-key").val();
+            });
+
+            // Restore remembered API key
+            if(window.localStorage.apiKey) {
+               $("#api-key").val(window.localStorage.apiKey);
+            }
+
+            $("#play").click(function() {
+                self.audio.play();
+            });
         }
+
 
     };
 

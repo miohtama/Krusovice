@@ -76,7 +76,12 @@ var Audia = (function () {
             object.bufferSource = audioContext.createBufferSource();
 
             // Attach buffer to buffer source
-            object.bufferSource.buffer = buffersCache[object.src];
+            if(object.buffer) {
+                // Locally loaded
+                object.bufferSource.buffer = object.buffer;
+            } else {
+                object.bufferSource.buffer = buffersCache[object.src];
+            }
 
             // Connect to gain node
             object.bufferSource.connect(object.gainNode);
@@ -643,6 +648,9 @@ var Audia = (function () {
             });
         })(eventNames[i]);
     }
+
+    // Need to export for file loader
+    Audia.prototype.audioContext = audioContext;
 
     return Audia;
 
