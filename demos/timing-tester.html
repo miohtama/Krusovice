@@ -1,0 +1,108 @@
+<html>
+        <!-- Manual inspect timing output -->
+<head>
+
+    <meta charset='utf-8'>
+
+    <script src="../src/thirdparty/require.js"></script>
+    <script src="../src/thirdparty/shim.js"></script>
+    <script type="text/javascript">
+        require.config({
+            paths : {
+                krusovice : "../src",
+                audia : "../src/thirdparty/audia",
+                spin : "../src/thirdparty/spin"
+            },
+
+            shim : requireShim
+        });
+    </script>
+
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+
+    <link href="../media/visualizer.css" rel="stylesheet"></link>
+
+    <script type="text/javascript" src="timing-tester.js"></script>
+
+<style>
+
+    #show {
+    }
+
+    #show canvas {
+        border: 1px solid black;
+    }
+
+    #visualizer-wrapper {
+        width: 800px;
+        height: 300px;
+        margin-left: 10px;
+        border: 1px solid black;
+        overflow-x: scroll;
+        float: left;
+    }
+
+    audio {
+        margin-top: 10px;
+        width: 800px;
+        display: block;
+    }
+
+    #spectrum {
+        float: left;
+    }
+
+    #controls {
+        display: block;
+        margin: 1em 0;
+    }
+
+</style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Krusovice Timing Demo</h1>
+
+        <p>You need to run on Chrome, security disabled as</p>
+
+        <pre>
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security \
+    -–allow-file-access-from-files
+        </pre>
+
+        <h2>Load local MP3 file</h2>
+        <p><label for="apiKey">Echo Nest API Key:</label> <input type="text" id="api-key"/></p>
+        <p><input type="file" id="upload"/><span id="upload-load-indicator" /></p>
+
+        <div id="controls">
+            <button id="play" class="btn">
+                <i class="icon-play"></i> Play
+            </button>
+
+            <button id="stop" class="btn">
+                <i class="icon-stop"></i> Please stop it!
+            </button>
+        </div>
+
+        <div id="visualizer-wrapper">
+            <div id="visualizer"></div>
+        </div>
+
+        <div style="clear: both"><!-- --></div>
+
+        <div id="show"></div>
+
+        <canvas id="spectrum" width="800" height="400"></canvas>
+
+        <div style="clear: both"><!-- --></div>
+
+        <div>
+            <b>Audio mode:</b>
+            <span id="audio-mode" />
+        </div>
+    </div>
+</body>
+</html>

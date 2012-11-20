@@ -1,5 +1,6 @@
 /**
- * Wrapper around JSON exported Echo Nest Remix data
+ * Helper classes to deal with sound analysis JSON data.
+ * Exported by Echo Nest Remix or custom scripts.
  *
  * Note that all clocks here are in milliseconds, not seconds
  * (start, duration).
@@ -8,7 +9,7 @@
 
 /*global define, window, console, jQuery, document, setTimeout */
 
-define("krusovice/analysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/analyses", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 "use strict";
 
 /**
@@ -18,11 +19,11 @@ define("krusovice/analysis", ["krusovice/thirdparty/jquery-bundle", "krusovice/c
  */
 krusovice.RhythmAnalysis = function(data) {
 
-        if(!data) {
-                throw "Rhythm data must be given";
-        }
+    if(!data) {
+        throw "Rhythm data must be given";
+    }
 
-        this.data = data;
+    this.data = data;
 
 };
 
@@ -78,24 +79,24 @@ krusovice.RhythmAnalysis.prototype = {
 
         var beat = 0;
 
-                var i = 0;
+        var i = 0;
 
-                clock *= 1000;
+        clock *= 1000;
 
-                var confidenceThreshold = this.minBeatConfidence;
+        var confidenceThreshold = this.minBeatConfidence;
 
-                for(i=0; i<this.data.beats.length; i++) {
+        for(i=0; i<this.data.beats.length; i++) {
             var t = this.data.beats[i];
-                        if(t.confidence < confidenceThreshold) {
+            if(t.confidence < confidenceThreshold) {
                 continue;
             }
 
-                        if(t.start > clock) {
-                                beat = t;
-                                break;
-                        }
+            if(t.start > clock) {
+                beat = t;
+                break;
+            }
 
-                }
+        }
 
         return beat;
     },
@@ -272,9 +273,138 @@ $.extend(LoudnessAnalysis.prototype, {
 
 });
 
+/**
+ * Real-time spectrum FFT for on-going audio playback.
+ *
+ * http://0xfe.blogspot.fi/2011/08/web-audio-spectrum-analyzer.html
+ */
+function RealTimeSpectrumAnalysis(config) {
+    config = config || {};
+    $.extend(this, config);
+}
+
+$.extend(RealTimeSpectrumAnalysis.prototype, {
+
+    data : null,
+
+    bins : 30,
+
+    points : 2048,
+
+    smoothing : 0.75,
+
+    average : 0,
+
+    /** millisecs how often we are updates */
+    rate : 50,
+
+    /** <canvas> were we dump visual output for debugging */
+    canvas : null,
+
+    /**
+     * Call regularly to update the data buffer
+     */
+    update : function() {
+
+        var data = this.data;
+
+        // Get the frequency-domain data
+        this.fft.getByteFrequencyData(data);
+
+        // Update also visual output if wanted
+        if(this.canvas) {
+            this.drawBars(this.canvas);
+        }
+
+    },
+
+    /**
+     * Bind spectrum analysis to Web Audio context
+     *
+     * Plug FFT analyser in the audio node tree between source and dst.
+     *
+     * @param  {Object} source Audio source
+     * @param {Object} destination Audio sink
+     * @param {Object} actx AudioContext
+     */
+    bindToAudioContext : function(source, destination, actx) {
+        this.fft = actx.createAnalyser();
+        this.fft.fftSize = this.points; // 15 different bands
+        this.fft.smoothingTimeConstant = this.smoothing;
+        this.data = new Uint8Array(this.fft.frequencyBinCount);
+
+        var node = this.fft;
+        source.connect(node);
+        //node.connect(destination);
+    },
+
+    start : function() {
+        var self = this;
+        this.intervalId = window.setInterval(function() { self.update(); }, self.rate);
+    },
+
+    stop : function() {
+        if(this.intervalId) {
+            window.clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    },
+
+    getBand : function(point, width) {
+    },
+
+    /**
+     * Visualize spectrum analyser on its own <canvas> element
+     */
+    drawBars : function(canvas) {
+        var i;
+        var ctx = canvas.getContext("2d");
+        if(!ctx) {
+            console.error("Could not get canvas context");
+            console.log(ctx);
+            return;
+        }
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgb(0, 0, 0)";
+
+        var data = this.data;
+
+        var length = data.length;
+
+        var valid_points = 1025;
+
+        if (valid_points > 0) length = valid_points;
+
+        var bar_spacing = 3;
+
+        // Break the samples up into bins
+        var bin_size = Math.floor(length / this.bins);
+
+        for (i=0; i <this.bins; ++i) {
+            var sum = 0;
+            for (var j=0; j < bin_size; ++j) {
+                sum += data[(i * bin_size) + j];
+            }
+
+            // Calculate the average frequency of the samples in the bin
+            var average = sum / bin_size;
+
+            // Draw the bars on the canvas
+            var bar_width = canvas.width / this.bins;
+            var scaled_average = (average / 256) * canvas.height;
+
+            ctx.fillRect(i * bar_width, canvas.height, bar_width - bar_spacing, - scaled_average);
+        }
+    }
+});
+
+
 return {
     RhythmAnalysis : krusovice.RhythmAnalysis,
-    LoudnessAnalysis : LoudnessAnalysis
+    LoudnessAnalysis : LoudnessAnalysis,
+    RealTimeSpectrumAnalysis : RealTimeSpectrumAnalysis
 };
 
 });

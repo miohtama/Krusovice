@@ -663,6 +663,7 @@ function($, THREE) {
             strength = strength * capped;
 
             // console.log(strength);
+            //console.log(strength);
 
             var blurAmountX = strength / postprocessor.width;
             var blurAmountY = strength / postprocessor.height;

@@ -1,6 +1,7 @@
 /*global define, console, jQuery, document, setTimeout */
 
-define("krusovice/timelinevisualizer", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/timelinevisualizer", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analyses"],
+    function($, krusovice, analyses) {
 "use strict";
 
 /**
@@ -32,6 +33,11 @@ krusovice.TimelineVisualizer.prototype = {
      * @cfg {Object} rhythmData Rhythm data JSON from Echo Nest Remix API or null if no music
      */
     rhythmData : null,
+
+    /**
+     * @cfg {Object} levelData Level data JSON from levels.py
+     */
+    levelData : null,
 
     /**
      * @cfg {Number} secondsPerPixel How long timeline is covered by single pixel on the timeline. Modify this to change the zoom level.
@@ -136,7 +142,7 @@ krusovice.TimelineVisualizer.prototype = {
         var bars = this.rhythmData.bars;
         var barsHit;
 
-        var analysis = new krusovice.RhythmAnalysis(this.rhythmData);
+        var analysis = new analyses.RhythmAnalysis(this.rhythmData);
 
         context.lineWidth = 1;
 
@@ -179,9 +185,57 @@ krusovice.TimelineVisualizer.prototype = {
 
         }
 
-
     },
 
+
+    /**
+     * Show levels data on timeline
+     */
+    createLevelsLine : function() {
+
+        var i;
+
+        var currentClock;
+
+        var line = this.createDataLine();
+
+        var canvas = line[0];
+        var context = line[1];
+
+        if(!this.levelData) {
+            // Data not avail
+            console.log("Missing levels data for levels line");
+            return;
+        } else {
+            console.log("Rendering levels line");
+        }
+
+        var analysis = new analyses.LoudnessAnalysis(this.levelData);
+
+        context.lineWidth = 1;
+        context.strokeStyle = "#ff0000";
+
+        // Render each pixel of the timeline image
+        for(i=0; i<this.lineLength; i++) {
+
+            currentClock = i*this.secondsPerPixel;
+
+            var currentLevel = analysis.getLevel(currentClock);
+
+            var height =  this.lineHeight * currentLevel;
+
+            // canvas assumes 0.5 is in the middle of pixel
+            // hurray for subpixel mess
+            context.beginPath();
+            context.moveTo(i + 0.5, this.lineHeight - height);
+            context.lineTo(i + 0.5, this.lineHeight);
+            context.stroke();
+
+        }
+
+        return canvas;
+
+    },
 
     /**
      * Show beat data on timeline
@@ -213,11 +267,12 @@ krusovice.TimelineVisualizer.prototype = {
             //console.log("Rendering beats");
 
             // Render each pixel of the timeline image
+            // For each pixel span, find the max beat during this span start...span end
             for(i=0; i<this.lineLength; i++) {
 
                  var currentClock = i*this.secondsPerPixel;
                  var nextClock =  currentClock + this.secondsPerPixel;
-
+                 currentBeat = 0;
                  //console.log("Rendering clock span " + currentClock + "-" + nextClock);
                  //console.log(beats[currentBeat]);
 
@@ -229,21 +284,25 @@ krusovice.TimelineVisualizer.prototype = {
                  // Note: beat data clocks are in milliseconds
 
                  // Wind beat cursor to the start of current clock span
-                 while(currentBeat < beats.length && beats[currentBeat].start/1000 < currentClock) {
+                 do {
                      currentBeat++;
-                 }
+                 } while(currentBeat < beats.length && beats[currentBeat].start/1000 < currentClock);
 
+                while(currentBeat < beats.length && beats[currentBeat].start/1000 >= currentClock && beats[currentBeat].start/1000 < nextClock) {
+                    peakBeat = Math.max(beats[currentBeat].confidence, peakBeat);
+                    beatsHit++;
+                    currentBeat++;
+                    if(currentBeat >= beats.length) {
+                        // Out of song
+                        peakBeat = 0;
+                        break;
+                    }
+                }
 
-                 while(beats[currentBeat].start/1000 >= currentClock && beats[currentBeat].start/1000 < nextClock) {
-                     peakBeat = Math.max(beats[currentBeat].confidence, peakBeat);
-                     beatsHit++;
-                     currentBeat++;
-                 }
-
-                 // console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat);
+                 console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat + " clock start:" + currentClock + " clock end:" + nextClock);
 
                  // Beat line height in pixels
-                 var height =  peakBeat * this.lineHeight;
+                 var height = peakBeat * this.lineHeight;
 
                  this.renderedBeats += 1;
 
@@ -389,9 +448,12 @@ krusovice.TimelineVisualizer.prototype = {
 
         var clock = this.createClockLine();
         var beats = this.createBeatLine();
+        var levels = this.createLevelsLine();
         var elements = this.createElementLine();
+
         elem.append(clock);
         elem.append(beats);
+        elem.append(levels);
         elem.append(elements);
 
         this.positionIndicator = this.createPositionIndicator();
@@ -473,14 +535,10 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
     this.visualization = visualization;
 
     if(typeof(src) == "string") {
-
         // http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video-and-audio/
         this.audio = document.createElement("audio");
-
         this.audio.controls = true;
-
         this.audio.setAttribute('src', src);
-
     } else {
         this.audio = src;
     }
@@ -491,14 +549,14 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
 
     var audio = this.audio;
 
-    $(this.audio).bind("load", function() {
+    this.audio.addEventListener("load", function() {
         if(musicStartTime) {
             audio.currentTime = musicStartTime;
         }
         console.log("Loaded:" + src);
     });
 
-    $(this.audio).bind("play", function() {
+    this.audio.addEventListener("play", function() {
         console.log("Trying to set start time:" + musicStartTime);
         try {
             audio.currentTime = musicStartTime;
@@ -507,7 +565,7 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
         }
     });
 
-    $(this.audio).bind("canplaythrough", function() {
+    this.audio.addEventListener("canplaythrough", function() {
 
         if(musicStartTime) {
             console.log("Setting start time:" + musicStartTime);
@@ -520,13 +578,13 @@ krusovice.TimelinePlayer = function(visualization, src, musicStartTime) {
         console.log("canplay:" + src);
     });
 
-    $(this.audio).bind("Error", function() {
-        console.log("Error:" + src);
+    this.audio.addEventListener("error", function() {
+        console.error("Error:" + src);
     });
 
 
-    $(this.audio).bind("timeupdate", $.proxy(this.onTimeUpdate, this));
-    $(this.audio).bind("stop", $.proxy(this.stop, this));
+    this.audio.addEventListener("timeupdate", $.proxy(this.onTimeUpdate, this));
+    this.audio.addEventListener("stop", $.proxy(this.stop, this));
 
 };
 

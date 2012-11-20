@@ -1,0 +1,8 @@
+# command to run validation + tests against the code base
+script: tests.sh
+
+before_install:
+    sudo apt-get install chromium
+
+env:
+  - TRAVIS=true

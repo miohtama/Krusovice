@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 
     Get time -> loudness data for a song.

@@ -1,5 +1,5 @@
 /*global define, console, jQuery, document, setTimeout, setInterval, clearInterval */
-define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analysis"], function($, krusovice, analysis) {
+define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/analyses"], function($, krusovice, analyses) {
 
 "use strict";
 
@@ -588,14 +588,14 @@ krusovice.Show.prototype = {
      */
     prepareEffects : function() {
         if(this.rhythmData) {
-            this.rhythmAnalysis = new analysis.RhythmAnalysis(this.rhythmData);
+            this.rhythmAnalysis = new analyses.RhythmAnalysis(this.rhythmData);
             this.rhythmAnalysis.initBeats();
         } else {
             this.rhythmAnalysis = null;
         }
 
         if(this.levelData) {
-            this.levelAnalysis = new analysis.LoudnessAnalysis(this.levelData);
+            this.levelAnalysis = new analyses.LoudnessAnalysis(this.levelData);
         } else {
             this.levelAnalysis = null;
         }
@@ -985,7 +985,7 @@ krusovice.Show.prototype = {
 
 
     /**
-     * Bind this show to HTML5 <audio> player.
+     * Bind this show to HTML5 <audio> as clock source.
      *
      * The show will listen to events from the audio object and
      * will use its clock to adjust own playback.
@@ -1007,7 +1007,6 @@ krusovice.Show.prototype = {
         function onTimeUpdate() {
 
             //console.log("timeupdate");
-
             var ctime = audio.currentTime;
             ctime -= self.musicStartTime;
             self.onClock(ctime);
@@ -1021,10 +1020,9 @@ krusovice.Show.prototype = {
             }
         }
 
-        //
-        $(audio).bind("timeupdate", onTimeUpdate);
-        $(audio).bind("play", $.proxy(this.play, this));
-        $(audio).bind("pause", $.proxy(this.stop, this));
+        audio.addEventListener("timeupdate", onTimeUpdate);
+        audio.addEventListener("play", $.proxy(this.play, this));
+        audio.addEventListener("pause", $.proxy(this.stop, this));
 
 
         // User has moved time slider in Audio
@@ -1041,8 +1039,6 @@ krusovice.Show.prototype = {
         $(audio).bind("seekend", $.proxy(onSeekEnd, this));
         */
 
-
-
         /*
          * HAVE_NOTHING (0) No data available
 
@@ -1057,14 +1053,20 @@ krusovice.Show.prototype = {
 
         // http://www.chipwreck.de/blog/2010/03/01/html-5-video-dom-attributes-and-events/
         if(loadAsResource) {
-            if(audio.readyState < 4) {
+            /*if(audio.readyState != undefined audio.readyState < 4) {
                 //
                 $(audio).bind("canplaythrough", function() {
                     self.loader.mark("audio", 1);
                 });
 
                 this.loader.add("audio", 1);
-            }
+            }*/
+
+            audio.addEventListener("canplaythrough", function() {
+                self.loader.mark("audio", 1);
+            });
+
+            this.loader.add("audio", 1);
         }
 
         return audio;

@@ -7,7 +7,7 @@
  */
 
 /*global define, console, jQuery, document, setTimeout */
-define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api"], function($, krusovice) {
+define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/api", "krusovice/tools/audiowrapper"], function($, krusovice, audiowrapper) {
     "use strict";
 
 
@@ -34,6 +34,13 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
      *
      * Automatically start playback.
      *
+     * Extra initOptions
+     *     - prelistingSongs
+     *     - playCallback: function
+     *     - audio: Audia instance
+     *     - ignoreRhythmData: Boolean
+     *
+     *
      * @param {String} elementId Wrapping div id
      *
      * @param {Object} initOptions As would be passed to krusovice.Startup() + additional option prelistenSongs if small encoding version load is tried
@@ -52,6 +59,24 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
         if(!showOptions) {
             showOptions = {};
+        }
+
+        // Default way of starting the playback
+        function playDefault(show, audio, plan, config) {
+
+            // Sync with audio clock
+            show.bindToAudio(audio);
+
+            // Auto-start
+            $(show).bind("loadend", function() {
+                console.log("Rendering the show");
+                $(audio).bind("canplay", function() {
+                    audio.play();
+                });
+            });
+
+            setupFadeOut(show, audio);
+
         }
 
         // Create show timeline and playback object after we have the song and its music data
@@ -76,13 +101,14 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 levelData : audio.levelData
             };
 
-            if(!audio.rhythmData) {
+            if(!audio.rhythmData && !initOptions.ignoreRhythmData) {
                 throw new Error("audio.rhytmData missing");
             }
 
+            /*
             if(!audio.levelData) {
                 throw new Error("audio.levelData missing");
-            }
+            }*/
 
             $.extend(cfg, showOptions);
 
@@ -91,16 +117,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
             show = new krusovice.Show(cfg);
 
-            // Sync with audio clock
-            show.bindToAudio(audio);
+            var play = initOptions.playCallback || playDefault;
 
-            // Auto-start
-            $(show).bind("loadend", function() {
-                console.log("Rendering the show");
-                audio.play();
-            });
-
-            setupFadeOut(show, audio);
+            play(show, audio, timeline, cfg);
 
             show.prepare();
         }
@@ -110,16 +129,20 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        // Load <audio> element for song playback
-        audio = document.createElement("audio");
-        audio.controls = true;
+        if(!initOptions.audio) {
 
-        // Apply audio options
-        if(showOptions.audio) {
-            $.extend(audio, showOptions.audio);
+            // Load <audio> element for song playback
+            if(!audiowrapper.hasAudioBufferSupport()) {
+                audio = document.createElement("audio");
+                audio.controls = true;
+                elem.append(audio);
+            } else {
+                audio = new audiowrapper.AudioBufferWrapper();
+            }
+
+        } else {
+            audio = initOptions.audio;
         }
-
-        elem.append(audio);
 
         var startup = new krusovice.Startup(initOptions);
         var startupLoader = startup.init();
@@ -132,7 +155,6 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         $.when(startupLoader).done(function() {
 
             var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs, false);
-
             songLoader.fail(function(msg) {
                 console.erro("Song loader failed:" + msg);
             });

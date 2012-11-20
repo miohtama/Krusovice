@@ -6,27 +6,27 @@
 }
 
  .timeline {
-        position: relative;
-        height: 40px;
-        border-top: 1px solid #aaa;
-        border-bottom: 1px solid #aaa;
+    position: relative;
+    height: 40px;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
  }
 
  .timeline .label {
     position: relative;
-        /*z-inde: 2;*/
-        float: left;
+    /*z-inde: 2;*/
+    float: left;
  }
 
  .timeline  {
-        width: 100%;
+    width: 100%;
  }
 
 /* Hide until playback starts */
 .timeline-visualization .position-indicator {
-        position: absolute;
+    position: absolute;
     display: none;
-        border: 0;
-        width: 1px;
-        background: black;
+    border: 0;
+    width: 1px;
+    background: black;
 }

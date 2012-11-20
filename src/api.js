@@ -1,4 +1,5 @@
-/*global define, window, console, jQuery, document, setTimeout */
+/*global define, window, console, jQuery, document, setTimeout, requirejs */
+
 
 define("krusovice/api", [
 
@@ -18,7 +19,7 @@ define("krusovice/api", [
     "krusovice/editdata",
     "krusovice/project",
     "krusovice/loader",
-    "krusovice/analysis",
+    "krusovice/analyses",
     "krusovice/timeliner",
     "krusovice/timelinevisualizer",
     "krusovice/show",

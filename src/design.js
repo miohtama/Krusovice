@@ -133,7 +133,12 @@ krusovice.Design.prototype = {
         name : null,
 
         // MP3 URL
-        url : null
+        url : null,
+
+        // Direct audio data as <audio> or Audia instance.
+        // This must have audio.rhythmData property set to track analysis data
+        // if analysis information is used
+        audio : null
     },
 
     /**
