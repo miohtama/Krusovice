@@ -276,9 +276,19 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 spinner.stop();
             }
 
+            // ech
             function done(data) {
                 console.log("Done!!!");
                 spinner.stop();
+
+                if(!data.analysis) {
+                    throw new Error("Oops internal error");
+                }
+
+                $("pre").text(JSON.stringify(data.response.track, undefined, 2) + "\n" + JSON.stringify(data.response.track.audio_summary, undefined, 2));
+
+                // Associate rhythm hinting to audio
+                audio.rhythmData = data.analysis;
                 audiowrapper.loadLocalAudioFile(audio, file, loaded);
             }
 

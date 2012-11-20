@@ -55,6 +55,7 @@
 
     #controls {
         display: block;
+        margin: 1em 0;
     }
 
 </style>
@@ -67,20 +68,23 @@
 
         <p>You need to run on Chrome, security disabled as</p>
 
-        <pre>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security -–allow-file-access-from-files</pre>
+        <pre>
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security \
+    -–allow-file-access-from-files
+        </pre>
 
         <h2>Load local MP3 file</h2>
         <p><label for="apiKey">Echo Nest API Key:</label> <input type="text" id="api-key"/></p>
         <p><input type="file" id="upload"/><span id="upload-load-indicator" /></p>
 
         <div id="controls">
-        <button id="play">
-            Play
-        </button>
+            <button id="play" class="btn">
+                <i class="icon-play"></i> Play
+            </button>
 
-        <button id="stop">
-            Please stop it!
-        </button>
+            <button id="stop" class="btn">
+                <i class="icon-stop"></i> Please stop it!
+            </button>
         </div>
 
         <div id="visualizer-wrapper">

@@ -29,6 +29,30 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
     }
 
     /**
+     * Convert Echo Nest data to Krusovice internal format in place.
+     *
+     * We optimize some timestamps for quicker look up.
+     *
+     * @param  {Object} analysis Raw echo nest data
+     */
+    function preprocessData(data) {
+        var i;
+        var bars = data.analysis.bars, beats = data.analysis.beats;
+
+        for(i=0; i<bars.length; i++) {
+            bars[i].start *= 1000; // ms
+            bars[i].duration *= 1000;
+        }
+
+        for(i=0; i<beats.length; i++) {
+            beats[i].start *= 1000; // ms
+            beats[i].duration *= 1000;
+        }
+
+        return data;
+    }
+
+    /**
      * Calculate file hash using SparkMD5 lib
      *
      * @param  {Object}   file window.File instance
@@ -76,7 +100,7 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
      *
      * @param  {[type]}   apiKey [description]
      * @param  {[type]}   file   [description]
-     * @param  {Function} done   Called with succesful track analysis
+     * @param  {Function} done   Called with succesful track analysis done(data) where data.analysis contains bars, beats
      * @param  {Function} failed   Called with unsuccesful track analysis
      * @return {[type]}          [description]
      */
@@ -87,6 +111,10 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
         console.log('analyzing file', file);
 
         var nest = createNest(apiKey);
+
+        function ready(data) {
+            return done(preprocessData(data));
+        }
 
         // Call Echo Nest HTTP API with file payload
         function postToAPI() {
@@ -117,6 +145,7 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
                             onload: function (result) {
                                 data.analysis = result;
                                 storeCachedResult(hash, JSON.stringify(data));
+                                ready(data);
                             }
                         });
                     }
@@ -129,7 +158,7 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
             hash = xhash;
             var cached = getCachedResult(hash);
             if(cached) {
-                done(cached);
+                ready(cached);
             } else {
                 postToAPI();
             }

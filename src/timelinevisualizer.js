@@ -267,11 +267,12 @@ krusovice.TimelineVisualizer.prototype = {
             //console.log("Rendering beats");
 
             // Render each pixel of the timeline image
+            // For each pixel span, find the max beat during this span start...span end
             for(i=0; i<this.lineLength; i++) {
 
                  var currentClock = i*this.secondsPerPixel;
                  var nextClock =  currentClock + this.secondsPerPixel;
-
+                 currentBeat = 0;
                  //console.log("Rendering clock span " + currentClock + "-" + nextClock);
                  //console.log(beats[currentBeat]);
 
@@ -283,21 +284,25 @@ krusovice.TimelineVisualizer.prototype = {
                  // Note: beat data clocks are in milliseconds
 
                  // Wind beat cursor to the start of current clock span
-                 while(currentBeat < beats.length && beats[currentBeat].start/1000 < currentClock) {
+                 do {
                      currentBeat++;
-                 }
+                 } while(currentBeat < beats.length && beats[currentBeat].start/1000 < currentClock);
 
+                while(currentBeat < beats.length && beats[currentBeat].start/1000 >= currentClock && beats[currentBeat].start/1000 < nextClock) {
+                    peakBeat = Math.max(beats[currentBeat].confidence, peakBeat);
+                    beatsHit++;
+                    currentBeat++;
+                    if(currentBeat >= beats.length) {
+                        // Out of song
+                        peakBeat = 0;
+                        break;
+                    }
+                }
 
-                 while(beats[currentBeat].start/1000 >= currentClock && beats[currentBeat].start/1000 < nextClock) {
-                     peakBeat = Math.max(beats[currentBeat].confidence, peakBeat);
-                     beatsHit++;
-                     currentBeat++;
-                 }
-
-                 // console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat);
+                 console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat + " clock start:" + currentClock + " clock end:" + nextClock);
 
                  // Beat line height in pixels
-                 var height =  peakBeat * this.lineHeight;
+                 var height = peakBeat * this.lineHeight;
 
                  this.renderedBeats += 1;
 
