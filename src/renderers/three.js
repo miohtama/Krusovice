@@ -10,52 +10,6 @@ function cssToOpenGLColor(cssColor) {
 }
 
 /**
- * Copy WebGL buffer.
- *
- * Render a texture on the another using orthogonal scene with 1x1 target texture.
- *
- * @param  {Object} renderer Three.js renderer instance
- * @param  {[type]} target   [description]
- * @param  {[type]} src      [description]
- * @param  {[type]} width    [description]
- * @param  {[type]} height   [description]
- * @return {[type]}          [description]
- */
-function copyWebGLBuffer(renderer, target, src, width, height) {
-
-
-    var geometry = new THREE.PlaneGeometry( 1, 1 );
-
-    //var tex = new THREE.Texture("http://localhost:8000/demos/test-texture-transparent.png", THREE.UVMapping);
-    //tex.needsUpdate = true;
-
-    var quad = new THREE.Mesh(geometry);
-    quad.position.z = -100;
-    quad.scale.set(width, height, 1 );
-    quad.updateMatrixWorld();
-    quad.material = new THREE.MeshBasicMaterial(
-        {
-        color : 0x008800,
-        transparent : true,
-        map: src
-        });
-
-    var scene = new THREE.Scene();
-    scene.addObject(quad );
-
-    var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
-    camera.updateMatrixWorld();
-
-    var color = new THREE.Color(0);
-    renderer.setClearColor(color, 0);
-
-    renderer.clearTarget(target);
-    renderer.render(scene, camera, target, false);
-    //renderer.render(scene, camera);
-}
-
-
-/**
  * Show object rendering backend utilizing THREE.js for 3D operations abstraction.
  *
  * Pushes the heavy 3D math for a lib which is designed for this purpose.
@@ -569,8 +523,17 @@ krusovice.renderers.Three.prototype = {
 
         this.renderer.render(scene, camera, time);
 
+        //frontBuffer.clear();
         frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
         // blit to actual image output from THREE <canvas> renderer internal buffer
+    },
+
+    /**
+     * Direct access to the renderer <canvas> for providing 2D overlay drawing.
+     *
+     */
+    getCanvas : function() {
+        return this.renderer.domElement;
     },
 
     /**

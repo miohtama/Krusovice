@@ -112,7 +112,8 @@ define("krusovice/tools/fade", ["krusovice/thirdparty/jquery-bundle", "krusovice
         var volumeStep = (audio.volume - targetVolume) / (rampTime / tick);
 
         if(!volumeStep) {
-            throw "Could not calculate volume adjustment step";
+            // Volume already at 0
+            return;
         }
 
         function ramp() {

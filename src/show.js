@@ -76,7 +76,7 @@ krusovice.Show.prototype = {
     /**
      * @cfg {Object} Use WebGL renderer: true, false or "auto"
      */
-    webGL : "auto",
+    webGL : true,
 
     /**
      * @cfg {Boolean} preview
@@ -333,7 +333,6 @@ krusovice.Show.prototype = {
      */
     prepare : function() {
 
-        this.webGL = krusovice.utils.useWebGL(this.webGL);
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();
@@ -461,28 +460,32 @@ krusovice.Show.prototype = {
     },
 
     /**
-     * Create a <canvas> and place it in the parent container
+     * Put renderer <canvas> background element to the show container.
+     *
+     * Also get context handle we use to render 2d stuff.
      */
     prepareCanvas : function() {
 
-        if(!this.canvas) {
-           console.log("Creating show <canvas>");
-            var $canvas = $("<canvas width=" + this.width + " height=" + this.height + ">");
-            this.canvas = $canvas.get(0);
-        }
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         if(!this.ctx) {
             this.ctx = this.canvas.getContext("2d");
         }
 
+        if(!this.ctx) {
+            throw new Error("Could not get 2D context for the canvas");
+        }
+
+        // Use jQuery to place <canvas> to the show container
         if(this.elem !== null) {
             this.elem.find("canvas").remove();
             this.elem.append(this.canvas);
         }
 
-        // XXX: We support currently only one show per page
+        // Provide id for CSS styling
         this.canvas.setAttribute("id", "show-canvas");
-
     },
 
     /**
@@ -757,7 +760,7 @@ krusovice.Show.prototype = {
         this.renderScene(renderClock);
 
         if(this.renderFlags.frameLabel) {
-            this.renderFrameLabel(renderClock);
+            this.renderHUD(renderClock);
         }
 
         this.renderPreviewWarningMessage(renderClock);
@@ -816,7 +819,7 @@ krusovice.Show.prototype = {
      *
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
-    renderFrameLabel : function(renderClock) {
+    renderHUD : function(renderClock) {
         // http://diveintohtml5.org/canvas.html#text
         var ctx = this.ctx;
         // round to 3 decimals
@@ -835,8 +838,14 @@ krusovice.Show.prototype = {
         var text = "Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync;
         ctx.fillText(text, 20, 20);
 
-        text = "Loudness:" + this.getLoudness(renderClock);
-        ctx.fillText(text, 20, 40);
+        var loudness = this.getLoudness(renderClock);
+        text = "Loudness:" + loudness;
+        //ctx.fillText(text, 20, 40);
+
+        ctx.fillStyle = "rgba(200,200,200,0.3)";
+        ctx.fillRect(10, this.height - 30, 100, 20);
+        ctx.fillRect(10, this.height - 30, 100*loudness, 20);
+
 
         ctx.restore();
     },
