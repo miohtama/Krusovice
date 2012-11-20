@@ -302,6 +302,13 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
     canvas : null,
 
     /**
+     * Callback with spectrum break up to n bins, each having value 0..1
+     *
+     * @type {Function} callback(bins)
+     */
+    callback : null,
+
+    /**
      * Call regularly to update the data buffer
      */
     update : function() {
@@ -316,6 +323,43 @@ $.extend(RealTimeSpectrumAnalysis.prototype, {
             this.drawBars(this.canvas);
         }
 
+        if(this.callback) {
+            var bins = this.breakToBins(this.data);
+            this.callback(bins);
+        }
+    },
+
+    // Break the samples up into bins
+    breakToBins : function(data) {
+        var i;
+
+        var length = data.length;
+
+        var valid_points = 1025;
+
+        if (valid_points > 0) length = valid_points;
+
+        var bin_size = Math.floor(length / this.bins);
+
+        var bins = [];
+
+        for (i=0; i <this.bins; ++i) {
+            var sum = 0;
+            for (var j=0; j < bin_size; ++j) {
+                sum += data[(i * bin_size) + j];
+            }
+
+            // Calculate the average frequency of the samples in the bin
+            var average = sum / bin_size;
+
+            // 0 ... 1.0
+            var scaled_average = (average / 256);
+
+            bins[i] = scaled_average;
+
+        }
+
+        return bins;
     },
 
     /**

@@ -166,6 +166,13 @@ krusovice.Show.prototype = {
     rhythmAnalysis : null,
 
     /**
+     * Do a real-time spectrum based effects. WebAudio / Chrome only.
+     *
+     * @type {Boolean}
+     */
+    realtimeSpectrum : false,
+
+    /**
      * Loudness data manipular
      *
      * @type {krusovice.LoudnessAnalysis}
@@ -277,6 +284,12 @@ krusovice.Show.prototype = {
      */
     realtime : true,
 
+    /**
+     * A hack to play around with spectrum analysis
+     *
+     * @type {Number}
+     */
+    externalLevel : 0,
 
     /**
      * Control individual render layers.
@@ -286,9 +299,9 @@ krusovice.Show.prototype = {
      * XXX: Move object initialization to the constructor
      */
     renderFlags : {
-          background : true,
-          scene : true,
-          frameLabel : false
+        background : true,
+        scene : true,
+        frameLabel : false
     },
 
     /**
@@ -924,11 +937,14 @@ krusovice.Show.prototype = {
      */
     getLoudness : function(clock) {
 
+        return this.externalLevel;
+
+        /* Bad idea...
         if(!this.levelAnalysis) {
-            return 0;
         }
 
         return this.levelAnalysis.getLevel(clock);
+        */
     },
 
     /**
@@ -1014,6 +1030,10 @@ krusovice.Show.prototype = {
         audio.addEventListener("timeupdate", onTimeUpdate);
         audio.addEventListener("play", $.proxy(this.play, this));
         audio.addEventListener("pause", $.proxy(this.stop, this));
+
+        if(this.realtimeSpectrum) {
+            // XXX: Code goes here
+        }
 
 
         // User has moved time slider in Audio

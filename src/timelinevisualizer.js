@@ -299,7 +299,7 @@ krusovice.TimelineVisualizer.prototype = {
                     }
                 }
 
-                 console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat + " clock start:" + currentClock + " clock end:" + nextClock);
+                 // console.log("Pixel " + i + " beat peak " + peakBeat + " hits:" + beatsHit + " current beat:" + currentBeat + " clock start:" + currentClock + " clock end:" + nextClock);
 
                  // Beat line height in pixels
                  var height = peakBeat * this.lineHeight;

@@ -631,15 +631,12 @@ function($, THREE) {
 
         render : function (readBuffer, immediateBuffer, writeBuffer, strength) {
 
-
             var postprocessor = this.postprocessor;
 
+            // var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
 
-            var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
-
-            strength = strength * capped;
-
-            //console.log(strength);
+            console.log("Got loudness:" + postprocessor.loudness);
+            strength *= postprocessor.loudness;
 
             var blurAmountX = strength / postprocessor.width;
             var blurAmountY = strength / postprocessor.height;

@@ -161,11 +161,16 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
         // Bind real-time spectrum analyzer to the audio playback
         bindSpectrum : function(audio) {
+            var self = this;
             var spectrumCanvas = document.getElementById("spectrum");
             var spectrum = new analyses.RealTimeSpectrumAnalysis({
                 canvas : spectrumCanvas,
                 bins : 8,
-                smoothing : 0.5
+                smoothing : 0.5,
+                callback : function(bins) {
+                    // Use one of the spectrum bins to set the post-processing effect strength
+                    self.show.externalLevel = bins[0];
+                }
             });
             spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
             spectrum.start();
@@ -196,7 +201,9 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                     frameLabel : true,
                     background : true,
                     scene : true
-                }
+                },
+
+                realtimeSpectrum : true
             };
 
             // Default way of starting the playback
@@ -241,8 +248,6 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                         audio.play();
                     }
                 });
-
-
 
                 self.updateAudioMode(audio);
 
