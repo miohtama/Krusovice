@@ -146,7 +146,7 @@ function(krusovice, quickplay, music, postprocessing) {
                 },
 
                 audio : {
-                    volume : 0
+                    volume : 0.5
                 }
 
             };

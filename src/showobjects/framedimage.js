@@ -140,11 +140,9 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
 
        var size = {width:naturalWidth, height:naturalHeight};
 
-       if(!this.renderer.webGL) {
-           // <canvas> renderer would be really really slow
-           // with huge images... make sure we downscale
-           size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, 320, 320);
-       }
+       // <canvas> renderer would be really really slow
+       // with huge images... make sure we downscale
+       size = krusovice.utils.calculateAspectRatioFit(naturalWidth, naturalHeight, 768, 768);
 
        buffer.width = size.width;
        buffer.height = size.height;

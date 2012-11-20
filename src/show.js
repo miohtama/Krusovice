@@ -747,7 +747,7 @@ krusovice.Show.prototype = {
         this.renderScene(renderClock);
 
         if(this.renderFlags.frameLabel) {
-            this.renderFrameLabel(renderClock);
+            this.renderHUD(renderClock);
         }
 
         this.renderPreviewWarningMessage(renderClock);
@@ -806,7 +806,7 @@ krusovice.Show.prototype = {
      *
      * @param {Number} renderClock The rendering clock time that should be used for this frame
      */
-    renderFrameLabel : function(renderClock) {
+    renderHUD : function(renderClock) {
         // http://diveintohtml5.org/canvas.html#text
         var ctx = this.ctx;
         // round to 3 decimals
@@ -825,8 +825,14 @@ krusovice.Show.prototype = {
         var text = "Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync;
         ctx.fillText(text, 20, 20);
 
-        text = "Loudness:" + this.getLoudness(renderClock);
-        ctx.fillText(text, 20, 40);
+        var loudness = this.getLoudness(renderClock);
+        text = "Loudness:" + loudness;
+        //ctx.fillText(text, 20, 40);
+
+        ctx.fillStyle = "rgba(200,200,200,0.3)";
+        ctx.fillRect(10, this.height - 30, 100, 20);
+        ctx.fillRect(10, this.height - 30, 100*loudness, 20);
+
 
         ctx.restore();
     },

@@ -15,6 +15,7 @@ function($, THREE) {
 
     "use strict";
 
+
     /**
      * Rendering pre- and post-processing effects on the scene.
      */
@@ -348,7 +349,31 @@ function($, THREE) {
          */
         copyBuffer : function(readBuffer, writeBuffer) {
 
+        },
+
+        /**
+         * Clear WebGL render targets.
+         *
+         * @param {Object} buf WebGLRenderTarget or null for the screen.
+         *
+         * @parma {Number} alpha 0....1  of the background alpha where 0 is 100% transparent.
+         */
+        clear : function(buf, alpha) {
+
+            alpha = alpha !== undefined ? alpha : 0.0;
+
+            // For debugging purposes we set clear color alpha
+            if(buf) {
+                // texture target
+                this.renderer.setClearColorHex(0xff00ff, alpha);
+                this.renderer.clearTarget(buf, true, true, true);
+            } else {
+                // screen
+                this.renderer.setClearColorHex(0xff00ff, alpha);
+                this.renderer.clear(true, true, true);
+            }
         }
+
     };
 
 
@@ -637,7 +662,7 @@ function($, THREE) {
 
             strength = strength * capped;
 
-            console.log(strength);
+            // console.log(strength);
 
             var blurAmountX = strength / postprocessor.width;
             var blurAmountY = strength / postprocessor.height;
@@ -668,7 +693,6 @@ function($, THREE) {
     $.extend(BlenderPass.prototype, ShaderPass.prototype, {
 
         render : function (tex1, tex2, writeBuffer) {
-
             this.setMaterial(this.material);
             this.setTexture("tDiffuse1", tex1);
             this.setTexture("tDiffuse2", tex2);
@@ -676,9 +700,8 @@ function($, THREE) {
         }
     });
 
-    function superBlur(postprocessor, buffers, context, blur) {
+    function expandedEdgeBlur(postprocessor, buffers, context, blur) {
         // XXX: Work-in-progress code to test blur on larger arae
-
         postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, 1.05);
 
         postprocessor.stencilDebug = false;
@@ -714,10 +737,34 @@ function($, THREE) {
         var bloom = postprocessor.createPass(BloomPass);
         var fill = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.mooBlur2);
         var blend = postprocessor.createPass(BlenderPass);
-
-        fill.blending = THREE.AdditiveBlending;
+        var god = postprocessor.createPass(ShaderPass, THREE.Extras.Shaders.Godrays);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
+
+        /**
+         * Render shiny edge around the photo.
+         *
+         * Dump result to buffer 2.
+         */
+        function edgeBlur(postprocessor, buffers) {
+
+            var context = postprocessor.renderer.context;
+
+            var expand = 1.05;
+
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : false}, expand);
+
+            context.clearStencil(1);
+            postprocessor.setMaskMode("negative-fill");
+            postprocessor.renderWorld(buffers[0], { photo : true });
+            postprocessor.renderWorld(buffers[1], { photo : true });
+            postprocessor.renderWorld(buffers[2], { photo : true });
+            postprocessor.setMaskMode("clip");
+
+            //fill.render(buffers[0], buffers[1]);
+            blur.render(buffers[0], buffers[1], buffers[2], 10);
+        }
+
 
         // http://localhost:8000/demos/shader.html
         function pipeline(postprocessor, buffers) {
@@ -726,18 +773,12 @@ function($, THREE) {
                 throw new Error("Prior buffer allocation failed");
             }
 
-            function clear(buf) {
-                // For debugging purposes we set clear color alpha
-                renderer.setClearColorHex(0xff00ff, 0.0);
-                renderer.clearTarget(buf, true, true, true);
-            }
-
             var renderer = postprocessor.renderer;
 
             // Clean up both buffers for the start
-            clear(buffers[0]);
-            clear(buffers[1]);
-            clear(buffers[2]);
+            postprocessor.clear(buffers[0]);
+            postprocessor.clear(buffers[1]);
+            postprocessor.clear(buffers[2]);
 
             // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
@@ -786,15 +827,36 @@ function($, THREE) {
             // postprocessor.renderWorld(buffers[1], { photo : true });
 
             // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
+            //edgeBlur(postprocessor, buffers);
+
             postprocessor.setMaskMode("normal");
+
+            postprocessor.clear(buffers[1], 1.0);
+            postprocessor.renderWorld(buffers[1], {photo: true, frame : false});
+
+            god.setUniform("fExposure", 0.2);
+
+
+            var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
+
+            god.setUniform("fDensity", 0.5*capped);
+
+
+
+
+            //god.setUniform("fExposure", 0.2);
+
+
+            postprocessor.renderWorld(buffers[0], {photo: false, frame : true});
+
+            god.render(buffers[1], buffers[0]);
+
             postprocessor.renderWorld(buffers[0], {photo: true, frame : false});
-            blur.render(buffers[0], buffers[1]);
 
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
-
-            blend.render(buffers[0], buffers[1], buffers[2]);
-            fxaa.render(buffers[2], null);
-            // fxaa.render(buffers[0], null);
+            //blend.render(buffers[1], buffers[2], buffers[0]);
+            //fxaa.render(buffers[0], null);
+            // postprocessor.clear(null);
+            fxaa.render(buffers[0], null);
 
         }
 
