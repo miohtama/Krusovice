@@ -2,6 +2,7 @@
  * Provide <audio> like API for AudioBuffer.
  *
  * Thin wrapper around Audia library.
+ * Allow loading from local file system using FileReader.
  *
  */
 

@@ -8,6 +8,11 @@ var requireShim = {
         exports : "window.Audia"
     },
 
+    'spin': {
+        deps : [],
+        exports : "window.Spinner"
+    },
+
     'krusovice/thirdparty/remix/src/js/audio': {
         deps : ["krusovice/thirdparty/remix/src/js/utils"]
     },

@@ -19,8 +19,9 @@ require([
     "krusovice/analyses",
     "krusovice/renderers/postprocessing",
     "krusovice/tools/echonest",
+    "spin",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, echonest) {
+function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, echonest, Spinner) {
 
     "use strict";
 
@@ -263,27 +264,39 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             var file = $("#upload").get(0).files[0];
             var apiKey = window.localStorage.apiKey;
             var audio = new audiowrapper.AudioBufferWrapper();
+            var echoNestData = null;
+            var spinner;
 
             audio.volume = 0.2;
 
             this.nuke();
 
+            function onEchoNestFail() {
+                $(".container").prepend("<div class='alert'>Echo Nest did not give track analysis for this MP3</div>");
+                spinner.stop();
+            }
+
             function done(data) {
                 console.log("Done!!!");
+                spinner.stop();
+                audiowrapper.loadLocalAudioFile(audio, file, loaded);
             }
 
             function loaded() {
                 console.log("Local audio file loaded");
                 var design = self.createDesign();
-                delete design.songId;
+                design.songId = null;
                 design.songData = {};
                 design.songData.audio = audio;
                 self.playShow(design, audio, true);
             }
 
-            audiowrapper.loadLocalAudioFile(audio, file, loaded);
+            // First analyze + then playback locally
+            echonest.analyzeFile(apiKey, file, done, onEchoNestFail);
 
-            //echonest.analyzeFile(apiKey, file, done);
+
+            var target = document.getElementById("upload-load-indicator");
+            spinner = new Spinner().spin(target);
         },
 
         // Remove old UI elements

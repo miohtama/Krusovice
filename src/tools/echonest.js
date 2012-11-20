@@ -76,10 +76,11 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
      *
      * @param  {[type]}   apiKey [description]
      * @param  {[type]}   file   [description]
-     * @param  {Function} done   [description]
+     * @param  {Function} done   Called with succesful track analysis
+     * @param  {Function} failed   Called with unsuccesful track analysis
      * @return {[type]}          [description]
      */
-    function analyzeFile (apiKey, file, done) {
+    function analyzeFile (apiKey, file, done, failed) {
 
         var hash = null;
 
@@ -103,11 +104,19 @@ define(["krusovice/thirdparty/remix", "krusovice/thirdparty/sparkmd5"], function
 
                     if (response.track && response.track.audio_summary) {
                         console.log("Loading analysis URL:" + response.track.audio_summary.analysis_url);
+
+                        if(!response.track.audio_summary.analysis_url) {
+                            console.error("Echonest does not like us and didn't produce track analysis URL");
+                            if(failed) {
+                                failed();
+                                return;
+                            }
+                        }
+
                         nest.loadAnalysis(response.track.audio_summary.analysis_url, {
                             onload: function (result) {
                                 data.analysis = result;
                                 storeCachedResult(hash, JSON.stringify(data));
-                                debugger;
                             }
                         });
                     }
