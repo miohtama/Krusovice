@@ -838,13 +838,9 @@ function($, THREE) {
 
             god.setUniform("fExposure", 0.2);
 
-
-            var capped = 1 - Math.max(postprocessor.loudness - 0.5, 0) / 0.5;
+            var capped = postprocessor.loudness;
 
             god.setUniform("fDensity", 0.5*capped);
-
-
-
 
             //god.setUniform("fExposure", 0.2);
 

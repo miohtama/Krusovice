@@ -26,7 +26,11 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
     "use strict";
 
     // List of texts and images in the show
-    var showSource = "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg";
+    var showSource = "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg\n" +
+                     "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg\n" +
+                     "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg\n" +
+                     "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg\n" +
+                     "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg";
 
     // Media locations
     var initOptions = {
@@ -142,9 +146,6 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 this.renderer.setup();
 
                 postprocessing.setupPipeline(this.renderer);
-
-                $(document.body).append(this.renderer.renderer.domElement);
-
             };
 
         },
@@ -169,7 +170,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 smoothing : 0.5,
                 callback : function(bins) {
                     // Use one of the spectrum bins to set the post-processing effect strength
-                    self.show.externalLevel = bins[0];
+                    self.show.externalLevel = bins[3];
                 }
             });
             spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);

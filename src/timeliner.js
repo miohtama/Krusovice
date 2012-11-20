@@ -571,7 +571,7 @@ krusovice.Timeliner.prototype = {
             // This is to catch bad timing calculations
             // and prevent e.g. situation where all elements would start on
             // the same time
-            throw "Animation time failed - went to past";
+            // throw "Animation time failed - went to past";
         }
 
         return out;
