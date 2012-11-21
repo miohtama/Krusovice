@@ -119,7 +119,9 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             var design = new krusovice.Design({
                 plan : baseplan,
                 background : {
-                    backgroundId : "plain-sky"
+                    type: "texture",
+                    src: "crate.gif",
+                    color: 0xffFFff
                 },
                 songId : "test-song"
             });

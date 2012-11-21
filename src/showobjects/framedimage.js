@@ -64,7 +64,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
             throw new Error("Bad image input:" + this.image.src);
         }
 
-        console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
+        // console.log("FramedAndLabeledPhoto.prepare(): load: " + load + " image obj:" + this.data.image + " URL:" + this.data.imageURL);
 
         function imageLoaded() {
             self.framed = self.createFramedImage(self.image, width, height);
@@ -110,8 +110,8 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
      */
     createFramedImage : function(img, width, height) {
 
-       console.log("createFramedImage()");
-       console.log(this.data);
+       // console.log("createFramedImage()");
+       // console.log(this.data);
 
        if(!width || !height) {
            throw "Width and height missing";
@@ -148,7 +148,7 @@ $.extend(krusovice.showobjects.FramedAndLabeledPhoto.prototype, {
        buffer.height = size.height;
        buffer.naturalWidth = naturalWidth;
        buffer.naturalHeight = naturalHeight;
-       console.log("Buffer:" + size.width + " " + size.height);
+       //console.log("Buffer:" + size.width + " " + size.height);
 
        var nw = size.width;
        var nh = size.height;

@@ -5,10 +5,14 @@
 
 /*global define, console, jQuery, document, setTimeout */
 
-define("krusovice/backgrounds", ["krusovice/thirdparty/jquery-bundle",
+define("krusovice/backgrounds", [
+"krusovice/thirdparty/jquery-bundle",
 "krusovice/core",
 "krusovice/utils",
-"krusovice/tools/url"], function($, krusovice, utils, urltools) {
+"krusovice/tools/url",
+"krusovice/backgrounds/texture"
+],
+function($, krusovice, utils, urltools, TextureBackround) {
 
 "use strict";
 
@@ -137,7 +141,7 @@ krusovice.backgrounds.Background.prototype = {
 
     },
 
-    buildScene : function(loader, renderer) {
+    buildScene : function(renderer) {
     },
 
 
@@ -152,22 +156,26 @@ krusovice.backgrounds.Background.prototype = {
 
 krusovice.backgrounds.createBackground = function(type, duration, timeline, rhythmData, cfg) {
 
-       console.log("Creating background type:" + type);
+    var data;
+    console.log("Creating background type:" + type);
 
-       if(type == "plain") {
-           if(!cfg.color) {
-               throw "Color is missing";
-           }
-           return new krusovice.backgrounds.Plain(cfg);
-       } else if(type == "panorama-2d") {
-           var data = krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhythmData, cfg);
-           if(!data.frames) {
-               throw "Ooops";
-           }
-           return new krusovice.backgrounds.Scroll2D(cfg, data);
-       } else {
-           throw "Unknown background type:" + type;
+    if(type == "plain") {
+       if(!cfg.color) {
+           throw "Color is missing";
        }
+       return new krusovice.backgrounds.Plain(cfg);
+    } else if(type == "panorama-2d") {
+        data = krusovice.backgrounds.Scroll2D.createAnimation(duration, timeline, rhythmData, cfg);
+        if(!data.frames) {
+           throw "Ooops";
+        }
+        return new krusovice.backgrounds.Scroll2D(cfg, data);
+    } else if(type == "texture") {
+        data = null;
+        return new TextureBackround(cfg, data);
+    } else {
+       throw "Unknown background type:" + type;
+    }
 };
 
 /**

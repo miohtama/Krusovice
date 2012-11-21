@@ -349,8 +349,8 @@ krusovice.renderers.Three.prototype = {
 
         if(this.webGL && src.getContext) {
 
-            console.log("createQuad(), using src:");
-            console.log(src);
+            // console.log("createQuad(), using src:");
+            // console.log(src);
 
             texture = new THREE.Texture(src, THREE.UVMapping);
             texture.minFilter = THREE.LinearFilter;

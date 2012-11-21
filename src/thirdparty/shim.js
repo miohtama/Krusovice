@@ -13,6 +13,11 @@ var requireShim = {
         exports : "window.Spinner"
     },
 
+    'bootstrap': {
+        deps : ["krusovice/thirdparty/jquery"],
+        exports : "$"
+    },
+
     'krusovice/thirdparty/remix/src/js/audio': {
         deps : ["krusovice/thirdparty/remix/src/js/utils"]
     },

@@ -332,7 +332,6 @@ krusovice.Show.prototype = {
      *
      */
     prepare : function() {
-
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();
@@ -341,6 +340,27 @@ krusovice.Show.prototype = {
         this.prepareEffects();
         this.prepareWatermark();
         this.loadResources();
+    },
+
+    /**
+     * Called when all media resources are loaded.
+     */
+    finishLoading : function() {
+        var $this = $(this);
+
+        this.loaded = true;
+        console.log("All show resources loaded");
+        if(this.errorMessage) {
+            console.error("error status:" + this.errorMessage);
+        }
+
+        if(!this.errorMessage) {
+            $this.trigger("loadend");
+        }
+
+        this.buildScene();
+
+        $this.trigger("loaddone");
     },
 
     /**
@@ -354,7 +374,9 @@ krusovice.Show.prototype = {
     },
 
     /**
-     * ASync waiting loop until are resources are loaded
+     * Toggle asyncrhonous loading of media resources related to this show.
+     *
+     * Includes: photos themselves, textures, videos, music.
      */
     loadResources : function() {
 
@@ -374,12 +396,7 @@ krusovice.Show.prototype = {
 
 
         function loaddone() {
-            self.loaded = true;
-            console.log("All show resources loaded, error status:" + self.errorMessage);
-            if(!self.errorMessage) {
-                $this.trigger("loadend");
-            }
-            $this.trigger("loaddone");
+            self.finishLoading();
         }
 
         this.loader.callback = loadcb;
@@ -594,6 +611,13 @@ krusovice.Show.prototype = {
         }
 
         this.loader.loadImage(this.watermark.url, onWatermarkLoad);
+    },
+
+    /**
+     * Set up persistent 3D scene objects, like background
+     */
+    buildScene : function() {
+        this.background.buildScene(this.renderer);
     },
 
     /**

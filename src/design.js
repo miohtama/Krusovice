@@ -91,15 +91,19 @@ krusovice.Design.prototype = {
         /**
          * @type String
          *
-         * One of "video", "plain", "gradient", "skybox"
+         * One of "plain", "scroll-2d", "texture"
          */
         type : null,
 
         color : null,
 
-        imageId : null,
+        /**
+         * Texture, image, etc. media source file URL
+         *
+         * @type {String}
+         */
+        src : null
 
-        videoId : null
     },
 
 

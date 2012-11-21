@@ -1,11 +1,11 @@
 /*global define, window, console, jQuery, document, setTimeout, Image */
 
-define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
 "use strict";
 
 /**
  * Show media loader helper.
- * 
+ *
  * Load media elements like bg music, photos, etc. needed to run show.
  */
 krusovice.Loader = function(cfg) {
@@ -206,8 +206,33 @@ krusovice.Loader.prototype = {
         }
 
         return img;
+    },
 
+    /**
+     * Load a Three.JS texture
+     */
+    loadTexture : function(src, mapping, done) {
+
+        var self = this;
+
+        function onLoad(texture) {
+            self.mark("texture", 1); // Mark one texture less to load
+            done(texture);
+        }
+
+        function onError() {
+            var msg = "Failed to load texture:" + src;
+            console.error(msg);
+            self.setError(msg);
+        }
+
+        // One more texture to go
+        self.add("texture", 1);
+
+        THREE.ImageUtils.loadTexture(src, mapping, onLoad, onError);
     }
+
+
 
 };
 });

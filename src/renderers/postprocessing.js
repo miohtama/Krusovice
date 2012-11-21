@@ -15,6 +15,17 @@ function($, THREE) {
 
     "use strict";
 
+    function traverseHierarchy(root, callback ) {
+
+            var n, i, l = root.children.length;
+
+            for ( i = 0; i < l; i ++ ) {
+                    n = root.children[ i ];
+                    callback( n );
+                    traverseHierarchy( n, callback );
+            }
+    }
+
 
     /**
      * Rendering pre- and post-processing effects on the scene.
@@ -246,7 +257,7 @@ function($, THREE) {
             }
 
             // Override rendering properties of world objects
-            THREE.SceneUtils.traverseHierarchy(scene, function(object) {
+            traverseHierarchy(scene, function(object) {
 
                 if(!(object instanceof THREE.Mesh)) {
                     // Skip lights and stuff
