@@ -179,12 +179,14 @@ function($, THREE) {
 
                 this.overrideMaterial = null;
 
-            } else {
+            } else if(mode == "normal") {
                 // Normal
                 context.colorMask(true, true, true, true);
                 context.depthMask(true);
                 context.disable(context.STENCIL_TEST);
                 this.overrideMaterial = null;
+            } else {
+                throw new Error("Unknown clip mode:" + mode);
             }
         },
 
@@ -356,20 +358,21 @@ function($, THREE) {
          *
          * @param {Object} buf WebGLRenderTarget or null for the screen.
          *
-         * @parma {Number} alpha 0....1  of the background alpha where 0 is 100% transparent.
+         * @param {Number} alpha 0....1  of the background alpha where 0 is 100% transparent.
          */
-        clear : function(buf, alpha) {
+        clear : function(buf, alpha, color) {
 
             alpha = alpha !== undefined ? alpha : 0.0;
+            color = (color !== undefined) ? color : 0xff00ff;
 
             // For debugging purposes we set clear color alpha
             if(buf) {
                 // texture target
-                this.renderer.setClearColorHex(0xff00ff, alpha);
+                this.renderer.setClearColorHex(color, alpha);
                 this.renderer.clearTarget(buf, true, true, true);
             } else {
                 // screen
-                this.renderer.setClearColorHex(0xff00ff, alpha);
+                this.renderer.setClearColorHex(color, alpha);
                 this.renderer.clear(true, true, true);
             }
         }
@@ -688,8 +691,11 @@ function($, THREE) {
         }
     });
 
+    /* Mix ratio blending */
     function BlenderPass() {
-        this.shader = THREE.ShaderExtras.mooBlend;
+        //this.shader = THREE.ShaderExtras.mooBlend;
+        this.shader = THREE.ShaderExtras.blend;
+
     }
 
     $.extend(BlenderPass.prototype, ShaderPass.prototype, {
@@ -698,6 +704,22 @@ function($, THREE) {
             this.setMaterial(this.material);
             this.setTexture("tDiffuse1", tex1);
             this.setTexture("tDiffuse2", tex2);
+            this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
+        }
+    });
+
+    /* Additive blending */
+    function AdditiveBlenderPass() {
+        //this.shader = THREE.ShaderExtras.mooBlend;
+        this.shader = THREE.Extras.Shaders.Additive;
+    }
+
+    $.extend(AdditiveBlenderPass.prototype, ShaderPass.prototype, {
+
+        render : function (tex1, tex2, writeBuffer) {
+            this.setMaterial(this.material);
+            this.setTexture("tDiffuse", tex1);
+            this.setTexture("tAdd", tex2);
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
         }
     });
@@ -739,6 +761,7 @@ function($, THREE) {
         var bloom = postprocessor.createPass(BloomPass);
         var fill = postprocessor.createPass(ShaderPass, THREE.ShaderExtras.mooBlur2);
         var blend = postprocessor.createPass(BlenderPass);
+        var additiveBlend = postprocessor.createPass(AdditiveBlenderPass);
         var god = postprocessor.createPass(ShaderPass, THREE.Extras.Shaders.Godrays);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
@@ -778,9 +801,13 @@ function($, THREE) {
             var renderer = postprocessor.renderer;
 
             // Clean up both buffers for the start
-            postprocessor.clear(buffers[0]);
-            postprocessor.clear(buffers[1]);
-            postprocessor.clear(buffers[2]);
+            //postprocessor.clear(buffers[0]);
+            //postprocessor.clear(buffers[1]);
+            //postprocessor.clear(buffers[2]);
+
+            postprocessor.clear(buffers[0], 1.0, 0x000000);
+            postprocessor.clear(buffers[1], 1.0, 0x000000);
+            postprocessor.clear(buffers[2], 1.0, 0x000000);
 
             // Don't do Z-index test for anything further
             var context = postprocessor.renderer.context;
@@ -833,28 +860,54 @@ function($, THREE) {
 
             postprocessor.setMaskMode("normal");
 
-            postprocessor.clear(buffers[1], 1.0);
+            // Render the normal scene without any effect
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
+
+            // Render the pure photo on empty buffer
+            // which will act as the data for god effect
             postprocessor.renderWorld(buffers[1], {photo: true, frame : false});
 
-            god.setUniform("fExposure", 0.2);
-
+            // Setup god effect strength based on
+            // spectrum VU data
             var capped = postprocessor.loudness;
-
+            god.setUniform("fExposure", 0.2);
+            god.setUniform("fClamp", 0.8);
             god.setUniform("fDensity", 0.5*capped);
 
-            //god.setUniform("fExposure", 0.2);
 
+            // By default we mask the whole buffer so
+            // that all pixels get through (stencil=1)
+            context.clearStencil(1);
+            // Then we mask the area of the photo content
+            // in the stencil so that these pixels won't be touched in
+            // the next pass
+            postprocessor.setMaskMode("negative-fill");
+            // Set the clip mask on all buffers
+            postprocessor.renderWorld(buffers[1], { photo : true });
+            //postprocessor.renderWorld(buffers[1], { photo : true });
+            //postprocessor.renderWorld(buffers[2], { photo : true });
+            postprocessor.setMaskMode("clip");
 
+            // We render god ray effect now and it should
+            // not mess the pixels of photo itself as it is masked awa
             postprocessor.renderWorld(buffers[0], {photo: false, frame : true});
+            god.render(buffers[1], buffers[2]);
 
-            god.render(buffers[1], buffers[0]);
+            // Blend the godrays over the actual image, still honoring the
+            // clip mask
+            additiveBlend.render(buffers[0], buffers[2], buffers[1]);
 
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : false});
+            postprocessor.setMaskMode("normal");
 
-            //blend.render(buffers[1], buffers[2], buffers[0]);
-            //fxaa.render(buffers[0], null);
-            // postprocessor.clear(null);
-            fxaa.render(buffers[0], null);
+            // XXX: Fine-tune god ray blending
+            // context.clearStencil(1);
+            // postprocessor.clear(buffers[1], 1.0);
+            //blend.setUniform("mixRatio", 0);
+            //
+            //postprocessor.clear(buffers[2], 0, 0x000000);
+
+            // Output the anti-aliased result to the screen
+            fxaa.render(buffers[1], null);
 
         }
 

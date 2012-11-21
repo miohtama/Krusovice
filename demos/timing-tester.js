@@ -19,9 +19,10 @@ require([
     "krusovice/analyses",
     "krusovice/renderers/postprocessing",
     "krusovice/tools/echonest",
+    "bootstrap",
     "spin",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, echonest, Spinner) {
+function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, echonest, bootstrap, Spinner) {
 
     "use strict";
 
@@ -69,6 +70,8 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
         player : null,
 
+        spectrum : null,
+
         createDesign : function() {
 
             var baseplan = [];
@@ -78,7 +81,8 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 label : null,
                 duration : 3.5,
                 imageURL : "ukko.jpg",
-                borderColor : "#faa8833"
+                //borderColor : "#faa8833",
+                borderColor : "#333"
             };
 
             var lines = showSource.split("\n");
@@ -170,11 +174,14 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 smoothing : 0.5,
                 callback : function(bins) {
                     // Use one of the spectrum bins to set the post-processing effect strength
-                    self.show.externalLevel = bins[3];
+                    if(self.show) { // self.show is null on the moment when stopped
+                        self.show.externalLevel = bins[0];
+                    }
                 }
             });
             spectrum.bindToAudioContext(audio.bufferSource, audio.gainNode, audio.bufferSource.context);
             spectrum.start();
+            self.spectrum = spectrum;
         },
 
         /**
@@ -254,6 +261,8 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
                 // Safe reference for stopping
                 self.audio = audio;
+
+                audio.volume = 0.1;
             }
 
             initOptions.playCallback = playWithVisualizer;
@@ -336,6 +345,21 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 this.player.stop();
                 this.player = null;
             }
+
+            if(this.spectrum) {
+                this.spectrum.stop();
+                this.spectrum = null;
+            }
+        },
+
+        /**
+         * Stand playback instantly on page load.
+         *
+         * Useful for effect testing.
+         */
+        autoplay : function() {
+            var design = this.createDesign();
+            this.playShow(design, null, true);
         },
 
         run : function() {
@@ -364,6 +388,10 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             $("#play").click(function() {
                 self.audio.play();
             });
+
+            if($("#file-mode").val() == "stock") {
+                self.autoplay();
+            }
         }
 
 
