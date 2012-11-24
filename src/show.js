@@ -304,7 +304,11 @@ krusovice.Show.prototype = {
         frameLabel : false,
 
         // Fill photo area with single color fill instead of a texture
-        photoDebugFill : false
+        photoDebugFill : false,
+
+        // Show Three.js renderer raw canvas dump before any
+        // context2d functions can touch the data
+        exposeThreeCanvas : false
     },
 
     /**
@@ -581,10 +585,13 @@ krusovice.Show.prototype = {
                 webGL : this.webGL,
                 debugFill : this.renderFlags.photoDebugFill
             });
-
         }
 
         this.renderer.setup();
+
+        if(this.renderFlags.exposeThreeCanvas) {
+            document.body.appendChild(this.renderer.renderer.domElement);
+        }
     },
 
     preparePreviewWarning : function() {

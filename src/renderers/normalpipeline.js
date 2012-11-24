@@ -16,12 +16,15 @@ define(["krusovice/thirdparty/three-bundle",
 
             var renderer = postprocessor.renderer;
 
-            postprocessor.clear(buffers[0], 0.0, 0x000000);
+            postprocessor.clear(buffers[0], 1.0, 0xff00ff);
 
             // Draw photo as is to the buffer
-            postprocessor.setMaskMode("normal");
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
-            fxaa.render(buffers[0], null);
+            //postprocessor.setMaskMode("normal");
+            //postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
+            //fxaa.render(buffers[0], null);
+            //
+            renderer.clear();
+            postprocessor.renderWorld(null, {photo: true, frame : true});
         }
 
         postprocessor.prepare(pipeline);

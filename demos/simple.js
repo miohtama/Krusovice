@@ -1,12 +1,5 @@
 /**
-  * Show timing tester
-  *
-  * - WebGL reactive effect pipelien
-  *
-  * - Echo Nest API Javascript uploads
-  *
-  * - Spectrum analysis
-  *
+  * Play a simple generated WebGL show without music.
   */
 
 /*global require, window, jQuery, document, setTimeout, console, $, krusovice */
@@ -65,8 +58,7 @@ function(krusovice, quickplay) {
                 label : null,
                 duration : 3.5,
                 imageURL : "ukko.jpg",
-                //borderColor : "#faa8833",
-                borderColor : "#333"
+                borderColor : "#faa8833"
             };
 
             var lines = showSource.split("\n");
@@ -103,9 +95,8 @@ function(krusovice, quickplay) {
             var design = new krusovice.Design({
                 plan : baseplan,
                 background : {
-                    type: "texture",
-                    src: "crate.gif",
-                    color: 0xffFFff
+                    type: "plain",
+                    color: "#aaAAff"
                 },
                 songId : null
             });
@@ -137,7 +128,8 @@ function(krusovice, quickplay) {
                     frameLabel : true,
                     background : true,
                     scene : true,
-                    photoDebugFill : true
+                    photoDebugFill : true,
+                    exposeThreeCanvas : true
                 }
             };
 
