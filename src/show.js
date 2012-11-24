@@ -22,6 +22,11 @@ define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"
 krusovice.Show = function(cfg) {
     $.extend(this, cfg);
 
+    // We need to setup this early, as
+    // bindAudio() is called before prepare();
+    this.setupLoader();
+
+
 };
 
 krusovice.Show.prototype = {
@@ -334,15 +339,22 @@ krusovice.Show.prototype = {
     },
 
     /**
+     * Count loaded and ready media resources for this show.
+     */
+    setupLoader : function() {
+
+        // Media resource manager
+        this.loader = new krusovice.Loader();
+
+    },
+
+    /**
      * Start async media loading and preparation.
      *
      * Will set loaded flag and fire loaded event when ready.
      *
      */
     prepare : function() {
-
-        // Media resource manager
-        this.loader = new krusovice.Loader();
 
         this.prepareCanvas();
         this.prepareRenderer();

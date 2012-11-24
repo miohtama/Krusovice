@@ -7,7 +7,7 @@ define(["krusovice/thirdparty/three-bundle",
     function setupPipeline(krusoviceRenderer) {
 
         var postprocessor = new postprocessing.PostProcessor({ bufferCount : 3});
-        postprocessor.init(krusoviceRenderer.renderer, krusoviceRenderer.width, krusoviceRenderer.height);
+        postprocessor.init(krusoviceRenderer, krusoviceRenderer.width, krusoviceRenderer.height);
 
         var sepia = postprocessor.createPass(postprocessing.ShaderPass, THREE.SepiaShader);
         var film = postprocessor.createPass(postprocessing.ShaderPass, THREE.FilmShader);

@@ -50,6 +50,7 @@ function cssToOpenGLColor(cssColor) {
 krusovice.renderers.Three = function(cfg) {
     $.extend(this, cfg);
 
+
 };
 
 krusovice.renderers.Three.prototype = {
