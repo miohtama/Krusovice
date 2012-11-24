@@ -30,6 +30,20 @@ var requireShim = {
         deps : ["krusovice/thirdparty/remix/src/js/filter"]
     },
 
+    // Controls
+
+    "krusovice/thirdparty/controls/orbit": {
+        deps: ["krusovice/thirdparty/three"],
+        exports : "THREE.OrbitControls"
+    },
+
+    "krusovice/thirdparty/controls/trackball": {
+        deps: ["krusovice/thirdparty/three"],
+        exports : "THREE.TrackballControls"
+    },
+
+    // Shaders
+
     "krusovice/thirdparty/shaders/BasicShader": {
         deps: ["krusovice/thirdparty/three"]
     },

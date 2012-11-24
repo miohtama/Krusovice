@@ -35,6 +35,10 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
 
             this.mode = this.options.mode || "horizon";
 
+            if(!this.options.src) {
+                throw new Error("Texture src missing");
+            }
+
             // Asynchronous texture load / co-operate
             // with show resource manager
             loader.loadTexture(this.options.src, undefined, done);
@@ -46,7 +50,7 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
          * The plane is always XY and Z=0
          *
          */
-        buildScene : function(krusoviceRenderer) {
+        buildScene : function(world, krusoviceRenderer) {
 
             var renderer = krusoviceRenderer.renderer; // ThreeJS backend
 
@@ -57,14 +61,14 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
             var texture1 = this.texture;
 
             if(!texture1) {
-                throw new Error("Texture loading has failed, cannot proceed");
+                throw new Error("Texture loading has failed, cannot proceed:" + this.options.src);
             }
 
             var material1 = new THREE.MeshBasicMaterial( { color: 0xffffff, map: texture1 } );
 
             texture1.anisotropy = maxAnisotropy;
             texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-            texture1.repeat.set( 50, 50 );
+            texture1.repeat.set(world.wall.repeat[0], world.wall.repeat[1]);
 
             var geometry = new THREE.PlaneGeometry(sizeOfMYJewelry, sizeOfMYJewelry);
 

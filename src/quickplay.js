@@ -112,7 +112,8 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 elem : elem,
                 webGL : true,
                 background : design.background,
-                rhythmData : rhythmData
+                rhythmData : rhythmData,
+                design : design
             };
 
             if(audio) {

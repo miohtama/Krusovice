@@ -140,6 +140,55 @@ krusovice.Design.prototype = {
 
     },
 
+    /**
+     * 3D distances and constants used to tune the scene object positions and animations.
+     */
+    world : {
+
+        // Camera near z, far z
+        camera : {
+
+            clip : [0.1, 10000],
+
+            // Where is camera located (always watches 0,0,0 by default)
+            position: [0, 0, 650],
+
+            aspectRatio : 16/10,
+
+            // Camera field of view in degrees
+            fov : 60
+
+        },
+
+        wall : {
+
+            // Where is the wall plane positioned
+            // when rendering the "falling photos" mode
+            position: [0, 0, 1],
+
+            // Wall texture repeat and scaling factor
+            repeat : [50, 50]
+
+        },
+
+        // Where is directional the light casting the shadows
+        shadows : {
+            light : [0, 0, 500]
+        },
+
+        lights : {
+            ambient : {
+                color : 0xaaAAaa
+            },
+
+            spot : {
+                position : [0, 0, 1200],
+                color : 0xaaAaaa
+            }
+        }
+
+    },
+
 
     /**
      * @type String

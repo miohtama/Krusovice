@@ -7,12 +7,14 @@
 define("krusovice/renderers/three", [
 "krusovice/thirdparty/jquery-bundle",
 "krusovice/core",
+"krusovice/utils",
 "krusovice/thirdparty/three-bundle",
 "krusovice/renderers/twosidedplane",
 "krusovice/renderers/borderplane",
 "krusovice/renderers/normalpipeline",
-"krusovice/renderers/magicpipeline"
-], function($, krusovice, THREE, TwoSidedPlaneGeometry, BorderPlaneGeometry, normalPipeline, magicPipeline) {
+"krusovice/renderers/magicpipeline",
+"krusovice/thirdparty/controls/trackball"
+], function($, krusovice, utils, THREE, TwoSidedPlaneGeometry, BorderPlaneGeometry, normalPipeline, magicPipeline, TrackballControls) {
 
 'use strict';
 
@@ -68,6 +70,16 @@ krusovice.renderers.Three.prototype = {
     height : 0,
 
     /**
+     * Count rendered frames.
+     *
+     * @type {Number}
+     */
+    frameCounter : 0,
+
+    /** Print Three.js rendering stats for every 30th frame */
+    statsDebug : true,
+
+    /**
      * Background fill color we use to fill the renderer before proceeding.
      */
     backgroundColor : 0xaaAAff,
@@ -78,10 +90,12 @@ krusovice.renderers.Three.prototype = {
 
     scene : null,
 
+    hasControls : true,
+
     /**
-     * Scene drawing stencil mask objects
+     * Install controls for the scene to move camera
      */
-    maskScene : null,
+    controls : null,
 
     /**
      * Use WebGL backend
@@ -136,10 +150,12 @@ krusovice.renderers.Three.prototype = {
     /**
      * Setup the rendering infrastructure
      *
+     * @param {Object} world krusovice.Design.world definitions
+     *
      * @param  {String} postprocessingPipeline Which postprocessing backend to use. Default is normal.
      *
      */
-    setup : function(postprocessingPipeline) {
+    setup : function(world, postprocessingPipeline) {
 
         var renderer;
 
@@ -153,11 +169,12 @@ krusovice.renderers.Three.prototype = {
 
         renderer = this.renderer;
 
+        // XXX: Fix this aspect ratio madness
 
         // Let's assume that we have Field of View of 90 degrees
         // on 16:9 canvas
-        var baseAspect = 16/9;
-        var baseFOV = 50;
+        var baseAspect = world.camera.aspectRatio;
+        var baseFOV = world.camera.fov;
 
         // http://en.wikipedia.org/wiki/Field_of_view_in_video_games
         // http://www.codinghorror.com/blog/2007/08/widescreen-and-fov.html
@@ -166,8 +183,12 @@ krusovice.renderers.Three.prototype = {
 
         // set some camera attributes
         var aspect = this.width / this.height,
-            near = 0.1,
-            far = 10000;
+            near = world.camera.clip[0],
+            far = world.camera.clip[1];
+
+        if(near === undefined || far === undefined) {
+            throw new Error("World camera setup error");
+        }
 
         var fov;
 
@@ -183,11 +204,10 @@ krusovice.renderers.Three.prototype = {
             this.baseScaleLandscape = 1;
             this.baseScalePortrait = 1;
         } else {
-            fov = krusovice.utils.calculateFOV(baseAspect, aspect, baseFOV);
+            fov = utils.calculateFOV(baseAspect, aspect, baseFOV);
         }
 
         // var renderer = new THREE.WebGLRenderer();
-
         var camera = new THREE.PerspectiveCamera(fov,
                                       this.width / this.height,
                                       near,
@@ -197,17 +217,15 @@ krusovice.renderers.Three.prototype = {
 
 
         // Camera is always in fixed position
-        camera.position.z = 650;
+        camera.position = utils.toVector(world.camera.position);
 
         this.scene = scene;
-        this.maskScene = new THREE.Scene();
+
         this.camera = camera;
 
-        var halfWidth = this.width/2, halfHeight=this.height/2;
-        this.maskCamera = new THREE.OrthographicCamera( -halfWidth, halfWidth, halfHeight, -halfHeight, -10000, 10000 );
+        this.setupLights(world);
 
-        this.setupLights();
-
+        this.setupShadows(world);
 
         // Ugh... need to make a registry
         var pipeline = eval(postprocessingPipeline + "Pipeline");
@@ -216,13 +234,11 @@ krusovice.renderers.Three.prototype = {
             throw new Error("Unknown pipeline:" + pipeline);
         }
 
-
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
-        //renderer.shadowMapEnabled = true;
-        //renderer.physicallyBasedShading = true;
-
         pipeline.setupPipeline(this);
+
+        if(this.hasControls) {
+            this.setupControls();
+        }
 
     },
 
@@ -235,29 +251,79 @@ krusovice.renderers.Three.prototype = {
      * Photo content itself should react to the light less.
      *
      */
-    setupLights : function() {
+    setupLights : function(world) {
 
         var scene = this.scene;
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff);
-        directionalLight.position.set(0, 0.5, -1.0).normalize();
-        directionalLight.position.set(1, 1, 0.5).normalize();
-        directionalLight.castShadow = true;
+        var ambient = new THREE.AmbientLight(world.lights.ambient.color);
+        ambient.castShadow = false;
+        scene.add(ambient);
 
-        directionalLight.shadowMapWidth = 1024;
-        directionalLight.shadowMapHeight = 1024;
-        directionalLight.shadowCameraFov = 45;
-        directionalLight.shadowMapDarkness = 0.95;
-
-        //scene.add(directionalLight);
-
-        var ambient = new THREE.AmbientLight(0xaaAAaa);
-        scene.add( ambient );
-
-        var spotLight = new THREE.SpotLight( 0xaaaaaa );
-        spotLight.position.set(0, 0, 1200);
+        var spotLight = new THREE.SpotLight(world.lights.spot.color);
+        spotLight.position.set(utils.toVector(world.lights.spot.position));
         spotLight.castShadow = false;
-        scene.add( spotLight );
+        scene.add(spotLight);
+
+    },
+
+    /**
+     * Make directional light to cast shadows on the background wall.
+     *
+     * Background wall plane has receiveShadow set,
+     * other objects have castShadow set.
+     */
+    setupShadows : function(world) {
+
+        // This light does not illuminate objects, only
+        // casts the shadow for the effect
+        var renderer = this.renderer, d = 50000, scene = this.scene;
+        var light = new THREE.DirectionalLight(0x0000ff);
+
+        scene.add(light);
+
+        light.position.set(utils.toVector(world.shadows.light)).normalize();
+
+        light.castShadow = true;
+
+        light.shadowMapWidth = 1024;
+        light.shadowMapHeight = 1024;
+        light.shadowCameraFov = 45;
+        light.shadowMapDarkness = 0.95;
+
+        light.shadowCameraLeft = -d;
+        light.shadowCameraRight = d;
+        light.shadowCameraTop = d;
+        light.shadowCameraBottom = -d;
+
+        light.shadowCameraFar = 100000;
+        light.shadowDarkness = 0.9;
+
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        renderer.physicallyBasedShading = true;
+        renderer.shadowMapEnabled = true;
+    },
+
+    /**
+     * Do mouse controls
+     * @return {[type]} [description]
+     */
+    setupControls : function() {
+        this.controls = new TrackballControls(this.camera, this.elem.get(0));
+        this.controls.target.set( 0, 0, 0 );
+    },
+
+    updateControls : function() {
+
+        var now = new Date().getTime();
+
+        if(this.lastUpdate) {
+            var delta = now - this.lastUpdate;
+            this.controls.update(delta);
+        }
+
+        this.lastUpdate = now;
+
     },
 
     /**
@@ -454,11 +520,25 @@ krusovice.renderers.Three.prototype = {
 
 
     render : function(frontBuffer, time, loudness) {
+
         if(this.webGL) {
             this.renderGL(frontBuffer, time, loudness);
         } else {
             throw new Error("renderCanvas() no longer supported");
         }
+
+        if(this.controls) {
+            this.updateControls();
+        }
+
+        this.frameCounter++;
+    },
+
+    /**
+     * Check if do to stats dumping for this frame
+     */
+    isDebugOutputFrame : function() {
+        return (this.statsDebug && this.frameCounter % 30 === 0);
     },
 
     renderGL : function(frontBuffer, time) {

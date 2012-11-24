@@ -9,7 +9,7 @@ define(["krusovice/thirdparty/three-bundle",
     function setupPipeline(krusoviceRenderer) {
 
         var postprocessor = new postprocessing.PostProcessor();
-        postprocessor.init(krusoviceRenderer.renderer, krusoviceRenderer.width, krusoviceRenderer.height);
+        postprocessor.init(krusoviceRenderer, krusoviceRenderer.width, krusoviceRenderer.height);
 
         var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
         var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.CopyShader);

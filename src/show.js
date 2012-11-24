@@ -22,10 +22,6 @@ define("krusovice/show", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"
 krusovice.Show = function(cfg) {
     $.extend(this, cfg);
 
-    if(!this.loader) {
-        this.loader = new krusovice.Loader();
-    }
-
 };
 
 krusovice.Show.prototype = {
@@ -344,6 +340,10 @@ krusovice.Show.prototype = {
      *
      */
     prepare : function() {
+
+        // Media resource manager
+        this.loader = new krusovice.Loader();
+
         this.prepareCanvas();
         this.prepareRenderer();
         this.prepareTimeline();
@@ -414,7 +414,6 @@ krusovice.Show.prototype = {
         this.loader.errorCallback = loaderror;
         this.loader.allLoadedCallback = loaddone;
 
-
         console.log("Starting loading, total objects " + this.loader.totalElementsToLoad);
 
         $this.trigger("loadstart");
@@ -461,17 +460,11 @@ krusovice.Show.prototype = {
 
         this.animatedObjects = [];
 
-        // XXX: fix all tests to use show.timeline as input
-        if(this.design) {
-            // DEPRECATE ME
-            timeline = this.design.timeline;
-        } else {
-            timeline = this.timeline;
-        }
+        timeline = this.timeline;
 
         if(!timeline) {
             // no animated objects
-            return;
+            throw new Error("Show lacks animated objects");
         }
 
         timeline.forEach(function(e) {
@@ -592,7 +585,7 @@ krusovice.Show.prototype = {
             });
         }
 
-        this.renderer.setup(this.postprocessingPipeline);
+        this.renderer.setup(this.design.world, this.postprocessingPipeline);
 
         if(this.renderFlags.exposeThreeCanvas) {
             document.body.appendChild(this.renderer.renderer.domElement);
@@ -636,7 +629,7 @@ krusovice.Show.prototype = {
     buildScene : function() {
 
         if(this.background && this.background.buildScene) {
-            this.background.buildScene(this.renderer);
+            this.background.buildScene(this.design.world, this.renderer);
         }
     },
 

@@ -211,7 +211,9 @@ krusovice.showobjects.Base.prototype = {
 
         animationData.scale.multiplyScalar(baseScale);
 
-        // this.dumpAnimationData(animationData);
+        if(this.renderer.isDebugOutputFrame()) {
+            this.dumpAnimationData(animationData);
+        }
 
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 

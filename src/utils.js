@@ -10,6 +10,17 @@ define("krusovice/utils", ["krusovice/thirdparty/jquery-bundle", "krusovice/core
  * Misc. utility methods used by various modules.
  */
 krusovice.utils = {
+
+
+    /**
+     * Convert array to Three.jh vector
+     * @param  {Array} arr
+     * @return {THREE.Vector3}
+     */
+    toVector : function(arr) {
+        return new THREE.Vector3(arr[0], arr[1], arr[2]);
+    },
+
     isNumber : function (n) {
       return !isNaN(parseFloat(n)) && isFinite(n);
     },
@@ -358,38 +369,8 @@ krusovice.utils = {
       * http://stackoverflow.com/questions/1682495/jquery-resize-to-aspect-ratio/5654801#5654801
       */
      resizeAspectRatio : function(srcWidth, srcHeight, maxWidth, maxHeight) {
-
-        /*
-        var resizeWidth = srcWidth;
-        var resizeHeight = srcHeight;
-
-        var aspect = resizeWidth / resizeHeight;
-
-        if (resizeWidth > maxWidth)
-        {
-            resizeWidth = maxWidth;
-            resizeHeight = resizeWidth / aspect;
-        }
-
-        if (resizeHeight > maxHeight)
-        {
-            aspect = resizeWidth / resizeHeight;
-            resizeHeight = maxHeight;
-            resizeWidth = resizeHeight * aspect;
-        }
-
-        return { width : resizeWidth,
-                 height : resizeHeight };*/
-
-
         var ratio = [maxWidth / srcWidth, maxHeight / srcHeight ];
         ratio = Math.min(ratio[0], ratio[1]);
-
-        //ratio = [srcWidth * ratio, srcHeight * ratio]
-
-        //# Some codecs raquire w/h to be multiple of 4
-        //ratio = [ratio[0] - ratio[0] % 4, ratio[1] - ratio[1] % 4]
-
         return { width:srcWidth*ratio, height:srcHeight*ratio };
 
      },

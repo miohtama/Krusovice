@@ -9,10 +9,8 @@ define("krusovice/loader", ["krusovice/thirdparty/jquery-bundle", "krusovice/cor
  * Load media elements like bg music, photos, etc. needed to run show.
  */
 krusovice.Loader = function(cfg) {
-    $.extend(this, cfg);
-};
 
-krusovice.Loader.prototype = {
+    $.extend(this, cfg || {});
 
     /**
      * Dictionary of elements which are still being loaded.
@@ -20,12 +18,16 @@ krusovice.Loader.prototype = {
      * Must be populated in before prepare() or during prepare() using addForLoading
      *
      */
-    loadElements : {
+    this.loadElements = {
         video : 0,
         audio : 0,
-        images : 0,
-        backgroundImages : 0
-    },
+        image : 0,
+        backgroundImage : 0,
+        texture : 0
+    };
+};
+
+$.extend(krusovice.Loader.prototype, {
 
     totalElementsToLoad : 0,
 
@@ -38,7 +40,6 @@ krusovice.Loader.prototype = {
      *
      */
     callback : null,
-
 
     /**
      * @type Function
@@ -216,8 +217,8 @@ krusovice.Loader.prototype = {
         var self = this;
 
         function onLoad(texture) {
-            self.mark("texture", 1); // Mark one texture less to load
             done(texture);
+            self.mark("texture", 1); // Mark one texture less to load
         }
 
         function onError() {
@@ -232,7 +233,6 @@ krusovice.Loader.prototype = {
         THREE.ImageUtils.loadTexture(src, mapping, onLoad, onError);
     }
 
+});
 
-
-};
 });

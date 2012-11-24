@@ -33,7 +33,7 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
         for ( iy = 0; iy < gridY1; iy++ ) {
             for ( ix = 0; ix < gridX1; ix++ ) {
                 var x = ix * segment_width - width_half;
-                var y = gridY1 - (iy * segment_height - height_half);
+                var y = (gridY1-iy-1) * segment_height - height_half;
                 this.vertices.push(new THREE.Vector3( x, - y, 0 ));
             }
         }

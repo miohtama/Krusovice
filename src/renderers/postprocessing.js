@@ -46,8 +46,11 @@ function($, THREE, god) {
         /** Function which will take care of magic */
         pipeline : null,
 
+        krusoviceRenderer : null,
+
         /** THREE rendering instance (not our show renderer) */
         renderer : null,
+
         scene : null,
         camera : null,
 
@@ -78,33 +81,25 @@ function($, THREE, god) {
         /** Use debug fill material on quad2d so we see the projector target even if the render-to-texture fails*/
         materialDebug : false,
 
-        /** Print Three.js rendering stats for every 30th frame */
-        statsDebug : true,
-
         /** Used by 2d post-processing */
         camera2d : null,
         geometry2d : null,
         quad2d : null,
         scene2d : null,
 
-        init : function(renderer, width, height) {
+        init : function(krusoviceRenderer, width, height) {
 
-            if(!renderer) {
+            this.krusoviceRenderer = krusoviceRenderer;
+            this.renderer = krusoviceRenderer.renderer;
+
+            if(!this.renderer) {
                 throw new Error("Must give proper THREE.Renderer instance");
             }
 
-            this.renderer = renderer;
             this.renderer.autoClear = true;
             this.width = width;
             this.height = height;
             this.passes = [];
-        },
-
-        /**
-         * Check if do to stats dumping for this frame
-         */
-        isDebugOutputFrame : function() {
-            return (this.statsDebug && this.frameCounter % 30 === 0);
         },
 
         /**
@@ -113,6 +108,10 @@ function($, THREE, god) {
          */
         addPass : function(effect) {
             this.passes.push(effect);
+        },
+
+        isDebugOutputFrame : function() {
+            return this.krusoviceRenderer.isDebugOutputFrame();
         },
 
         /**
