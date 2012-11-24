@@ -629,7 +629,9 @@ krusovice.Show.prototype = {
      * Set up persistent 3D scene objects, like background
      */
     buildScene : function() {
-        this.background.buildScene(this.renderer);
+        if(this.background && this.background.buildScene) {
+            this.background.buildScene(this.renderer);
+        }
     },
 
     /**

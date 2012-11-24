@@ -8,8 +8,8 @@ define(["krusovice/thirdparty/three-bundle",
         var postprocessor = new postprocessing.PostProcessor({bufferCount : 1});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
-        debugger;
         var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
+        var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.CopyShader);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
@@ -22,11 +22,16 @@ define(["krusovice/thirdparty/three-bundle",
 
             // Draw photo as is to the buffer
             //postprocessor.setMaskMode("normal");
-            //postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
+            copy.render(buffers[0], null);
+
+
+            console.log(renderer.info);
             //fxaa.render(buffers[0], null);
             //
-            renderer.clear();
-            postprocessor.renderWorld(null, {photo: true, frame : true});
+            //renderer.setClearColor(0xff00ff, 0.5);
+            //renderer.clear();
+            //postprocessor.renderWorld(null, {photo: true, frame : true});
         }
 
         postprocessor.prepare(pipeline);
