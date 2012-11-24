@@ -51,6 +51,9 @@ function($, THREE, god) {
         scene : null,
         camera : null,
 
+        /** Keep internal frame counter */
+        frameCounter : 0,
+
         /**
          * Seconds since show start.
          *
@@ -75,6 +78,9 @@ function($, THREE, god) {
         /** Use debug fill material on quad2d so we see the projector target even if the render-to-texture fails*/
         materialDebug : false,
 
+        /** Print Three.js rendering stats for every 30th frame */
+        statsDebug : true,
+
         /** Used by 2d post-processing */
         camera2d : null,
         geometry2d : null,
@@ -95,6 +101,13 @@ function($, THREE, god) {
         },
 
         /**
+         * Check if do to stats dumping for this frame
+         */
+        isDebugOutputFrame : function() {
+            return (this.statsDebug && this.frameCounter % 30 === 0);
+        },
+
+        /**
          * Add one effect to the chain.
          *
          */
@@ -111,10 +124,6 @@ function($, THREE, god) {
         setup2DCamera : function() {
             var width = this.width, height = this.height;
 
-            //this.camera2d = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
-            //this.geometry2d = new THREE.PlaneGeometry(1, 1);
-            //this.geometry2d.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
-
             this.geometry2d = new THREE.PlaneGeometry(2, 2);
             this.camera2d = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -124,8 +133,6 @@ function($, THREE, god) {
             //this.geometry2d.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 3 ));
 
             this.quad2d = new THREE.Mesh(this.geometry2d, null);
-            //this.quad2d.position.z = -1.2;
-            //this.quad2d.scale.set(width, height, 1);
 
             this.scene2d = new THREE.Scene();
             this.scene2d.add(this.quad2d);
@@ -306,7 +313,9 @@ function($, THREE, god) {
 
             scene.overrideMaterial = this.overrideMaterial;
 
-            // console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects");
+            if(this.isDebugOutputFrame()) {
+                console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects");
+            }
 
             if(renderTarget) {
                 // buffer
@@ -342,6 +351,12 @@ function($, THREE, god) {
 
             // color + depth + stencil
             this.pipeline(this, this.buffers);
+
+            if(this.isDebugOutputFrame()) {
+                console.log(JSON.stringify(this.renderer.info));
+            }
+
+            this.frameCounter++;
 
             // Dump WebGL canvas on 2D canvas
             frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);

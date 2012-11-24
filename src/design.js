@@ -116,6 +116,11 @@ krusovice.Design.prototype = {
          */
         type : null,
 
+        /**
+         * Background color as RGB hex triplet
+         *
+         * @type {Number}
+         */
         color : null,
 
         /**

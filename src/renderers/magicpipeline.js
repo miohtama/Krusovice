@@ -4,10 +4,10 @@ define(["krusovice/thirdparty/three-bundle",
 
     "use strict";
 
-    function setupPipeline(renderer) {
+    function setupPipeline(krusoviceRenderer) {
 
         var postprocessor = new postprocessing.PostProcessor({ bufferCount : 3});
-        postprocessor.init(renderer.renderer, renderer.width, renderer.height);
+        postprocessor.init(krusoviceRenderer.renderer, krusoviceRenderer.width, krusoviceRenderer.height);
 
         var sepia = postprocessor.createPass(postprocessing.ShaderPass, THREE.SepiaShader);
         var film = postprocessor.createPass(postprocessing.ShaderPass, THREE.FilmShader);
@@ -30,12 +30,7 @@ define(["krusovice/thirdparty/three-bundle",
 
             var renderer = postprocessor.renderer;
 
-            // Clean up both buffers for the start
-            //postprocessor.clear(buffers[0]);
-            //postprocessor.clear(buffers[1]);
-            //postprocessor.clear(buffers[2]);
-
-            postprocessor.clear(buffers[0], 1.0, 0x000000);
+            postprocessor.clear(buffers[0], 0.0, krusoviceRenderer.backgroundColor);
             postprocessor.clear(buffers[1], 1.0, 0x000000);
             postprocessor.clear(buffers[2], 1.0, 0x000000);
 
@@ -46,52 +41,11 @@ define(["krusovice/thirdparty/three-bundle",
 
             // Draw photo as is to the buffer
             postprocessor.setMaskMode("normal");
-            //postprocessor.renderWorld(buffers[0], { photo : true }, 1.2);
-
-            // Do Bloom
-            //bloom.applyPass1(buffers[0]);
-            //bloom.applyPass2();
-
-            //postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
-            // Postprocessor.renderWorld(buffers[0], {frame : true, photo : false });
-
-
-            // Create target mask to operate only on photo content, not its frame
-            /*
-            postprocessor.setMaskMode("fill");
-            postprocessor.renderWorld(buffers[0], { photo : true });
-            postprocessor.renderWorld(buffers[1], { photo : true });
-
-            // Operate 2D filters only on the area masked by clip
-            postprocessor.setMaskMode("clip");
-            // Run sepia filter against masked area buffer 0 -> buffer 1
-            // sepia.setUniform("amount", 0.5);
-            // sepia.render(buffers[0], buffers[1]);
-
-            // Run film filter against masked area buffer 1 -> buffer 0
-            // film.setUniform("grayscale", 0);
-            // film.setUniform("sIntensity", 0.3);
-            // film.setUniform("nIntensity", 0.3);
-            // film.render(buffers[1], buffers[0]);
-
-            postprocessor.setMaskMode("normal");
-             */
-            // Overlay bloom image
-            // bloom.finalize(buffers[1]);
-            // postprocessor.renderWorld(buffers[2], {photo: false, frame : true});
-            //postprocessor.setMaskMode("normal");
-
-            // Mask the target buffer for photo area
-            // postprocessor.setMaskMode("fill");
-            // postprocessor.renderWorld(buffers[1], { photo : true });
-
-            // Copy buffer 0 to screen with FXAA (fake anti-alias) filtering
-            //edgeBlur(postprocessor, buffers);
 
             postprocessor.setMaskMode("normal");
 
             // Render the normal scene without any effect
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
+            postprocessor.renderWorld(buffers[0], {photo: true, frame : true, background:true});
 
             // Render the pure photo on empty buffer
             // which will act as the data for god effect
@@ -104,7 +58,6 @@ define(["krusovice/thirdparty/three-bundle",
             god.setUniform("fClamp", 0.8);
             god.setUniform("fDensity", 0.5*capped);
 
-
             // By default we mask the whole buffer so
             // that all pixels get through (stencil=1)
             context.clearStencil(1);
@@ -114,8 +67,6 @@ define(["krusovice/thirdparty/three-bundle",
             postprocessor.setMaskMode("negative-fill");
             // Set the clip mask on all buffers
             postprocessor.renderWorld(buffers[1], { photo : true });
-            //postprocessor.renderWorld(buffers[0], { photo : true });
-            //postprocessor.renderWorld(buffers[2], { photo : true });
             postprocessor.setMaskMode("clip");
 
             // We render god ray effect now and it should
@@ -127,12 +78,6 @@ define(["krusovice/thirdparty/three-bundle",
             // clip mask
             additiveBlend.render(buffers[0], buffers[2], buffers[1]);
 
-            // XXX: Fine-tune god ray blending
-            // context.clearStencil(1);
-            // postprocessor.clear(buffers[1], 1.0);
-            //blend.setUniform("mixRatio", 0);
-            //
-            //postprocessor.clear(buffers[2], 0, 0x000000);
             postprocessor.setMaskMode("normal");
 
             // Output the anti-aliased result to the screen
@@ -141,7 +86,7 @@ define(["krusovice/thirdparty/three-bundle",
         }
 
         postprocessor.prepare(pipeline);
-        postprocessor.takeOver(renderer);
+        postprocessor.takeOver(krusoviceRenderer);
 
     }
 

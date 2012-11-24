@@ -367,10 +367,9 @@ krusovice.Show.prototype = {
         }
 
         if(!this.errorMessage) {
+            this.buildScene();
             $this.trigger("loadend");
         }
-
-        this.buildScene();
 
         $this.trigger("loaddone");
     },
@@ -588,7 +587,8 @@ krusovice.Show.prototype = {
                 height : this.height,
                 elem : this.elem,
                 webGL : this.webGL,
-                debugFill : this.renderFlags.photoDebugFill
+                debugFill : this.renderFlags.photoDebugFill,
+                backgroundColor: this.background.color || 0xff00ff
             });
         }
 
@@ -634,6 +634,7 @@ krusovice.Show.prototype = {
      * Set up persistent 3D scene objects, like background
      */
     buildScene : function() {
+
         if(this.background && this.background.buildScene) {
             this.background.buildScene(this.renderer);
         }
@@ -826,7 +827,13 @@ krusovice.Show.prototype = {
         }
 
         if(this.background) {
-            this.background.render(this.ctx, renderClock);
+
+            if(this.background.render3d) {
+                this.background.render3d(this.renderer, renderClock);
+            } else {
+                // XXX: Old canvas 2d path, these backgrounds are going to be dropped
+                this.background.render(this.ctx, renderClock);
+            }
         }
 
     },

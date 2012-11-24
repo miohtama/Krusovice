@@ -67,6 +67,11 @@ krusovice.renderers.Three.prototype = {
      */
     height : 0,
 
+    /**
+     * Background fill color we use to fill the renderer before proceeding.
+     */
+    backgroundColor : 0xaaAAff,
+
     camera : null,
 
     renderer : null,
@@ -87,13 +92,6 @@ krusovice.renderers.Three.prototype = {
      * Use debug fill materials
      */
     debugFill : false,
-
-    /**
-     * Run rendered scene thru fragment shader post-processing step
-     *
-     * @type {Boolean}
-     */
-    usePostProcessing : false,
 
     // Default pixel sizes used for photo quad
     // Will be aspect ratio resized

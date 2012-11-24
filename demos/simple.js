@@ -95,8 +95,9 @@ function(krusovice, quickplay) {
             var design = new krusovice.Design({
                 plan : baseplan,
                 background : {
-                    type: "plain",
-                    color: "#aaAAff"
+                    type: "texture",
+                    src: "crate.gif",
+                    color : 0xaaaaff
                 },
                 songId : null
             });

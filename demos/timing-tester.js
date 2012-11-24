@@ -121,7 +121,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 background : {
                     type: "texture",
                     src: "crate.gif",
-                    color: 0xffFFff
+                    color: 0xaaAAff
                 },
                 songId : "test-song"
             });

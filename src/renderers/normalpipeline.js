@@ -6,10 +6,10 @@ define(["krusovice/thirdparty/three-bundle",
 
     "use strict";
 
-    function setupPipeline(renderer) {
+    function setupPipeline(krusoviceRenderer) {
 
         var postprocessor = new postprocessing.PostProcessor();
-        postprocessor.init(renderer.renderer, renderer.width, renderer.height);
+        postprocessor.init(krusoviceRenderer.renderer, krusoviceRenderer.width, krusoviceRenderer.height);
 
         var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
         var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.CopyShader);
@@ -22,11 +22,10 @@ define(["krusovice/thirdparty/three-bundle",
 
             // We draw the world directly to the screen
             // and let renderer use native anti-aliasing
+            postprocessor.renderer.setClearColorHex(krusoviceRenderer.backgroundColor, 1.0);
             postprocessor.renderer.clear();
-            postprocessor.renderWorld(null, {photo: true, frame : true});
+            postprocessor.renderWorld(null, {photo: true, frame : true, background: true});
             //copy.render(buffers[0], null);
-
-            //console.log(renderer.info);
             //fxaa.render(buffers[0], null);
             //
             //renderer.setClearColor(0xff00ff, 0.5);
@@ -35,7 +34,7 @@ define(["krusovice/thirdparty/three-bundle",
         }
 
         postprocessor.prepare(pipeline);
-        postprocessor.takeOver(renderer);
+        postprocessor.takeOver(krusoviceRenderer);
     }
 
     return {
