@@ -64,30 +64,44 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
 
             texture1.anisotropy = maxAnisotropy;
             texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-            texture1.repeat.set( 512, 512 );
+            texture1.repeat.set( 50, 50 );
 
             var geometry = new THREE.PlaneGeometry(sizeOfMYJewelry, sizeOfMYJewelry);
 
-            var mesh1 = new THREE.Mesh( geometry, material1 );
-            mesh1.rotation.x = - Math.PI / 2;
+            var mesh = new THREE.Mesh( geometry, material1 );
+            mesh.rotation.x = - Math.PI / 2;
             var scene = krusoviceRenderer.scene;
-            scene.add(mesh1);
+            scene.add(mesh);
 
             // Object type hint for 2d post-processing
-            mesh1.krusoviceTypeHint = "background";
+            mesh.krusoviceTypeHint = "background";
 
-            this.setupPlanePosition(mesh1);
+            // Allow photos to cast shadows on wall like background
+            mesh.receiveShadow = true;
 
-            this.mesh = mesh1;
+            this.setupPlane(krusoviceRenderer, scene, mesh);
+
+            this.mesh = mesh;
 
         },
 
-        setupPlanePosition : function(mesh) {
+        /**
+         * Do plane type specific setup
+         */
+        setupPlane : function(krusoviceRenderer, scene, mesh) {
             if(this.type == "horizon") {
                 mesh.position.z = -10000;
                 mesh.position.y = 2000;
                 mesh.rotation.x = -1.1*Math.PI/3;
+
+
+                mesh.scale = new THREE.Vector3(100, 100, 100);
+
                 mesh.updateMatrixWorld();
+
+
+                // Fade to horizon
+                scene.fog = new THREE.Fog(krusoviceRenderer.backgroundColor, 8000, 10000);
             } else {
                 throw new Error("Unknown background texture plane type " + this.type);
             }
@@ -100,6 +114,11 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
             var renderer = krusoviceRenderer.renderer;
 
             //this.mesh.position.z -= 1;
+            //
+            var mesh = this.mesh;
+            mesh.scale.x += 100;
+            mesh.scale.y += 100;
+            mesh.scale.z += 100;
 
             //this.mesh.position.y += 1;
             //this.mesh.rotation.x -= 0.01;
