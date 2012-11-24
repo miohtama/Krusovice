@@ -128,8 +128,8 @@ function(krusovice, quickplay) {
                     frameLabel : true,
                     background : true,
                     scene : true,
-                    photoDebugFill : true,
-                    exposeThreeCanvas : true
+                    photoDebugFill : false,
+                    exposeThreeCanvas : false
                 }
             };
 

@@ -69,6 +69,12 @@ function($, THREE, god) {
         /** Fill stencil with 0xff00ff color */
         stencilDebug : false,
 
+        /** Make othonogal projector quad to use a debug material */
+        projectorDebug : false,
+
+        /** Use debug fill material on quad2d so we see the projector target even if the render-to-texture fails*/
+        materialDebug : false,
+
         /** Used by 2d post-processing */
         camera2d : null,
         geometry2d : null,
@@ -105,13 +111,21 @@ function($, THREE, god) {
         setup2DCamera : function() {
             var width = this.width, height = this.height;
 
-            this.camera2d = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
-            this.geometry2d = new THREE.PlaneGeometry(1, 1);
-            this.geometry2d.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+            //this.camera2d = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, -10000, 10000 );
+            //this.geometry2d = new THREE.PlaneGeometry(1, 1);
+            //this.geometry2d.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+
+            this.geometry2d = new THREE.PlaneGeometry(2, 2);
+            this.camera2d = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+            // Enable these to see the polygon on the screen projected,
+            // without blocking all the background
+            //this.geometry2d.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI / 3 ));
+            //this.geometry2d.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 3 ));
 
             this.quad2d = new THREE.Mesh(this.geometry2d, null);
-            this.quad2d.position.z = -100;
-            this.quad2d.scale.set(width, height, 1);
+            //this.quad2d.position.z = -1.2;
+            //this.quad2d.scale.set(width, height, 1);
 
             this.scene2d = new THREE.Scene();
             this.scene2d.add(this.quad2d);
@@ -314,6 +328,12 @@ function($, THREE, god) {
          */
         render : function(frontBuffer, time, loudness, scene, camera) {
 
+            if(this.projectorDebug) {
+                this.quad2d.rotation.y += 0.01;
+                this.quad2d.rotation.z += 0.1;
+                this.quad2d.updateMatrixWorld();
+            }
+
             // XXX: Move
             this.scene = scene;
             this.camera = camera;
@@ -448,9 +468,12 @@ function($, THREE, god) {
                 uniforms: this.uniforms,
                 vertexShader: shader.vertexShader,
                 fragmentShader: shader.fragmentShader,
-                blending : this.blending,
-                transparent : false
+                //blending : this.blending,
+                transparent : true
             });
+
+
+
         },
 
         /**
@@ -464,13 +487,20 @@ function($, THREE, god) {
 
             this.updateUniforms(readBuffer, writeBuffer);
 
-            this.setMaterial(this.material);
+            if(this.postprocessor.materialDebug) {
+                var debugFillRed = new THREE.MeshBasicMaterial( {  color: 0xff0000 } );
+                this.Material(debugFillRed);
+            } else {
+                // Set quad2d texture target
+                this.setMaterial(this.material);
+            }
 
             if(writeBuffer) {
                 this.renderer.render(postprocessor.scene2d, postprocessor.camera2d, writeBuffer);
             } else {
                 this.renderer.render(postprocessor.scene2d, postprocessor.camera2d);
             }
+
         },
 
         /**
@@ -487,13 +517,14 @@ function($, THREE, god) {
          */
         updateUniforms : function(readBuffer, writeBuffer) {
 
+
             // Use existing real world scene buffer as source for the shader program
             //
             if(this.material.uniforms.tDiffuse) {
-                this.material.uniforms.tDiffuse.texture = readBuffer;
+                this.material.uniforms.tDiffuse.value = readBuffer;
             } else if(this.material.uniforms.texture) {
                 // triangleBlur
-                this.material.uniforms.texture.texture = readBuffer;
+                this.material.uniforms.texture.value = readBuffer;
             }
 
             if(this.material.uniforms.time !== undefined) {
@@ -509,16 +540,18 @@ function($, THREE, god) {
          * @param {Number} value new value
          */
         setUniform : function(name, value) {
+
             this.material.uniforms[name].value = value;
         },
 
 
         setTexture : function(name, tex) {
-            this.material.uniforms[name].texture = tex;
+            this.material.uniforms[name].value = tex;
         },
 
 
         render : function(source, target) {
+
             this.render2dEffect(source, target);
         }
 
@@ -618,7 +651,7 @@ function($, THREE, god) {
 
         // Render pass 1 to renderTargetX
         applyPass1 : function(readBuffer) {
-            this.convolutionUniforms.tDiffuse.texture = readBuffer;
+            this.convolutionUniforms.tDiffuse.value = readBuffer;
             this.convolutionUniforms.uImageIncrement.value = this.blurX;
             this.setMaterial(this.materialConvolution);
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetX);
@@ -628,7 +661,7 @@ function($, THREE, god) {
         applyPass2 : function() {
             // Render quad with blured scene into texture (convolution pass 2)
             this.setMaterial(this.materialConvolution);
-            this.convolutionUniforms.tDiffuse.texture = this.renderTargetX;
+            this.convolutionUniforms.tDiffuse.value = this.renderTargetX;
             this.convolutionUniforms.uImageIncrement.value = this.blurY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetY);
         },
@@ -637,31 +670,31 @@ function($, THREE, god) {
             // Render original scene with superimposed blur to texture
             // (additive blending
             this.setMaterial(this.materialScreen);
-            this.screenUniforms.tDiffuse.texture = this.renderTargetY;
+            this.screenUniforms.tDiffuse.value = this.renderTargetY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
         },
 
         // Check buffer aligment
         testRender : function(readBuffer, writeBuffer) {
             this.setMaterial(this.materialScreen);
-            this.screenUniforms.tDiffuse.texture = readBuffer;
+            this.screenUniforms.tDiffuse.value = readBuffer;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
         },
 
         testRender2 : function(readBuffer, writeBuffer) {
 
-            this.convolutionUniforms.tDiffuse.texture = readBuffer;
+            this.convolutionUniforms.tDiffuse.value = readBuffer;
             this.convolutionUniforms.uImageIncrement.value = this.blurX;
             this.setMaterial(this.materialConvolution);
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetX);
 
             this.setMaterial(this.materialConvolution);
-            this.convolutionUniforms.tDiffuse.texture = this.renderTargetX;
+            this.convolutionUniforms.tDiffuse.value = this.renderTargetX;
             this.convolutionUniforms.uImageIncrement.value = this.blurY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, this.renderTargetY);
 
             this.setMaterial(this.materialScreen);
-            this.screenUniforms.tDiffuse.texture = this.renderTargetY;
+            this.screenUniforms.tDiffuse.value = this.renderTargetY;
             this.renderer.render(this.postprocessor.scene2d, this.postprocessor.camera2d, writeBuffer);
         }
 

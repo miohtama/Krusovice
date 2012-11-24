@@ -1,3 +1,6 @@
+/**
+ * WebGL pipeline which does not do any special effects
+ */
 define(["krusovice/thirdparty/three-bundle",
 "krusovice/renderers/postprocessing"], function(THREE, postprocessing) {
 
@@ -5,7 +8,7 @@ define(["krusovice/thirdparty/three-bundle",
 
     function setupPipeline(renderer) {
 
-        var postprocessor = new postprocessing.PostProcessor({bufferCount : 1});
+        var postprocessor = new postprocessing.PostProcessor();
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
         var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
@@ -13,20 +16,17 @@ define(["krusovice/thirdparty/three-bundle",
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
-        // http://localhost:8000/demos/shader.html
         function pipeline(postprocessor, buffers) {
 
             var renderer = postprocessor.renderer;
 
-            postprocessor.clear(buffers[0], 1.0, 0xff00ff);
+            // We draw the world directly to the screen
+            // and let renderer use native anti-aliasing
+            postprocessor.renderer.clear();
+            postprocessor.renderWorld(null, {photo: true, frame : true});
+            //copy.render(buffers[0], null);
 
-            // Draw photo as is to the buffer
-            //postprocessor.setMaskMode("normal");
-            postprocessor.renderWorld(buffers[0], {photo: true, frame : true});
-            copy.render(buffers[0], null);
-
-
-            console.log(renderer.info);
+            //console.log(renderer.info);
             //fxaa.render(buffers[0], null);
             //
             //renderer.setClearColor(0xff00ff, 0.5);
