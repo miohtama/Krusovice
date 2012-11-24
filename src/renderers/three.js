@@ -1,10 +1,25 @@
+/**
+ * Krusovice Three.js renderer backend
+ */
+
 /*global define, console, jQuery, document, setTimeout, window */
 
-define("krusovice/renderers/three", ["krusovice/thirdparty/jquery-bundle", "krusovice/core", "krusovice/thirdparty/three-bundle"], function($, krusovice, THREE) {
+define("krusovice/renderers/three", [
+"krusovice/thirdparty/jquery-bundle",
+"krusovice/core",
+"krusovice/thirdparty/three-bundle",
+"krusovice/renderers/twosidedplane",
+"krusovice/renderers/borderplane"
+], function($, krusovice, THREE, TwoSidedPlaneGeometry, BorderPlaneGeometry) {
+
 'use strict';
 
 krusovice.renderers = krusovice.renderers || {};
 
+/**
+ * #ff00ff -> 0xff00ff
+ *
+ */
 function cssToOpenGLColor(cssColor) {
     return parseInt(cssColor.substring(1), 16);
 }
@@ -252,88 +267,11 @@ krusovice.renderers.Three.prototype = {
 
     },
 
-    /**
-     * Set-up image post processing fragment shaders
-     *
-     *
-     */
-    setupSepiaComposer : function() {
-
-        THREE.EffectComposer.setup(this.width, this.height);
-
-        var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat};
-
-        this.target = new THREE.WebGLRenderTarget(this.width, this.height, rtParameters);
-
-        var effectFilm = new THREE.FilmPass( 0.35, 0.025, 648, false );
-        var effectFilmBW = new THREE.FilmPass( 0.35, 0.5, 2048, true );
-
-        this.target2 = this.target.clone();
-        //this.bloomBuffer = this.target.clone();
-        //this.bloomBuffer2 = this.target.clone();
-        var composer = new THREE.EffectComposer(this.renderer, this.width, this.height);
-
-        var shaderSepia = THREE.ShaderExtras.sepia;
-        var effectSepia = new THREE.ShaderPass( shaderSepia );
-        effectSepia.uniforms.amount.value = 0.9;
-        var renderScene = new THREE.RenderPass(this.scene, this.camera);
-        //var renderModel2 = new THREE.RenderPass(this.scene, this.camera);
-        //this.maskObject = new THREE.RenderPass(this.maskScene, this.camera);
-        //var renderScene = new THREE.TexturePass(composer.renderTarget2);
-
-        composer.addPass(renderScene);
-        //composer3.addPass( renderMask );
-        //composer.addPass( effectSepia );
-        //
-        composer.addPass( effectFilm );
-        composer.addPass( effectSepia );
-
-        effectSepia.renderToScreen = true;
-
-
-        this.composer = composer;
-        //composer3.addPass( clearMask );
-        //composer.addPass( effectVignette );
-
-        //var renderModel = new THREE.RenderPass(this.maskScene, this.maskCamera);
-        ///*
-        //
-        /*
-        var maskModel = new THREE.MaskPass(this.maskScene, this.camera);
-        var clearMask = new THREE.ClearMaskPass();
-        var dotScreen = new THREE.DotScreenPass( new THREE.Vector2( 0, 0 ), 0.5, 0.6 );
-        //var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
-        //effectFilm.renderToScreen = true;
-
-        this.renderModel = renderModel;
-        this.maskModel = maskModel;
-        this.clearMask = clearMask;
-        this.copyPass = new THREE.ShaderPass(THREE.ShaderExtras.screen);
-
-        //renderModel.clear = false;
-        maskModel.clear = false;
-        clearMask.clear = false;
-        renderModel.clear = false;
-        renderModel2.clear = false;
-        this.maskObject.clear = false;
-        //renderScene.clear = false;
-
-        this.copyPass.clear = false;
-
-        this.composer = true;
-        var quadMask;
-
-        var plane = new THREE.PlaneGeometry( 1, 1 );
-        quadMask = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0xffaa00 } )  );
-        quadMask.position.z = -300;
-        quadMask.scale.set(this.width / 2, this.height/2, 1 );
-        this.maskScene.add( quadMask );
-        */
-    },
-
 
     /**
-     * Creates a 3D textured rectangle
+     * Creates a 3D textured rectangle.
+     *
+     * TODO: Clean up this function
      *
      * @param src Canvas back buffer used as the source material
      *
@@ -381,8 +319,8 @@ krusovice.renderers.Three.prototype = {
             borderWidth = 0;
         }
 
-        var bodyPlane = new THREE.TwoSidedPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
-        var borderPlane = new THREE.BorderPlaneGeometry(dimensions.width, dimensions.height, borderWidth, borderWidth, x, y);
+        var bodyPlane = new TwoSidedPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
+        var borderPlane = new BorderPlaneGeometry(dimensions.width, dimensions.height, borderWidth, borderWidth, x, y);
 
         var filler = new THREE.MeshBasicMaterial({map: texture});
 
@@ -396,14 +334,15 @@ krusovice.renderers.Three.prototype = {
         // Two sided faces each get their own material
         var material = new THREE.MeshFaceMaterial();
 
-        bodyPlane.materials[0] = bodyPlane.materials[1] = filler;
-        borderPlane.materials[0] = borderPlane.materials[1] = border;
+        //bodyPlane.materials[0] = bodyPlane.materials[1] = filler;
+        //borderPlane.materials[0] = borderPlane.materials[1] = border;
 
-        var bodyMesh = new THREE.Mesh(bodyPlane, material);
+        // Face materials are set by geometry constructor
+        var bodyMesh = new THREE.Mesh(bodyPlane, new THREE.MeshFaceMaterial([filler, filler]));
         // Consumed by post-processing
         bodyMesh.krusoviceTypeHint = "photo";
 
-        var borderMesh =  new THREE.Mesh(borderPlane, material);
+        var borderMesh =  new THREE.Mesh(borderPlane, new THREE.MeshFaceMaterial([border, border]));
         // Consumed by post-processing
         borderMesh.krusoviceTypeHint = "frame";
 
@@ -427,34 +366,6 @@ krusovice.renderers.Three.prototype = {
 
         //console.log("Base scale is:"+ mesh.baseScale);
         return object;
-    },
-
-
-    /**
-     * XXX: Not used
-     *
-     * http://superfad.com/missioncontrol/js/superglobe.js
-     */
-    createBorderLines : function(srcWidth, srcHeight, color) {
-
-        var dimensions = krusovice.utils.calculateAspectRatioFit(srcWidth, srcHeight, this.PLANE_WIDTH, this.PLANE_HEIGHT);
-
-        var plane = new THREE.LinePlaneGeometry(dimensions.width + 32, dimensions.height + 32);
-
-        var material = new THREE.LineBasicMaterial( {
-                opacity: 0.8,
-                linewidth: 10,
-                depthTest: false,
-                //blending: THREE.AdditiveBlending,
-                transparent : true } );
-
-        material.color.setRGB(1, 0, 1);
-
-        var mesh = new THREE.Line(plane, material);
-
-        mesh.useQuaternion = true;
-
-        return mesh;
     },
 
     /**
@@ -495,24 +406,12 @@ krusovice.renderers.Three.prototype = {
     },
 
 
-    setupBloom : function() {
-        this.effectBloom = new THREE.BloomPass(this.postProcessingStrength);
-    },
-
     render : function(frontBuffer, time, loudness) {
         if(this.webGL) {
             this.renderGL(frontBuffer, time, loudness);
         } else {
             throw new Error("renderCanvas() no longer supported");
         }
-    },
-
-    renderCanvas : function(frontBuffer) {
-        var scene = this.scene;
-        var camere = this.camera;
-
-        this.renderer.render(this.scene, this.camera);
-        frontBuffer.drawImage(this.renderer.domElement, 0, 0, this.width, this.height);
     },
 
     renderGL : function(frontBuffer, time) {
@@ -543,287 +442,5 @@ krusovice.renderers.Three.prototype = {
         return this.renderer.domElement.getContext("2d");
     }
 };
-
-
-/**
- * 3D object used to draw border around plane
- *
- * @param {[type]} width          [description]
- * @param {[type]} height         [description]
- * @param {[type]} segmentsWidth  [description]
- * @param {[type]} segmentsHeight [description]
- * @param {[type]} frameWidth     [description]
- * @param {[type]} frameHeight    [description]
- * @param {[type]} ax             Border x width
- * @param {[type]} ay             Border y width
- */
-THREE.BorderPlaneGeometry = function (width, height, frameWidth, frameHeight, ax, ay) {
-
-    THREE.Geometry.call( this );
-
-    var ix, iy,
-    width_half = width / 2,
-    height_half = height / 2,
-    normal = new THREE.Vector3( 0, 0, 1 ),
-    normal2 = new THREE.Vector3( 0, 0, -1 );
-
-    this.borderFaces = [];
-    var self = this;
-
-    function addBorderFace(left, top, right, bottom, v1, v2, v3, v4) {
-
-        if(v4 === undefined) {
-            throw "Ooops.";
-        }
-
-        var vi = self.vertices.length;
-
-        var uv = [
-            new THREE.UV( 0, 0 ),
-            new THREE.UV( 0, 1 ),
-            new THREE.UV(1, 1),
-            new THREE.UV(1, 0 )
-        ];
-
-        left -= width_half;
-        top -= height_half;
-        right -= width_half;
-        bottom -= height_half;
-
-        // console.log("face " + left + " " + top + " " + right + " " + bottom + " v1:" + v1 + " v2:" + v2 + " v3:" + v3 + " v4:" + v4);
-
-        self.vertices.push( new THREE.Vector3(ax + left, ay + top,  0));
-        self.vertices.push( new THREE.Vector3(ax + right, ay + top, 0));
-        self.vertices.push( new THREE.Vector3(ax + right, ay + bottom, 0));
-        self.vertices.push( new THREE.Vector3(ax + left, ay + bottom, 0));
-
-        // Create faces for both sides
-
-        var face = new THREE.Face4(vi, vi+1, vi+2, vi+3);
-        face.normal.copy( normal );
-        face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
-        face.materialIndex = 0;
-        self.faces.push( face );
-        self.borderFaces.push(face);
-
-        self.faceVertexUvs[0].push( [
-                    uv[v1], uv[v2], uv[v3], uv[v4]
-                ] );
-
-        face = new THREE.Face4(vi, vi+3, vi+2, vi+1);
-        face.normal.copy(normal2);
-        face.vertexNormals.push(normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone());
-        face.materialIndex = 1;
-        self.faces.push(face);
-        self.borderFaces.push(face);
-
-        self.faceVertexUvs[0].push( [
-                    uv[v1], uv[v3], uv[v2], uv[v1]
-                ] );
-
-
-    }
-
-    if(frameWidth > 0 && frameHeight > 0) {
-
-        // bl
-        addBorderFace(-frameWidth, -frameHeight, 0, 0,     0, 0, 2, 0);
-
-        // bottom
-        addBorderFace(0, -frameHeight, width, 0, 0,     0, 2, 2, 0);
-
-        // br
-        addBorderFace(width, -frameHeight, width+frameWidth, 0,    0, 0, 0, 2);
-
-        // ml
-        addBorderFace(-frameWidth, 0, 0, height,    0, 2, 2, 0);
-
-        // tl
-        addBorderFace(-frameWidth, height, 0, height+frameHeight,    0, 2, 0, 0);
-
-        // top
-        addBorderFace(0, height, width, height+frameHeight,    2, 2, 0, 0);
-
-        // tr
-        addBorderFace(width+frameWidth, height+frameHeight, width, height,    0, 0, 2, 0);
-
-        // mr
-        addBorderFace(width, 0, width+frameWidth, height,    2, 0, 0, 2);
-
-
-        //addBorderFace(-frameWidth, -frameHeight, width+frameWidth, 0, 0, 1, 2, 3);
-        //addBorderFace(-frameWidth, 0, 0, height, 0, 1, 2, 3);
-        //addBorderFace(width, 0, width+frameWidth, height, 0, 1, 2, 3);
-        //addBorderFace(-frameWidth, height, width+frameWidth, height+frameHeight, 0, 1, 2, 3);
-    }
-
-
-    var borderMaterial = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdd00dd, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading });
-    var borderMaterial2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x00dd00, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading });
-
-    this.materials = [borderMaterial, borderMaterial2];
-
-    this.computeCentroids();
-
-};
-
-
-THREE.BorderPlaneGeometry.prototype = new THREE.Geometry();
-
-THREE.BorderPlaneGeometry.prototype.constructor = THREE.BorderPlaneGeometry;
-
-/**
- * Create a two-sided plane
- */
-THREE.TwoSidedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight) {
-
-    THREE.Geometry.call( this );
-
-    var ix, iy,
-    width_half = width / 2,
-    height_half = height / 2,
-    gridX = segmentsWidth || 1,
-    gridY = segmentsHeight || 1,
-    gridX1 = gridX + 1,
-    gridY1 = gridY + 1,
-    segment_width = width / gridX,
-    segment_height = height / gridY,
-    normal = new THREE.Vector3( 0, 0, 1 ),
-    normal2 = new THREE.Vector3( 0, 0, -1 );
-
-    // Add UV coordinates for back fill material
-    this.faceVertexUvs.push([]);
-
-    // Body vertices
-    for ( iy = 0; iy < gridY1; iy++ ) {
-        for ( ix = 0; ix < gridX1; ix++ ) {
-            var x = ix * segment_width - width_half;
-            var y = iy * segment_height - height_half;
-            this.vertices.push(new THREE.Vector3( x, - y, 0 ));
-        }
-    }
-
-    for ( iy = 0; iy < gridY; iy++ ) {
-
-        for ( ix = 0; ix < gridX; ix++ ) {
-
-            var a = ix + gridX1 * iy;
-            var b = ix + gridX1 * ( iy + 1 );
-            var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-            var d = ( ix + 1 ) + gridX1 * iy;
-
-            var face = new THREE.Face4( a, b, c, d );
-            face.normal.copy( normal );
-            face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
-
-            face.materialIndex = 0;
-
-            this.faces.push( face );
-            this.faceVertexUvs[ 0 ].push( [
-                        new THREE.UV( ix / gridX, iy / gridY ),
-                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY )
-                    ] );
-
-            // Back side
-
-            face = new THREE.Face4( a, d, c, b );
-            face.normal.copy( normal2 );
-            face.vertexNormals.push( normal2.clone(), normal2.clone(), normal2.clone(), normal2.clone() );
-
-            face.materialIndex = 1;
-
-            this.faces.push( face );
-            this.faceVertexUvs[0].push( [
-                        new THREE.UV( ix / gridX, iy / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, iy / gridY ),
-                        new THREE.UV( ( ix + 1 ) / gridX, ( iy + 1 ) / gridY ),
-                        new THREE.UV( ix / gridX, ( iy + 1 ) / gridY )
-                    ] );
-
-
-        }
-
-    }
-
-    var fillMaterial = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );
-
-    this.materials = [fillMaterial, fillMaterial];
-
-    this.computeCentroids();
-
-};
-
-THREE.TwoSidedPlaneGeometry.prototype = new THREE.Geometry();
-
-THREE.TwoSidedPlaneGeometry.prototype.constructor = THREE.TwoSidedPlaneGeometry;
-
-
-// http://data-arts.appspot.com/globe/globe.js
-
-// http://superfad.com/missioncontrol/js/superglobe.js
-
-THREE.LinePlaneGeometry = function(width, height) {
-    THREE.Geometry.call( this );
-
-    var ix, iy;
-    var width_half = width / 2,
-    height_half = height / 2,
-    gridY = 1,
-    gridX = 1,
-    normal = new THREE.Vector3( 0, 0, -1 ),
-    normal2 = new THREE.Vector3( 0, 0, 1 );
-
-    // Body vertices
-
-    var x = width_half;
-    var y = height_half;
-
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, -y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( x, -y, 0 ) ) );
-    this.vertices.push( new THREE.Vertex( new THREE.Vector3( -x, -y, 0 ) ) );
-
-
-};
-
-THREE.LinePlaneGeometry.prototype = new THREE.Geometry();
-
-THREE.LinePlaneGeometry.prototype.constructor = THREE.LinePlaneGeometry;
-
-
-THREE.CustomShaders = {
-    'alphaedge' : {
-      uniforms: {
-            "color" : { type: "v3", value: new THREE.Vector3(1, 0, 1) },
-            "intensity" : { type: "f", value: 0 }
-      },
-      vertexShader: [
-        'varying vec2 vUv;',
-        'varying vec3 vNormal;',
-        'void main() {',
-          'vNormal = normalize( normalMatrix * normal );',
-          'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-          'vUv = uv;',
-        '}'
-      ].join('\n'),
-      fragmentShader: [
-        'varying vec2 vUv;',
-        'varying vec3 vNormal;',
-        "uniform vec3 color;",
-        "uniform float intensity;",
-         'void main() {',
-          'float distance = dot(vUv, vUv);',
-          'float e = intensity * distance;',
-          'vec4 add = vec4(color.x, color.y, color.z, e*0.8);',
-          //'vec4 mix = vec4(gl_FragColor.r + color.x /2.0, 0.5, 0.5, 1);',
-          //'vec4 clamped = vec4(clamp(add.x, add.y, add.z, e));',
-          'gl_FragColor = add;',
-        '}'
-      ].join('\n')
-    }
-  };
 
 });

@@ -47,6 +47,27 @@ krusovice.Design.clean = function(design) {
 };
 
 /**
+ * Check if a particular design has some kind of audio associated with it
+ *
+ * @param  {krusovice.Design}  design
+ */
+krusovice.Design.hasMusic = function(design) {
+    if(design.songId) {
+        // XXX: Remove BBB
+        return true;
+    }
+
+    var d = design.songData;
+    if(d) {
+        if(d.id || d.url || d.audio) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
  *
  */
 krusovice.Design.prototype = {
@@ -109,6 +130,8 @@ krusovice.Design.prototype = {
 
     /**
      * @type String
+     *
+     * XXX: Remove - use songData block
      *
      * Background song id. Song id is associated with the serve side music file and generated rhythm analysis data.
      */

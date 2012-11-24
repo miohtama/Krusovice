@@ -65,17 +65,30 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         function playDefault(show, audio, plan, config) {
 
             // Sync with audio clock
-            show.bindToAudio(audio);
+            if(audio) {
+                show.bindToAudio(audio);
 
-            // Auto-start
-            $(show).bind("loadend", function() {
-                console.log("Rendering the show");
-                $(audio).bind("canplay", function() {
-                    audio.play();
+                // Auto-start
+                $(show).bind("loadend", function() {
+                    console.log("Rendering the show");
+
+                    if(audio) {
+                        $(audio).bind("canplay", function() {
+                            audio.play();
+                        });
+                    } else {
+
+                    }
                 });
-            });
 
-            setupFadeOut(show, audio);
+                setupFadeOut(show, audio);
+            } else {
+                // Use clock based playback
+                var controller = show.bindToClock();
+                $(show).bind("loadend", function() {
+                    controller.play();
+                });
+            }
 
         }
 
@@ -84,7 +97,9 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
 
             console.log("createShow()");
 
-            var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, audio.rhythmData, design.transitions);
+            var rhythmData = audio && audio.rhythmData || null;
+
+            var timeliner = krusovice.Timeliner.createSimpleTimeliner(design.plan, rhythmData, design.transitions);
 
             timeliner.updateFromDesign(design);
 
@@ -97,12 +112,13 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
                 elem : elem,
                 webGL : true,
                 background : design.background,
-                rhythmData : audio.rhythmData,
-                levelData : audio.levelData
+                rhythmData : rhythmData
             };
 
-            if(!audio.rhythmData && !initOptions.ignoreRhythmData) {
-                throw new Error("audio.rhytmData missing");
+            if(audio) {
+                if(!audio.rhythmData && !initOptions.ignoreRhythmData) {
+                    throw new Error("audio.rhytmData missing");
+                }
             }
 
             /*
@@ -129,19 +145,24 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
             krusovice.texts.Registry.init(initOptions.textMediaURL);
         }
 
-        if(!initOptions.audio) {
+        // Setup audio playback if design has a background song
+        if(krusovice.Design.hasMusic(design)) {
+            if(!initOptions.audio) {
 
-            // Load <audio> element for song playback
-            if(!audiowrapper.hasAudioBufferSupport()) {
-                audio = document.createElement("audio");
-                audio.controls = true;
-                elem.append(audio);
+                // Load <audio> element for song playback
+                if(!audiowrapper.hasAudioBufferSupport()) {
+                    audio = document.createElement("audio");
+                    audio.controls = true;
+                    elem.append(audio);
+                } else {
+                    audio = new audiowrapper.AudioBufferWrapper();
+                }
+
             } else {
-                audio = new audiowrapper.AudioBufferWrapper();
+                // Use whatever <audio> element was given in init
+                audio = initOptions.audio;
             }
 
-        } else {
-            audio = initOptions.audio;
         }
 
         var startup = new krusovice.Startup(initOptions);
@@ -155,13 +176,22 @@ define("krusovice/quickplay", ["krusovice/thirdparty/jquery-bundle", "krusovice/
         $.when(startupLoader).done(function() {
 
             var songLoader = krusovice.music.Registry.loadSongFromDesign(design, audio, initOptions.prelistenSongs, false);
-            songLoader.fail(function(msg) {
-                console.erro("Song loader failed:" + msg);
-            });
 
-            songLoader.done(function() {
+            if(songLoader) {
+
+                // There was a song associated with the show
+                songLoader.fail(function(msg) {
+                    console.erro("Song loader failed:" + msg);
+                });
+
+                songLoader.done(function() {
+                    createShow();
+                });
+            } else {
+                // Mute show
                 createShow();
-            });
+            }
+
 
         });
     }

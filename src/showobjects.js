@@ -1,6 +1,10 @@
 /*global define, console, jQuery, document, setTimeout */
 
-define("krusovice/showobjects", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
+define("krusovice/showobjects",
+["krusovice/thirdparty/jquery-bundle",
+"krusovice/core",
+"krusovice/thirdparty/three-bundle"
+], function($, krusovice, THREE) {
 'use strict';
 
 krusovice.showobjects = krusovice.showobjects || {};
@@ -237,19 +241,21 @@ krusovice.showobjects.Base.prototype = {
     },
 
     /**
-     * Handle apply opacity.
+     * Handle opacity animation.
      *
-     * XXX: Do this smarter
      */
     setOpacity : function(mesh, opacity) {
 
-        var objects = [ mesh.bodyObject, mesh.borderObject ];
+        var objects = [mesh.bodyObject, mesh.borderObject];
 
         objects.forEach(function(mesh) {
-            var materials = mesh.geometry.materials;
-            materials.forEach(function(m) {
-               m.opacity =  opacity;
-            });
+            // Assume MeshFaceMaterial
+            if(mesh.geometry.material instanceof THREE.MeshFaceMaterial) {
+                var materials = mesh.geometry.material.materials;
+                materials.forEach(function(m) {
+                   m.opacity =  opacity;
+                });
+            }
         });
     },
 

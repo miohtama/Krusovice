@@ -1,0 +1,43 @@
+<html>
+        <!-- Render something simple to see that the rendering backend works -->
+<head>
+
+    <meta charset='utf-8'>
+
+    <script src="../src/thirdparty/require.js"></script>
+    <script src="../src/thirdparty/shim.js"></script>
+    <script type="text/javascript">
+        require.config({
+            paths : {
+                krusovice: "../src",
+                audia: "../src/thirdparty/audia",
+                bootstrap: "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min"
+            },
+
+            shim : requireShim
+        });
+    </script>
+
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="simple.js"></script>
+
+    <style>
+        #show canvas {
+            border: 1px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Krusovice Simple Rendering Backend test</h1>
+
+        <p>Will display a rotating photo</p>
+
+        <div id="show"></div>
+    </div>
+</body>
+</html>
