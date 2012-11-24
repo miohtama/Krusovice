@@ -114,7 +114,7 @@ define(["krusovice/thirdparty/three-bundle",
             postprocessor.setMaskMode("negative-fill");
             // Set the clip mask on all buffers
             postprocessor.renderWorld(buffers[1], { photo : true });
-            //postprocessor.renderWorld(buffers[1], { photo : true });
+            //postprocessor.renderWorld(buffers[0], { photo : true });
             //postprocessor.renderWorld(buffers[2], { photo : true });
             postprocessor.setMaskMode("clip");
 
@@ -127,14 +127,13 @@ define(["krusovice/thirdparty/three-bundle",
             // clip mask
             additiveBlend.render(buffers[0], buffers[2], buffers[1]);
 
-            postprocessor.setMaskMode("normal");
-
             // XXX: Fine-tune god ray blending
             // context.clearStencil(1);
             // postprocessor.clear(buffers[1], 1.0);
             //blend.setUniform("mixRatio", 0);
             //
             //postprocessor.clear(buffers[2], 0, 0x000000);
+            postprocessor.setMaskMode("normal");
 
             // Output the anti-aliased result to the screen
             fxaa.render(buffers[1], null);

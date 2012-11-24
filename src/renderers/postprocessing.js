@@ -306,7 +306,7 @@ function($, THREE, god) {
 
             scene.overrideMaterial = this.overrideMaterial;
 
-            console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects");
+            // console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects");
 
             if(renderTarget) {
                 // buffer
