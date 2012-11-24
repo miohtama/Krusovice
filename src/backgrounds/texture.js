@@ -21,7 +21,7 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
         mesh : null,
 
         // horizon, wall
-        type : null,
+        mode : null,
 
         /**
          * Load the referred texture in the memory
@@ -33,7 +33,7 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
                 self.texture = texture;
             }
 
-            this.type = this.data.type || "horizon";
+            this.mode = this.options.mode || "horizon";
 
             // Asynchronous texture load / co-operate
             // with show resource manager
@@ -89,22 +89,23 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
          * Do plane type specific setup
          */
         setupPlane : function(krusoviceRenderer, scene, mesh) {
-            if(this.type == "horizon") {
+            if(this.mode == "horizon") {
                 mesh.position.z = -10000;
                 mesh.position.y = 2000;
                 mesh.rotation.x = -1.1*Math.PI/3;
 
 
-                mesh.scale = new THREE.Vector3(100, 100, 100);
-
-                mesh.updateMatrixWorld();
-
-
                 // Fade to horizon
                 scene.fog = new THREE.Fog(krusoviceRenderer.backgroundColor, 8000, 10000);
+            } else if(this.mode == "wall") {
+                mesh.position.z = -4000;
+                mesh.rotation.x = 0;
             } else {
-                throw new Error("Unknown background texture plane type " + this.type);
+                throw new Error("Unknown background texture plane type " + this.mode);
             }
+
+            mesh.updateMatrixWorld();
+
         },
 
         // XXX: Nothing to do
@@ -116,12 +117,9 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
             //this.mesh.position.z -= 1;
             //
             var mesh = this.mesh;
-            mesh.scale.x += 100;
-            mesh.scale.y += 100;
-            mesh.scale.z += 100;
 
-            //this.mesh.position.y += 1;
-            //this.mesh.rotation.x -= 0.01;
+            this.mesh.position.z -= 1;
+            //this.mesh.rotation.x += 0.01;
             this.mesh.updateMatrixWorld();
         }
 

@@ -153,6 +153,7 @@ krusovice.renderers.Three.prototype = {
 
         renderer = this.renderer;
 
+
         // Let's assume that we have Field of View of 90 degrees
         // on 16:9 canvas
         var baseAspect = 16/9;
@@ -215,6 +216,12 @@ krusovice.renderers.Three.prototype = {
             throw new Error("Unknown pipeline:" + pipeline);
         }
 
+
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        //renderer.shadowMapEnabled = true;
+        //renderer.physicallyBasedShading = true;
+
         pipeline.setupPipeline(this);
 
     },
@@ -235,6 +242,13 @@ krusovice.renderers.Three.prototype = {
         var directionalLight = new THREE.DirectionalLight(0xffffff);
         directionalLight.position.set(0, 0.5, -1.0).normalize();
         directionalLight.position.set(1, 1, 0.5).normalize();
+        directionalLight.castShadow = true;
+
+        directionalLight.shadowMapWidth = 1024;
+        directionalLight.shadowMapHeight = 1024;
+        directionalLight.shadowCameraFov = 45;
+        directionalLight.shadowMapDarkness = 0.95;
+
         //scene.add(directionalLight);
 
         var ambient = new THREE.AmbientLight(0xaaAAaa);

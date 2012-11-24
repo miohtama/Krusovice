@@ -97,7 +97,8 @@ function(krusovice, quickplay) {
                 background : {
                     type: "texture",
                     src: "crate.gif",
-                    color : 0xaaaaff
+                    color : 0xaaaaff,
+                    mode : "wall"
                 },
                 songId : null
             });

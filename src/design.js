@@ -117,6 +117,14 @@ krusovice.Design.prototype = {
         type : null,
 
         /**
+         * Specify subtype of background inside the renderer.
+         *
+         * For example, for texture this can be "horizon" or "wall"
+         * @type {String}
+         */
+        mode : null,
+
+        /**
          * Background color as RGB hex triplet
          *
          * @type {Number}

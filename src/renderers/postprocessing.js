@@ -268,6 +268,9 @@ function($, THREE, god) {
             var scene = this.scene, camera = this.camera,
                 visibleCount = 0, hiddenCount = 0;
 
+            // Do we have a scene where there is a shadow receiver (backgroudn wall)
+            var hasShadows = false;
+
             if(!scale) {
                 scale = 1.0;
             }
@@ -280,14 +283,17 @@ function($, THREE, god) {
                 throw new Error("Bad camera");
             }
 
-
-
             // Override rendering properties of world objects
             traverseHierarchy(scene, function(object) {
 
                 if(!(object instanceof THREE.Mesh)) {
                     // Skip lights and stuff
                     return;
+                }
+
+                // We got a background here
+                if(object.receiveShadow) {
+                    hasShadows = true;
                 }
 
                 var hint = object.krusoviceTypeHint;
@@ -311,10 +317,25 @@ function($, THREE, god) {
                 object.scale = new THREE.Vector3(scale, scale, scale);
             });
 
+
+            // Set shadowing hints
+            // We need to render shadows only against the background all
+            // -> not in post-processing tricks
+            traverseHierarchy(scene, function(object) {
+                var hint = object.krusoviceTypeHint;
+                if(hint == "photo" || hint == "frame") {
+                    if(hasShadows) {
+                        object.castShadow = true;
+                    } else {
+                        object.castShadow = false;
+                    }
+                }
+            });
+
             scene.overrideMaterial = this.overrideMaterial;
 
             if(this.isDebugOutputFrame()) {
-                console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects");
+                console.log("Rendering scene. Visible " + visibleCount + " hidden " + hiddenCount + " objects. Shadows:" + hasShadows);
             }
 
             if(renderTarget) {
