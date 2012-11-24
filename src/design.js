@@ -53,7 +53,7 @@ krusovice.Design.clean = function(design) {
  */
 krusovice.Design.hasMusic = function(design) {
     if(design.songId) {
-        // XXX: Remove BBB
+        // XXX: Remove songId BBB
         return true;
     }
 
@@ -164,7 +164,7 @@ krusovice.Design.prototype = {
 
             // Where is the wall plane positioned
             // when rendering the "falling photos" mode
-            position: [0, 0, 1],
+            position: [0, 0, -4000],
 
             // Wall texture repeat and scaling factor
             repeat : [50, 50]
@@ -172,8 +172,18 @@ krusovice.Design.prototype = {
         },
 
         // Where is directional the light casting the shadows
-        shadows : {
-            light : [0, 0, 500]
+        shadow : {
+
+            // Shadow light direction
+            light : [0, 2000, 5000],
+
+            fov: 60,
+
+            // top, right, bottom, left, near far
+            frustrum : [-1000, 1000, 1000, -1000, -4000, 10000],
+
+            darkness : 0.7
+
         },
 
         lights : {

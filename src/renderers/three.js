@@ -277,28 +277,28 @@ krusovice.renderers.Three.prototype = {
 
         // This light does not illuminate objects, only
         // casts the shadow for the effect
-        var renderer = this.renderer, d = 50000, scene = this.scene;
+        var renderer = this.renderer, d = 1000, scene = this.scene;
         var light = new THREE.DirectionalLight(0x0000ff);
 
         scene.add(light);
 
-        light.position.set(utils.toVector(world.shadows.light)).normalize();
+        light.position = utils.toVector(world.shadow.light).normalize();
 
         light.castShadow = true;
         light.onlyShadow = true;
 
         light.shadowMapWidth = 1024;
         light.shadowMapHeight = 1024;
-        light.shadowCameraFov = 45;
-        light.shadowMapDarkness = 0.95;
+        light.shadowCameraFov = world.shadow.fov;
 
-        light.shadowCameraLeft = -d;
-        light.shadowCameraRight = d;
-        light.shadowCameraTop = d;
-        light.shadowCameraBottom = -d;
+        light.shadowCameraLeft = world.shadow.frustrum[3];
+        light.shadowCameraRight = world.shadow.frustrum[1];
+        light.shadowCameraTop = world.shadow.frustrum[0];
+        light.shadowCameraBottom = world.shadow.frustrum[2];
 
-        light.shadowCameraFar = 100000;
-        light.shadowDarkness = 0.9;
+        light.shadowCameraFar = world.shadow.frustrum[5];
+        light.shadowCameraNear = world.shadow.frustrum[4];
+        light.shadowDarkness = world.shadow.darkness;
 
         renderer.gammaInput = true;
         renderer.gammaOutput = true;

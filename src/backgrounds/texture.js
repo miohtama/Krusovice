@@ -3,7 +3,11 @@
  *
  */
 
-define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], function($, THREE) {
+define([
+"krusovice/thirdparty/jquery",
+"krusovice/thirdparty/three-bundle",
+"krusovice/utils"],
+function($, THREE, utils) {
 
     "use strict";
 
@@ -83,7 +87,7 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
             // Allow photos to cast shadows on wall like background
             mesh.receiveShadow = true;
 
-            this.setupPlane(krusoviceRenderer, scene, mesh);
+            this.setupPlane(krusoviceRenderer, world, scene, mesh);
 
             this.mesh = mesh;
 
@@ -92,17 +96,17 @@ define(["krusovice/thirdparty/jquery", "krusovice/thirdparty/three-bundle"], fun
         /**
          * Do plane type specific setup
          */
-        setupPlane : function(krusoviceRenderer, scene, mesh) {
+        setupPlane : function(krusoviceRenderer, world, scene, mesh) {
             if(this.mode == "horizon") {
                 mesh.position.z = -10000;
                 mesh.position.y = 2000;
                 mesh.rotation.x = -1.1*Math.PI/3;
 
-
                 // Fade to horizon
                 scene.fog = new THREE.Fog(krusoviceRenderer.backgroundColor, 8000, 10000);
             } else if(this.mode == "wall") {
-                mesh.position.z = -4000;
+                //mesh.position.z = -4000;
+                mesh.position = utils.toVector(world.wall.position);
                 mesh.rotation.x = 0;
             } else {
                 throw new Error("Unknown background texture plane type " + this.mode);
