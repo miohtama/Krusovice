@@ -7,7 +7,8 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
     "use strict";
 
     /**
-     * Two-sided plane where we can define different faces for the different sides of the plane
+     * Two-sided plane where we can define different faces for the different sides of the plane.
+     *
      */
     THREE.TwoSidedPlaneGeometry = function ( width, height, segmentsWidth, segmentsHeight, frameWidth, frameHeight) {
 
@@ -32,7 +33,7 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
         for ( iy = 0; iy < gridY1; iy++ ) {
             for ( ix = 0; ix < gridX1; ix++ ) {
                 var x = ix * segment_width - width_half;
-                var y = iy * segment_height - height_half;
+                var y = gridY1 - (iy * segment_height - height_half);
                 this.vertices.push(new THREE.Vector3( x, - y, 0 ));
             }
         }
@@ -51,6 +52,8 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
                 face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone(), normal.clone() );
 
                 face.materialIndex = 0;
+
+                // Front side
 
                 this.faces.push( face );
                 this.faceVertexUvs[ 0 ].push( [
@@ -80,13 +83,6 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
             }
 
         }
-
-        // The caller must reset the material,
-        // here set a debug material
-        var fillMaterial = new THREE.MeshBasicMaterial( {  color: 0xff00ff, wireframe : true } );
-
-        // r52 -> r53
-        // this.materials = [fillMaterial, fillMaterial];
 
         this.computeCentroids();
 
