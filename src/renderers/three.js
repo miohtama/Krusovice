@@ -284,6 +284,7 @@ krusovice.renderers.Three.prototype = {
         light.position.set(utils.toVector(world.shadows.light)).normalize();
 
         light.castShadow = true;
+        light.onlyShadow = true;
 
         light.shadowMapWidth = 1024;
         light.shadowMapHeight = 1024;
