@@ -7,14 +7,16 @@
 require([
     "krusovice/api",
     "krusovice/quickplay",
+    "krusovice/styles/wall",
+    "krusovice/plaintextreader",
     "bootstrap",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay) {
+function(krusovice, quickplay, wallStyle, readPlainTextShow) {
 
     "use strict";
 
-    // List of texts and images in the show
-    var showSource = "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg";
+    // List of demo texts and images in the show
+    var source = "ukko.jpg\nthailand.jpg\nthailand3.jpg\nukko.jpg\nthailand.jpg\nthailand3.jpg";
 
     // Media locations
     var initOptions = {
@@ -24,21 +26,6 @@ function(krusovice, quickplay) {
         backgroundMediaURL : "../demos",
         textMediaURL : "../src/showobjects/textdefinitions.js"
     };
-
-    var transitions = {
-        transitionIn : {
-            type : "zoomfar",
-            duration : 1.5
-        },
-        transitionOut : {
-            type : "zoomin",
-            duration : 1.5
-        },
-        onScreen : {
-            type : "slightrotatez"
-        }
-    };
-
 
     /**
      * Module namespace
@@ -51,57 +38,18 @@ function(krusovice, quickplay) {
 
         createDesign : function() {
 
-            var baseplan = [];
+            var style = wallStyle;
 
-            var baseelem = {
-                type : "image",
-                label : null,
-                duration : 3.5,
-                imageURL : "ukko.jpg",
-                borderColor : "#faa8833"
-            };
+            var plan = readPlainTextShow(source);
 
-            var lines = showSource.split("\n");
-
-            // Add image elements to show
-            lines.forEach(function(l) {
-                l = l.trim();
-                var copy;
-
-                if(l !== "") {
-
-                    if(l.indexOf(".jpg") >= 0) {
-                        copy = $.extend({}, baseelem);
-                        copy.imageURL = l;
-                        baseplan.push(copy);
-                    } else {
-                        copy = $.extend({}, baseelem);
-                        copy.type = "text";
-                        copy.texts = { text : l };
-                        copy.shape = "clear";
-                        baseplan.push(copy);
-
-                    }
-                }
-
-                copy.transitions = $.extend({}, transitions);
-            });
-
-
-            for(var i=0; i<baseplan.length; i++) {
-                baseplan[i].id = i;
-            }
+            wallStyle.setupPlan(plan);
 
             var design = new krusovice.Design({
-                plan : baseplan,
-                background : {
-                    type: "texture",
-                    src: "crate.gif",
-                    color : 0xaaaaff,
-                    mode : "wall"
-                },
-                songId : null
+                plan: plan,
+                songId: null
             });
+
+            wallStyle.setupDesign(design);
 
             return design;
         },
@@ -115,8 +63,6 @@ function(krusovice, quickplay) {
         playShow : function(design, audio, autoplay) {
 
             var self = this;
-
-            design = design || this.createDesign();
 
             var project = new krusovice.Project({
                 width : 720,
@@ -135,8 +81,6 @@ function(krusovice, quickplay) {
                     pipeline: "normal"
                 }
             };
-
-            initOptions.ignoreRhythmData = true;
 
             var show = quickplay.play("show", project, initOptions, showOptions);
 

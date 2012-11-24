@@ -24,16 +24,24 @@ define("krusovice/api", [
     "krusovice/timelinevisualizer",
     "krusovice/show",
     "krusovice/renderers/three",
+
     "krusovice/effects",
     "krusovice/effects/linear",
+
     "krusovice/backgrounds",
     "krusovice/backgrounds/plain",
     "krusovice/backgrounds/scroll2d",
+
     "krusovice/showobjects",
     "krusovice/showobjects/framedimage",
     "krusovice/showobjects/textdefinitions",
     "krusovice/showobjects/text",
+
+    "krusovice/styles/registry",
+    "krusovice/styles/wall",
+
     "krusovice/music",
+
     "krusovice/tools/fade",
     "krusovice/tools/url",
     "krusovice/tools/resizer",

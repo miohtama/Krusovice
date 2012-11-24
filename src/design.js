@@ -195,6 +195,13 @@ krusovice.Design.prototype = {
                 position : [0, 0, 1200],
                 color : 0xaaAaaa
             }
+        },
+
+
+        postprocessing : {
+
+            // What kind of postprocessing chain is used for the show
+            postprocessor : "normal"
         }
 
     },
