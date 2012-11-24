@@ -1,9 +1,10 @@
 /*global define*/
 
 define("krusovice/thirdparty/three-bundle", [
-    "krusovice/thirdparty/Three"
+    "krusovice/thirdparty/three",
+    "krusovice/thirdparty/three-extra/God"
     //"krusovice/thirdparty/Three.debug"
-], function (THREE) {
-    return THREE;
+], function () {
+    return window.THREE;
 });
 

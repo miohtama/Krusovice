@@ -13,6 +13,11 @@ var requireShim = {
         exports : "window.Spinner"
     },
 
+    'three': {
+        deps : [],
+        exports : "window.THREE"
+    },
+
     'bootstrap': {
         deps : ["krusovice/thirdparty/jquery"],
         exports : "$"
