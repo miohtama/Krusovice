@@ -135,9 +135,19 @@ krusovice.renderers.Three.prototype = {
 
     },
 
-    setup : function() {
+    /**
+     * Setup the rendering infrastructure
+     *
+     * @param  {String} postprocessingPipeline Which postprocessing backend to use. Default is normal.
+     *
+     */
+    setup : function(postprocessingPipeline) {
 
         var renderer;
+
+        if(!postprocessingPipeline) {
+            throw new Error("Must give a post-processing pipeline name");
+        }
 
         if(!this.renderer) {
             this.setupContext();
@@ -199,7 +209,15 @@ krusovice.renderers.Three.prototype = {
 
         this.setupLights();
 
-        normalPipeline.setupPipeline(this);
+
+        // Ugh... need to make a registry
+        var pipeline = eval(postprocessingPipeline + "Pipeline");
+
+        if(!pipeline) {
+            throw new Error("Unknown pipeline:" + pipeline);
+        }
+
+        pipeline.setupPipeline(this);
 
     },
 

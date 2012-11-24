@@ -614,7 +614,7 @@ function($, THREE, god) {
 
 
         // Prepare additive blending stage
-        var screenShader = THREE.ShaderExtras.screen;
+        var screenShader = THREE.CopyShader;
         this.screenUniforms = THREE.UniformsUtils.clone( screenShader.uniforms );
         this.screenUniforms.opacity.value = strength;
         this.materialScreen = new THREE.ShaderMaterial( {
@@ -627,12 +627,14 @@ function($, THREE, god) {
 
         // convolution material
 
-        var convolutionShader = THREE.ShaderExtras.convolution;
+        var convolutionShader = THREE.ConvolutionShader;
 
         this.convolutionUniforms = THREE.UniformsUtils.clone(convolutionShader.uniforms);
 
-        this.convolutionUniforms.uImageIncrement.value = THREE.BloomPass.blurx;
-        this.convolutionUniforms.cKernel.value = THREE.ShaderExtras.buildKernel(sigma);
+        //THREE.BloomPass.blurY = new THREE.Vector2( 0.0, 0.001953125 );
+
+        this.convolutionUniforms.uImageIncrement.value = new THREE.Vector2( 0.001953125, 0.0 );
+        this.convolutionUniforms.cKernel.value = THREE.ConvolutionShader.buildKernel(sigma);
 
         this.materialConvolution = new THREE.ShaderMaterial( {
             uniforms: this.convolutionUniforms,
@@ -704,7 +706,7 @@ function($, THREE, god) {
      * Render triangle blur in x and y directions on the image
      */
     function BlurPass() {
-        this.shader = THREE.ShaderExtras.triangleBlur;
+        this.shader = THREE.TriangleBlurShader;
     }
 
     $.extend(BlurPass.prototype, ShaderPass.prototype, {
@@ -746,7 +748,7 @@ function($, THREE, god) {
     /* Mix ratio blending */
     function BlenderPass() {
         //this.shader = THREE.ShaderExtras.mooBlend;
-        this.shader = THREE.ShaderExtras.blend;
+        this.shader = THREE.BlendShader;
 
     }
 
@@ -803,6 +805,7 @@ function($, THREE, god) {
         PostProcessor : PostProcessor,
         AdditiveBlenderPass : AdditiveBlenderPass,
         ShaderPass : ShaderPass,
+        BlenderPass : BlenderPass,
         BloomPass : BloomPass,
         BlurPass : BlurPass
     };

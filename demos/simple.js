@@ -129,7 +129,8 @@ function(krusovice, quickplay) {
                     background : true,
                     scene : true,
                     photoDebugFill : false,
-                    exposeThreeCanvas : false
+                    exposeThreeCanvas : false,
+                    pipeline: "normal"
                 }
             };
 

@@ -1,6 +1,6 @@
 define(["krusovice/thirdparty/three-bundle",
 "krusovice/thirdparty/god",
-"krusovice/renderers/postprocessing"], function(THREE, god, postprocessing) {
+"krusovice/renderers/postprocessing"], function(THREE, mtOlympus, postprocessing) {
 
     "use strict";
 
@@ -11,13 +11,13 @@ define(["krusovice/thirdparty/three-bundle",
 
         var sepia = postprocessor.createPass(postprocessing.ShaderPass, THREE.SepiaShader);
         var film = postprocessor.createPass(postprocessing.ShaderPass, THREE.FilmShader);
-        var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.ScreenShader);
+        var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.CopyShader);
         var blur = postprocessor.createPass(postprocessing.BlurPass);
         var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
         var bloom = postprocessor.createPass(postprocessing.BloomPass);
         var blend = postprocessor.createPass(postprocessing.BlenderPass);
         var additiveBlend = postprocessor.createPass(postprocessing.AdditiveBlenderPass);
-        var god = postprocessor.createPass(postprocessing.ShaderPass, god.Godrays);
+        var god = postprocessor.createPass(postprocessing.ShaderPass, mtOlympus.Godrays);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 

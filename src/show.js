@@ -143,6 +143,11 @@ krusovice.Show.prototype = {
     watermark : null,
 
     /**
+     * @cfg {String} pipeline Used postprocessing pipeline name
+     */
+    postprocessingPipeline : "normal",
+
+    /**
      * <canvas> used as the main output element
      */
     canvas : null,
@@ -587,7 +592,7 @@ krusovice.Show.prototype = {
             });
         }
 
-        this.renderer.setup();
+        this.renderer.setup(this.postprocessingPipeline);
 
         if(this.renderFlags.exposeThreeCanvas) {
             document.body.appendChild(this.renderer.renderer.domElement);

@@ -129,32 +129,6 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
             return design;
         },
 
-        // Setup special webGL effect pipeline
-        customizeRenderer : function() {
-
-            krusovice.Show.prototype.prepareRenderer = function() {
-
-                console.log("Custom prepareRenderer()");
-
-                // XXX: hardcoded for THREE.js now
-
-                if(!this.renderer) {
-                    console.log("Creating show renderer");
-                    this.renderer = new krusovice.renderers.Three({
-                        width : this.width,
-                        height : this.height,
-                        elem : this.elem,
-                        webGL : this.webGL
-                    });
-
-                }
-
-                this.renderer.setup();
-
-                postprocessing.setupPipeline(this.renderer);
-            };
-
-        },
 
         // Show what audio backend we are using
         updateAudioMode : function(audio) {
@@ -212,6 +186,8 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                     background : true,
                     scene : true
                 },
+
+                postprocessingPipeline : "magic",
 
                 realtimeSpectrum : true
             };
@@ -366,8 +342,6 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
 
         run : function() {
             var self = this;
-            this.customizeRenderer();
-            //this.playShow();
 
             $("#stop").click(function() {
                 self.stop();
