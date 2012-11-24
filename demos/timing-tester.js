@@ -151,7 +151,7 @@ function(krusovice, quickplay, music, audiowrapper, analyses, postprocessing, ec
                 callback : function(bins) {
                     // Use one of the spectrum bins to set the post-processing effect strength
                     if(self.show) { // self.show is null on the moment when stopped
-                        self.show.externalLevel = bins[0];
+                        self.show.externalLevel = bins[1];
                     }
                 }
             });

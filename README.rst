@@ -377,3 +377,9 @@ Then::
 
 Copy ``three.js`` to ``src/thirdparty``.
 
+Upload samples
+-----------------
+
+Example::
+
+    rsync -av --exclude "*.git" * kapsi:~/public_html/krusovice
