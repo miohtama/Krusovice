@@ -12,8 +12,8 @@
 
 /*global define, window, jQuery, document, setTimeout, console, $, krusovice */
 
-define(["krusovice/thirdparty/jquery-bundle", "krusovice/thirdparty/three-bundle"],
-function($, THREE) {
+define(["krusovice/thirdparty/jquery-bundle", "krusovice/thirdparty/three-bundle", "krusovice/thirdparty/god"],
+function($, THREE, god) {
 
     "use strict";
 
@@ -730,7 +730,7 @@ function($, THREE) {
     /* Additive blending */
     function AdditiveBlenderPass() {
         //this.shader = THREE.ShaderExtras.mooBlend;
-        this.shader = THREE.Extras.Shaders.Additive;
+        this.shader = god.Additive;
     }
 
     $.extend(AdditiveBlenderPass.prototype, ShaderPass.prototype, {

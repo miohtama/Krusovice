@@ -1,5 +1,6 @@
 define(["krusovice/thirdparty/three-bundle",
-"krusovice/renderers/postprocessing"], function(THREE, postprocessing) {
+"krusovice/thirdparty/god",
+"krusovice/renderers/postprocessing"], function(THREE, god, postprocessing) {
 
     "use strict";
 
@@ -8,16 +9,15 @@ define(["krusovice/thirdparty/three-bundle",
         var postprocessor = new postprocessing.PostProcessor({ bufferCount : 3});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
-        var sepia = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.sepia);
-        var film = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.film);
-        var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.screen);
+        var sepia = postprocessor.createPass(postprocessing.ShaderPass, THREE.SepiaShader);
+        var film = postprocessor.createPass(postprocessing.ShaderPass, THREE.FilmShader);
+        var copy = postprocessor.createPass(postprocessing.ShaderPass, THREE.ScreenShader);
         var blur = postprocessor.createPass(postprocessing.BlurPass);
-        var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.fxaa);
+        var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
         var bloom = postprocessor.createPass(postprocessing.BloomPass);
-        var fill = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.mooBlur2);
         var blend = postprocessor.createPass(postprocessing.BlenderPass);
         var additiveBlend = postprocessor.createPass(postprocessing.AdditiveBlenderPass);
-        var god = postprocessor.createPass(postprocessing.ShaderPass, THREE.Extras.Shaders.Godrays);
+        var god = postprocessor.createPass(postprocessing.ShaderPass, god.Godrays);
 
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 

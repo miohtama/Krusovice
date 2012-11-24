@@ -37,12 +37,7 @@ define("krusovice/api", [
     "krusovice/tools/fade",
     "krusovice/tools/url",
     "krusovice/tools/resizer",
-    "krusovice/tools/text2canvas",
-    // XXX: Unsupported in browsers
-    //"krusovice/tools/html2svg2canvas"
-
-    "krusovice/thirdparty/three-extra"
-    //"krusovice/thirdparty/three-extra/BloomPass"
+    "krusovice/tools/text2canvas"
 
 ], function(require, $, THREE, krusovice) {
 

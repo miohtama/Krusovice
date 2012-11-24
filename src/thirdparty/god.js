@@ -114,5 +114,9 @@ THREE.Extras.Shaders = {
     }
 };
 
+return {
+    Godrays : THREE.Extras.Shaders.Godrays,
+    Additive : THREE.Extras.Shaders.Additive
+};
 
 });

@@ -8,7 +8,9 @@ define(["krusovice/thirdparty/three-bundle",
         var postprocessor = new postprocessing.PostProcessor({bufferCount : 1});
         postprocessor.init(renderer.renderer, renderer.width, renderer.height);
 
-        var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.ShaderExtras.fxaa);
+        debugger;
+        var fxaa = postprocessor.createPass(postprocessing.ShaderPass, THREE.FXAAShader);
+
         fxaa.material.uniforms.resolution.value.set(1 / postprocessor.width, 1 / postprocessor.height);
 
         // http://localhost:8000/demos/shader.html
