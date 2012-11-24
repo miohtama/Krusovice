@@ -211,14 +211,17 @@ krusovice.showobjects.Base.prototype = {
 
         animationData.scale.multiplyScalar(baseScale);
 
-        this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
+        this.dumpAnimationData(animationData);
 
-        //console.log("Got rotation");
-        //console.log(animationData.rotation);
+        this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
         if(this.effectObject) {
             this.animateMesh(this.effectObject, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
         }
+    },
+
+    dumpAnimationData : function(d) {
+        console.log("Pos:" + d.position.x + " " + d.position.y + " " + d.position.z);
     },
 
     /**

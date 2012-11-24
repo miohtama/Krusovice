@@ -136,13 +136,15 @@ function(krusovice, quickplay) {
                 renderFlags : {
                     frameLabel : true,
                     background : true,
-                    scene : true
+                    scene : true,
+                    photoDebugFill : true
                 }
             };
 
             initOptions.ignoreRhythmData = true;
 
             var show = quickplay.play("show", project, initOptions, showOptions);
+
         },
 
         /**

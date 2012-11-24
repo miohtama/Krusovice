@@ -130,7 +130,6 @@ define(["krusovice/thirdparty/three-bundle"], function(THREE) {
 
 
     THREE.BorderPlaneGeometry.prototype = new THREE.Geometry();
-
     THREE.BorderPlaneGeometry.prototype.constructor = THREE.BorderPlaneGeometry;
 
 

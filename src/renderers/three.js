@@ -9,8 +9,10 @@ define("krusovice/renderers/three", [
 "krusovice/core",
 "krusovice/thirdparty/three-bundle",
 "krusovice/renderers/twosidedplane",
-"krusovice/renderers/borderplane"
-], function($, krusovice, THREE, TwoSidedPlaneGeometry, BorderPlaneGeometry) {
+"krusovice/renderers/borderplane",
+"krusovice/renderers/normalpipeline",
+"krusovice/renderers/magicpipeline"
+], function($, krusovice, THREE, TwoSidedPlaneGeometry, BorderPlaneGeometry, normalPipeline, magicPipeline) {
 
 'use strict';
 
@@ -79,8 +81,12 @@ krusovice.renderers.Three.prototype = {
     /**
      * Use WebGL backend
      */
-    webGL : false,
+    webGL : true,
 
+    /**
+     * Use debug fill materials
+     */
+    debugFill : false,
 
     /**
      * Run rendered scene thru fragment shader post-processing step
@@ -192,7 +198,8 @@ krusovice.renderers.Three.prototype = {
         this.maskCamera = new THREE.OrthographicCamera( -halfWidth, halfWidth, halfHeight, -halfHeight, -10000, 10000 );
 
         this.setupLights();
-        // this.setupDebugObjects();
+
+        normalPipeline.setupPipeline(this);
 
     },
 
@@ -284,6 +291,7 @@ krusovice.renderers.Three.prototype = {
         // http://mrdoob.github.com/three.js/examples/canvas_materials_video.html
 
         var texture;
+        var bodyMesh, borderMesh;
 
         if(this.webGL && src.getContext) {
 
@@ -322,6 +330,7 @@ krusovice.renderers.Three.prototype = {
         var bodyPlane = new TwoSidedPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
         var borderPlane = new BorderPlaneGeometry(dimensions.width, dimensions.height, borderWidth, borderWidth, x, y);
 
+
         var filler = new THREE.MeshBasicMaterial({map: texture});
 
         var border;
@@ -338,11 +347,19 @@ krusovice.renderers.Three.prototype = {
         //borderPlane.materials[0] = borderPlane.materials[1] = border;
 
         // Face materials are set by geometry constructor
-        var bodyMesh = new THREE.Mesh(bodyPlane, new THREE.MeshFaceMaterial([filler, filler]));
+        if(this.debugFill) {
+            var debugFillRed = new THREE.MeshBasicMaterial( {  color: 0xff0000, wireframe : true } );
+            var debugFillBlue = new THREE.MeshBasicMaterial( {  color: 0x0000ff, wireframe : true } );
+            bodyMesh = new THREE.Mesh(bodyPlane, new THREE.MeshFaceMaterial([debugFillRed, debugFillRed]));
+            borderMesh =  new THREE.Mesh(borderPlane, new THREE.MeshFaceMaterial([debugFillBlue, debugFillBlue]));
+        } else {
+            bodyMesh = new THREE.Mesh(bodyPlane, new THREE.MeshFaceMaterial([filler, filler]));
+            borderMesh =  new THREE.Mesh(borderPlane, new THREE.MeshFaceMaterial([border, border]));
+        }
+
         // Consumed by post-processing
         bodyMesh.krusoviceTypeHint = "photo";
 
-        var borderMesh =  new THREE.Mesh(borderPlane, new THREE.MeshFaceMaterial([border, border]));
         // Consumed by post-processing
         borderMesh.krusoviceTypeHint = "frame";
 
@@ -420,6 +437,7 @@ krusovice.renderers.Three.prototype = {
         var scene = this.scene;
         var camera = this.camera;
 
+        this.renderer.clear();
         this.renderer.render(scene, camera, time);
 
         //frontBuffer.clear();

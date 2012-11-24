@@ -301,7 +301,10 @@ krusovice.Show.prototype = {
     renderFlags : {
         background : true,
         scene : true,
-        frameLabel : false
+        frameLabel : false,
+
+        // Fill photo area with single color fill instead of a texture
+        photoDebugFill : false
     },
 
     /**
@@ -465,7 +468,7 @@ krusovice.Show.prototype = {
 
         timeline.forEach(function(e) {
             var obj = self.createAnimatedObject(e);
-            console.log("Created animated object " + obj);
+            console.log("Created animated object " + e.type);
             self.animatedObjects.push(obj);
             self.loader.add("animatedobject", 1);
         });
@@ -570,11 +573,13 @@ krusovice.Show.prototype = {
 
         if(!this.renderer) {
             console.log("Creating show renderer");
+
             this.renderer = new krusovice.renderers.Three({
                 width : this.width,
                 height : this.height,
                 elem : this.elem,
-                webGL : this.webGL
+                webGL : this.webGL,
+                debugFill : this.renderFlags.photoDebugFill
             });
 
         }
