@@ -12,15 +12,15 @@ define(["krusovice/thirdparty/three-bundle", "krusovice/styles/registry"], funct
 
     var transitions = {
         transitionIn : {
-            type : "zoomfar",
+            type : "fade",
             duration : 1.5
         },
         transitionOut : {
-            type : "zoomin",
+            type : "fade",
             duration : 1.5
         },
         onScreen : {
-            type : "slightrotatez"
+            type : "hold"
         }
     };
 

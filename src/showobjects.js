@@ -223,7 +223,9 @@ krusovice.showobjects.Base.prototype = {
     },
 
     dumpAnimationData : function(d) {
-        console.log("Pos:" + d.position.x + " " + d.position.y + " " + d.position.z);
+        if(d.position) {
+            console.log("Pos:" + d.position.x + " " + d.position.y + " " + d.position.z);
+        }
     },
 
     /**
@@ -255,8 +257,8 @@ krusovice.showobjects.Base.prototype = {
 
         objects.forEach(function(mesh) {
             // Assume MeshFaceMaterial
-            if(mesh.geometry.material instanceof THREE.MeshFaceMaterial) {
-                var materials = mesh.geometry.material.materials;
+            if(mesh.material instanceof THREE.MeshFaceMaterial) {
+                var materials = mesh.material.materials;
                 materials.forEach(function(m) {
                    m.opacity =  opacity;
                 });

@@ -36,20 +36,20 @@ function(krusovice, quickplay, wallStyle, readPlainTextShow) {
 
         player : null,
 
-        createDesign : function() {
+        style : wallStyle,
 
-            var style = wallStyle;
+        createDesign : function() {
 
             var plan = readPlainTextShow(source);
 
-            wallStyle.setupPlan(plan);
+            this.style.setupPlan(plan);
 
             var design = new krusovice.Design({
                 plan: plan,
                 songId: null
             });
 
-            wallStyle.setupDesign(design);
+            this.style.setupDesign(design);
 
             return design;
         },
