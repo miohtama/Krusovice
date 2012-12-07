@@ -12,6 +12,8 @@ define("krusovice/design", ["krusovice/thirdparty/jquery-bundle", "krusovice/cor
  * Design can be local or pure. Local design contain referenecs to non-serializable objects,
  * like raw image data. Local designs cannot be posted to the server.
  *
+ * @class krusovice.Design
+ *
  */
 krusovice.Design = function(cfg) {
     $.extend(this, cfg);

@@ -22,8 +22,8 @@ define(["krusovice/thirdparty/three-bundle",
 
             // We draw the world directly to the screen
             // and let renderer use native anti-aliasing
-            postprocessor.renderer.setClearColorHex(krusoviceRenderer.backgroundColor, 1.0);
-            postprocessor.renderer.clear();
+            renderer.setClearColorHex(krusoviceRenderer.backgroundColor, 1.0);
+            renderer.clear();
             postprocessor.renderWorld(null, {photo: true, frame : true, background: true});
             //copy.render(buffers[0], null);
             //fxaa.render(buffers[0], null);

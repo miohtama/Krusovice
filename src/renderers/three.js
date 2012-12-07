@@ -428,15 +428,15 @@ krusovice.renderers.Three.prototype = {
         var bodyPlane = new TwoSidedPlaneGeometry(dimensions.width, dimensions.height, 4, 4);
         var borderPlane = new BorderPlaneGeometry(dimensions.width, dimensions.height, borderWidth, borderWidth, x, y);
 
-
-        var filler = new THREE.MeshBasicMaterial({map: texture});
+        // transparent=true -> make sure we properly can handle fade by opacity
+        var filler = new THREE.MeshBasicMaterial({map: texture, transparent:true});
 
         var border;
 
         var borderColorHex = cssToOpenGLColor(borderColor || "#eeEEee");
 
         // Phong shaded borders on webGL
-        border = new THREE.MeshPhongMaterial( {shininess: 255, ambient: 0xffffff, color: borderColorHex } );
+        border = new THREE.MeshPhongMaterial( {shininess: 255, ambient: 0xffffff, color: borderColorHex, transparent: true } );
 
         // Two sided faces each get their own material
         var material = new THREE.MeshFaceMaterial();

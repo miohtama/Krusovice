@@ -30,7 +30,7 @@ define(["krusovice/thirdparty/three-bundle",
 
             var renderer = postprocessor.renderer;
 
-            postprocessor.clear(buffers[0], 0.0, krusoviceRenderer.backgroundColor);
+            postprocessor.clear(buffers[0], 1.0, krusoviceRenderer.backgroundColor);
             postprocessor.clear(buffers[1], 1.0, 0x000000);
             postprocessor.clear(buffers[2], 1.0, 0x000000);
 
@@ -46,6 +46,8 @@ define(["krusovice/thirdparty/three-bundle",
 
             // Render the normal scene without any effect
             postprocessor.renderWorld(buffers[0], {photo: true, frame : true, background:true});
+            //postprocessor.renderWorld(null, {photo: true, frame : true, background:true});
+
 
             // Render the pure photo on empty buffer
             // which will act as the data for god effect
