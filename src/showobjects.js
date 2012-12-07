@@ -245,6 +245,13 @@ krusovice.showobjects.Base.prototype = {
         mesh.opacity = opacity;
         this.setOpacity(mesh, opacity);
         mesh.updateMatrixWorld();
+
+        // XXX: Hack to animate shadow opacity
+        // Does not work if multiple objects on the scene simultaneously
+        if(this.renderer.shadowLight) {
+            this.renderer.shadowLight.shadowDarkness = opacity;
+        }
+
     },
 
     /**

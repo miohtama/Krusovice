@@ -91,6 +91,12 @@ krusovice.renderers.Three.prototype = {
 
     scene : null,
 
+    /**
+     * The directional light which casts shadows on the background wall
+     * @type {THREE.DirectionalLight}
+     */
+    shadowLight : null,
+
     hasControls : true,
 
     /**
@@ -304,6 +310,9 @@ krusovice.renderers.Three.prototype = {
         renderer.gammaOutput = true;
         renderer.physicallyBasedShading = true;
         renderer.shadowMapEnabled = true;
+
+        // Leave in the reference, as we want to animate some properties of shadow
+        this.shadowLight = light;
     },
 
     /**
