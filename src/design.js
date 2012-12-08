@@ -155,6 +155,9 @@ krusovice.Design.prototype = {
             // Where is camera located (always watches 0,0,0 by default)
             position: [0, 0, 650],
 
+            // How camera is rotated
+            rotation: [0, 0, 0],
+
             aspectRatio : 16/10,
 
             // Camera field of view in degrees

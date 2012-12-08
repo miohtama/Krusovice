@@ -883,13 +883,13 @@ krusovice.Show.prototype = {
             return Math.round(x*1000)/1000;
         }
 
-
         var clock = round(renderClock);
         var external = round(this.clock);
         var sync = round(this.clockUpdated);
 
         ctx.save();
         ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#ffFFff";
         var text = "Rendering frame " + this.currentFrame + " render clock:" + clock + " external clock:" + external + " last sync:" + sync;
         ctx.fillText(text, 20, 20);
 

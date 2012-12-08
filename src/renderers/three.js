@@ -97,6 +97,11 @@ krusovice.renderers.Three.prototype = {
      */
     shadowLight : null,
 
+    /**
+     * Allow mouse movement of the scene by Three.js
+     *
+     * @type {Boolean}
+     */
     hasControls : true,
 
     /**
@@ -222,9 +227,10 @@ krusovice.renderers.Three.prototype = {
 
         var scene = new THREE.Scene();
 
-
         // Camera is always in fixed position
         camera.position = utils.toVector(world.camera.position);
+
+        camera.rotation = utils.toVector(world.camera.rotation);
 
         this.scene = scene;
 
@@ -537,6 +543,12 @@ krusovice.renderers.Three.prototype = {
 
         if(this.controls) {
             this.updateControls();
+        }
+
+        if(this.isDebugOutputFrame()) {
+            // Dump out camera position
+            console.log("Camera position:", this.camera.position.x, this.camera.position.y, this.camera.position.z,
+                        " rotation:", this.camera.rotation.x, this.camera.rotation.y, this.camera.rotation.z);
         }
 
         this.frameCounter++;

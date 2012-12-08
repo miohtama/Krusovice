@@ -202,7 +202,10 @@ function($, THREE, registry, effects, Interpolate, utils) {
                 mode : "wall"
             };
 
-            design.world.wall.position = [0, 0, 0];
+            var world = design.world;
+            world.wall.position = [0, 0, 0];
+            world.camera.position = [29.02482966472225, -234.62693273310097, 671.6854940572234];
+            world.camera.rotation = [0,0,0];
 
             design.postprocssing = "normal";
 
