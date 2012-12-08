@@ -126,7 +126,7 @@ function($, THREE, utils) {
             //
             var mesh = this.mesh;
 
-            this.mesh.position.z -= 1;
+            //this.mesh.position.z -= 1;
             //this.mesh.rotation.x += 0.01;
             this.mesh.updateMatrixWorld();
         }

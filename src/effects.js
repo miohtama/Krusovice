@@ -1,11 +1,16 @@
 /*global define, console, jQuery, document, setTimeout */
 
-define("krusovice/effects", ['krusovice/thirdparty/jquery-bundle', "krusovice/core", "krusovice/utils"], function($, krusovice, utils) {
+define(
+['krusovice/thirdparty/jquery-bundle',
+"krusovice/core",
+"krusovice/utils"], function($, krusovice, utils) {
 "use strict";
 
 krusovice.effects = krusovice.effects || {};
 
 $.extend(krusovice.effects, {
+
+// XXX: Get rid of these constants and slowly move them to krusovice.Design.world
 
  /**
   * Z distance from the camera for normal image viewing.
@@ -410,9 +415,11 @@ krusovice.effects.Base = {
      *
      * @param {Object} source Source animation state
      *
-     * @param {Number} value current intermediate state 0...1, easing applied
+     * @param {Number} easedValue current intermediate state 0...1, default easing applied
+     *
+     * @param {Number} rawValue current intermediate state 0...1, raw time value
      */
-    animate : function(object, target, source, value) {
+    animate : function(object, target, source, easedValue, rawValue) {
     },
 
     render : function() {

@@ -1,33 +1,33 @@
 /**
- * Old wooden wall style design.
+ * Old wooden wall style design director.
  */
 
 define(["krusovice/thirdparty/jquery-bundle",
         "krusovice/thirdparty/three-bundle",
         "krusovice/directors/registry",
         "krusovice/effects",
+        "krusovice/effects/interpolate",
         "krusovice/utils"],
-function($, THREE, registry, effects, utils) {
+function($, THREE, registry, effects, Interpolate, utils) {
 
     "use strict";
 
-    var config = {
-        start : [0, 0, -100],
-        end : [0, 0, 0]
-    };
+    // Draw items little bit higher than zero Z
+    // so that we don't get polygon overlapping artifacts
+    // and flickering
+    var VERY_LOW_HEIGHT = 15.0;
 
     var transitions = {
         transitionIn : {
             type : "wall-fall",
-            duration : 1.5,
-            config : config
+            duration : 1.5
         },
         transitionOut : {
-            type : "fade",
+            type : "wall-fade",
             duration : 1.5
         },
         onScreen : {
-            type : "hold"
+            type : "wall-hold"
         }
     };
 
@@ -35,61 +35,106 @@ function($, THREE, registry, effects, utils) {
      * Animate photo falls from the camera on the background wall.
      *
      */
-    var WallFallEffect = $.extend(true, {}, effects.Base, {
+    var WallFallEffect = $.extend(true, {}, Interpolate, {
 
         id: "wall-fall",
 
-        name: "fallin",
+        name: "Fall",
 
         parameters: {
 
             // Where the falling begins
             source : {
-                position : [0, 0, -100],
-                rotation : [0,0,0, 1],
-                opacity : 1,
-                scale : [1,1,1]
+                position: [0, 0, 1000],
+                rotation: [0,0,0, 1],
+                opacity: 0,
+                scale: [1,1,1]
             },
 
-            // Variation in the photo source position
-            sourceVariation : {
 
-            },
-
-            // Where the falling ends
             target : {
-                position : [0, 0, 0],
-                rotation : [0, 0, 0, 1],
-                opacity : 1,
-                scale : [1,1,1]
+                position: [0, 0, VERY_LOW_HEIGHT]
+            },
+
+            // Variation in the each photo source position
+            sourceVariation : {
             }
+
         },
 
-        /**
-         * Calculate state variables for an animation frame
-         *
-         * @param {Object} Show object being animated
-         *
-         * @param {Object} target Target animation state
-         *
-         * @param {Object} source Source animation state
-         *
-         * @param {Number} value current intermediate state 0...1, easing applied
-         */
+        prepareParameters : function(parametersSlot, obj, config, source) {
+            this.initParameters(parametersSlot, obj, config, source);
+        },
 
         animate : function(target, source, value) {
 
-            return {
-                position: source.position,
-                rotation: source.rotation,
-                scale: source.scale,
-                opacity: 1
+            var output = {
+                position: utils.calculateAnimation(target.position, source.position, value),
+                rotation: utils.calculateAnimationSlerp(target.rotation, source.rotation, value),
+                scale: utils.calculateAnimation(target.scale, source.scale, value),
+                opacity: source.opacity + (target.opacity-source.opacity)*value
             };
+
+            return output;
+        }
+    });
+
+    effects.Manager.register(WallFallEffect);
+
+    /**
+     * Animate photo falls from the camera on the background wall.
+     *
+     */
+    var WallHoldEffect = $.extend(true, {}, Interpolate, {
+
+        id: "wall-hold",
+
+        name: "Hold",
+
+        parameters: {
+
+            // Where the falling begins
+            source : {
+                position: [0, 0, VERY_LOW_HEIGHT],
+                rotation: [0,0,0,1],
+                opacity: 1,
+                scale: [1,1,1]
+            },
+
+            target : {
+                position: [0, 0, VERY_LOW_HEIGHT]
+            },
+
+            // Variation in the each photo source position
+            sourceVariation : {
+            }
         }
 
     });
 
-effects.Manager.register(WallFallEffect);
+    effects.Manager.register(WallHoldEffect);
+
+    var WallFadeEffect = $.extend(true, {}, Interpolate, {
+
+        id: "wall-fade",
+
+        name: "Fade",
+
+        parameters: {
+
+            // Where the falling begins
+            source : {
+                opacity: 0,
+                position: [0, 0, VERY_LOW_HEIGHT]
+            },
+
+            // Variation in the each photo source position
+            sourceVariation : {
+            }
+        }
+    });
+
+    effects.Manager.register(WallFadeEffect);
 
     /**
      * The style class directing the show

@@ -4,114 +4,10 @@ define("krusovice/effects/linear",
     ["krusovice/thirdparty/jquery-bundle",
      "krusovice/core",
      'krusovice/effects',
+     'krusovice/effects/interpolate',
      'krusovice/thirdparty/three-bundle'
-     ], function($, krusovice, effects, THREE) {
+     ], function($, krusovice, effects, Interpolate, THREE) {
 "use strict";
-
-/*global krusovice, window, THREE, console, jQuery, document, setTimeout */
-
-/**
- *
- *
- * Interpolate position, rotation, etc. from source to target parameters.
- *
- * Weighting of the interpolation is based on ease value.
- */
-effects.Interpolate = $.extend(true, {}, effects.Base, {
-
-    name : "Interpolate",
-
-    available : false,
-
-    parameters : {
-
-        source : {
-            position : [0, 0, effects.ON_SCREEN_Z],
-            rotation : [0,0,0, 1],
-            opacity : 1,
-            scale : [1,1,1]
-        },
-
-        sourceVariation : {
-        },
-
-        target : {
-            position : [0, 0, effects.ON_SCREEN_Z],
-            rotation : [0, 0, 0, 1],
-            opacity : 1,
-            scale : [1,1,1]
-        },
-
-        targetVariation : {
-        }
-
-    },
-
-    prepareAnimationParameters : function(config, source, target, next) {
-    },
-
-
-    /**
-     * Calculate state variables for an animation frame
-     *
-     * @param {Object} Show object being animated
-     *
-     * @param {Object} target Target animation state
-     *
-     * @param {Object} source Source animation state
-     *
-     * @param {Number} value current intermediate state 0...1, easing applied
-     */
-
-    animate : function(target, source, value) {
-
-        if(!krusovice.utils.isNumber(value)) {
-            console.error(value);
-            throw "animate(): Bad interpolation value:" + value;
-        }
-
-        var output = {
-            position: krusovice.utils.calculateAnimation(target.position, source.position, value),
-            rotation: krusovice.utils.calculateAnimationSlerp(target.rotation, source.rotation, value),
-            scale: krusovice.utils.calculateAnimation(target.scale, source.scale, value),
-            opacity: source.opacity + (target.opacity-source.opacity)*value
-        };
-
-        return output;
-
-        /*
-        var position;
-
-        if(target.position !== null && source.position !== null) {
-            position =
-        } else {
-            position = null;
-        }
-
-        // Outputted animation values
-        var output = {};
-
-        var scale = krusovice.utils.calculateAnimation(target.scale, source.scale, value);
-
-        if(position !== null) {
-            output.position = new THREE.Vector3(position[0], position[1], position[2]);
-        } else {
-            output.position = null;
-        }
-
-        output.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
-
-        output.rotation = krusovice.utils.calculateAnimationSlerp(source.rotation, target.rotation, value);
-
-        output.opacity = source.opacity + (target.opacity-source.opacity)*value;
-
-        return output;
-        */
-
-    }
-
-
-});
 
 /**
  * An effect which has axis and angle paramters.
@@ -122,7 +18,7 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
  * which perform slerp animation.
  *
  */
-effects.QuaternionRotate = $.extend(true, {}, effects.Interpolate, {
+effects.QuaternionRotate = $.extend(true, {}, Interpolate, {
 
    id : "quaternionrotate",
 
@@ -155,7 +51,7 @@ effects.QuaternionRotate = $.extend(true, {}, effects.Interpolate, {
  *
  * Weighting of the interpolation is based on ease value.
  */
-effects.ZoomIn = $.extend(true, {}, effects.Interpolate, {
+effects.ZoomIn = $.extend(true, {}, Interpolate, {
 
     id : "zoomin",
 
@@ -179,7 +75,7 @@ effects.ZoomIn = $.extend(true, {}, effects.Interpolate, {
 effects.Manager.register(effects.ZoomIn);
 
 
-effects.ZoomFar = $.extend(true, {}, effects.Interpolate, {
+effects.ZoomFar = $.extend(true, {}, Interpolate, {
 
     id : "zoomfar",
 
@@ -203,7 +99,7 @@ effects.Manager.register(effects.ZoomFar);
 /**
  * Hold the photo on the screen without moving.
  */
-effects.Hold = $.extend(true, {}, effects.Interpolate, {
+effects.Hold = $.extend(true, {}, Interpolate, {
 
     id : "hold",
 
@@ -220,7 +116,7 @@ effects.Manager.register(effects.Hold);
 /**
  * Have the object on screen but move it a little for extra dynamicity.
  */
-effects.SlightMove = $.extend(true, {}, effects.Interpolate, {
+effects.SlightMove = $.extend(true, {}, Interpolate, {
 
     id : "slightmove",
 
@@ -252,7 +148,7 @@ effects.Manager.register(effects.SlightMove);
 /**
  * Have the object on screen but move it a little for extra dynamicity.
  */
-effects.Fade = $.extend(true, {}, effects.Interpolate, {
+effects.Fade = $.extend(true, {}, Interpolate, {
 
     id : "fade",
 
@@ -333,7 +229,7 @@ effects.Manager.register(effects.SlightMoveLeftRight);
  *
  * XXX: Don't use as an example - made before QuaternionEffect base class
  */
-effects.SlightRotateZ = $.extend(true, {}, effects.Interpolate, {
+effects.SlightRotateZ = $.extend(true, {}, Interpolate, {
 
     id : "slightrotatez",
 
