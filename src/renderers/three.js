@@ -522,10 +522,7 @@ krusovice.renderers.Three.prototype = {
         //console.log("Farewell for object");
         if(mesh) {
             mesh.visible = false;
-        }
-
-        if(effectObject) {
-            effectObject.visible = false;
+            this.scene.remove(mesh);
         }
     },
 

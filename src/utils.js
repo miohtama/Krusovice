@@ -103,7 +103,7 @@ krusovice.utils = {
      *
      * timepoint: relative to the element start time
      *
-     * return 0...1 (on screen always 1).
+     * @return {Object} {animation, current, next, value, rawValue, easing}
      *
      */
     calculateElementEase : function(elem, timepoint) {
@@ -112,11 +112,12 @@ krusovice.utils = {
 
         if(timepoint < 0) {
             return {
-                    animation : "notyet",
-                    current : null,
-                    next : null,
-                    value : 0,
-                    easing : null
+                animation: "notyet",
+                current: null,
+                next: null,
+                value: 0,
+                rawValue: 0,
+                easing: null
             };
         }
 
@@ -153,11 +154,12 @@ krusovice.utils = {
                 }
 
                 return {
-                    animation:anim.type,
-                        value : value,
-                        current : elem.animations[i],
-                        next : elem.animations[i+1],
-                        easing : method
+                    animation: anim.type,
+                    value: value,
+                    rawValue: percents,
+                    current: elem.animations[i],
+                    next: elem.animations[i+1],
+                    easing: method
                 };
             }
 
@@ -166,11 +168,12 @@ krusovice.utils = {
 
         // the element is past of its lifetime
         return {
-                animation : "gone",
-                value : 0,
-                current  : elem[elem.length-1],
-                next : null,
-                easing : null
+            animation: "gone",
+            value: 0,
+            rawValue: 0,
+            current: elem[elem.length-1],
+            next: null,
+            easing: null
         };
 
     },
@@ -182,53 +185,57 @@ krusovice.utils = {
      * instead of ascending run.
      *
      * Don't expose raw jQuery stuff as we might want to get rid of it later.
+     *
+     * @param {String} method One of functions defined in easing.js
+     *
+     * @param {Number} percents 0...1
+     *
+     * @param {Number} begin Start range
+     *
+     * @param {Number} delta End range - start range
      */
-    ease : function(method, percents, begin, delta) {
+    ease: function(method, percents, begin, delta) {
 
-            var reverse;
+        var reverse;
 
-            if(!method) {
-                    throw "Easing method is missing";
-            }
+        if(!method) {
+            throw "Easing method is missing";
+        }
 
-            if(method[0] == '-') {
-                    method = method.substring(1);
-                    reverse = true;
-            } else {
-                    reverse = false;
-            }
+        if(method[0] == '-') {
+            method = method.substring(1);
+            reverse = true;
+        } else {
+            reverse = false;
+        }
 
-            if(begin === undefined) {
-                    throw "Begin value is missing";
-            }
+        if(begin === undefined) {
+            throw "Begin value is missing";
+        }
 
-            if(delta === undefined) {
-                    throw "Delta value is missing";
-            }
+        if(delta === undefined) {
+            throw "Delta value is missing";
+        }
 
-            if(percents === undefined) {
-                    throw "Progress value is missing";
-            }
+        if(percents === undefined) {
+            throw "Progress value is missing";
+        }
 
-            var func = jQuery.easing[method];
+        var func = jQuery.easing[method];
 
-            if(!func) {
-                    console.error(func);
-                    throw "Unknown easing method:" + method;
-            }
+        if(!func) {
+            console.error(func);
+            throw "Unknown easing method:" + method;
+        }
 
-            if(reverse) {
-                    percents = 1 - percents;
-            }
-
-            if(method == "linear"||method == "swing"){
-                    // jQuery core easing methods
-                    return func(percents, 0, begin, delta);
-            } else {
-                    // http://gsgd.co.uk/sandbox/jquery/easing/
-                    // x, t: current time, b: begInnIng value, c: change In value, d: duration
-                   return func(null, percents, begin, delta, 1.0);
-            }
+        if(method == "linear" || method == "swing"){
+            // jQuery core easing methods
+            return func(percents, 0, begin, delta);
+        } else {
+            // http://gsgd.co.uk/sandbox/jquery/easing/
+            // x, t: current time, b: begInnIng value, c: change In value, d: duration
+           return func(null, percents, begin, delta, 1.0);
+        }
     },
 
     /**

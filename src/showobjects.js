@@ -174,7 +174,7 @@ krusovice.showobjects.Base.prototype = {
             throw "Failed to calculate animation step";
         }
 
-        this.animateEffect(target, source, statedata.value);
+        this.animateEffect(target, source, statedata.value, statedata.rawValue);
 
         return statedata;
 
@@ -189,8 +189,9 @@ krusovice.showobjects.Base.prototype = {
      *
      *  @param {Number} 0...1 how far the animation has progressed
      */
-    animateEffect : function(target, source, value) {
+    animateEffect : function(target, source, value, rawValue) {
         var effectId = source.effectType;
+
         var effect = krusovice.effects.Manager.get(effectId);
 
         if(!effect) {
@@ -199,27 +200,22 @@ krusovice.showobjects.Base.prototype = {
             throw "Animation had unknown effect:" + effectId;
         }
 
-        //console.log("animateEffect()");
-        //console.log(target);
-        //console.log(source);
-        //console.log(value);
-
-        // Limit xxx.... what?
         var baseScale = this.object.baseScale;
 
-        var animationData = effect.animate(target, source, value);
+        // Call the interpolator to get animation vectors for this frame
+        var animationData = effect.animate(target, source, value, rawValue);
 
+        // Apply photo aspect ration fix
         animationData.scale.multiplyScalar(baseScale);
 
+        // Please the developer
         if(this.renderer.isDebugOutputFrame()) {
             this.dumpAnimationData(animationData);
         }
 
+        // Handle Three.JS internals
         this.animateMesh(this.object, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
 
-        if(this.effectObject) {
-            this.animateMesh(this.effectObject, animationData.position, animationData.rotation, animationData.scale, animationData.opacity);
-        }
     },
 
     dumpAnimationData : function(d) {

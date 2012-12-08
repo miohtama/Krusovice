@@ -45,7 +45,7 @@ function($, THREE, registry, effects, Interpolate, utils) {
 
             // Where the falling begins
             source : {
-                position: [0, 0, 1000],
+                position: [0, 0, 700],
                 rotation: [0,0,0, 1],
                 opacity: 0,
                 scale: [1,1,1]
@@ -62,17 +62,51 @@ function($, THREE, registry, effects, Interpolate, utils) {
 
         },
 
-        prepareParameters : function(parametersSlot, obj, config, source) {
-            this.initParameters(parametersSlot, obj, config, source);
-        },
+        /**
+         * Calculate gravite based fall.
+         *
+         * Warp mess slightly from the edges, so that outer edges
+         * "drag" when the photo falls. When the photo hits
+         * ground, then let this warping slowly settle in.
+         *
+         * We use time range 0... 0.8 for fall and 0.8... 1.0
+         * to settle down the mesh warp.
+         *
+         * @param  {[type]} target            [description]
+         * @param  {[type]} source            [description]
+         * @param  {[type]} interpolatedValue [description]
+         * @param  {[type]} value             [description]
+         * @return {[type]}                   [description]
+         */
+        animate : function(target, source, interpolatedValue, value) {
 
-        animate : function(target, source, value) {
+            var movement, warp, opacity;
+
+            var g = 0.2;
+
+            if(value < 0.8) {
+                movement = value/0.8;
+                warp = 1;
+            } else {
+                movement = 1;
+                warp = (value-0.8) / 0.2;
+            }
+
+            // Object position in free fall acceleration is t^2
+            movement = (movement*movement);
+
+            if(value < 0.7) {
+                opacity = value / 0.7;
+                opacity = utils.ease("easeInQuad", opacity, 0, 1);
+            } else {
+                opacity = 1;
+            }
 
             var output = {
-                position: utils.calculateAnimation(target.position, source.position, value),
-                rotation: utils.calculateAnimationSlerp(target.rotation, source.rotation, value),
-                scale: utils.calculateAnimation(target.scale, source.scale, value),
-                opacity: source.opacity + (target.opacity-source.opacity)*value
+                position: utils.calculateAnimation(target.position, source.position, movement),
+                rotation: utils.calculateAnimationSlerp(target.rotation, source.rotation, movement),
+                scale: utils.calculateAnimation(target.scale, source.scale, movement),
+                opacity: source.opacity + (target.opacity-source.opacity)*opacity
             };
 
             return output;
