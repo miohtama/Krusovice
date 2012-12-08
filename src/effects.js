@@ -145,7 +145,7 @@ krusovice.effects.Base = {
     /**
      * @type Boolean
      *
-     * Run animation backwards when transition out effects
+     * Run animation backwards when used in transition out effects
      */
     reverseOut : true,
 
@@ -359,7 +359,6 @@ krusovice.effects.Base = {
      * Generate value for one parameter based on variation definitions in inputs.
      */
     randomizeParameter : function(name, slot, config, source) {
-
 
         var valSlot = slot;
         var variationSlot = slot + "Variation";

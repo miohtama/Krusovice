@@ -2,7 +2,7 @@
  * Read plain-text Krusovice show description;
  */
 
-define(["jquery", "krusovice/styles/registry"], function($) {
+define(["jquery"], function($) {
 
     "use strict";
 

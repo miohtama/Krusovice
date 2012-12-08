@@ -70,24 +70,23 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
             throw "animate(): Bad interpolation value:" + value;
         }
 
-        //console.log("Got target");
-        //console.log(target);
-        //console.log("Got source");
-        //console.log(source);
+        var output = {
+            position: krusovice.utils.calculateAnimation(target.position, source.position, value),
+            rotation: krusovice.utils.calculateAnimationSlerp(target.rotation, source.rotation, value),
+            scale: krusovice.utils.calculateAnimation(target.scale, source.scale, value),
+            opacity: source.opacity + (target.opacity-source.opacity)*value
+        };
 
+        return output;
+
+        /*
         var position;
 
         if(target.position !== null && source.position !== null) {
-            position = krusovice.utils.calculateAnimation(target.position, source.position, value);
+            position =
         } else {
             position = null;
         }
-        /*
-        console.log("Animation:" + source.type + " effect:" + source.effectType + " reverse:" + source.reverse + " value:" + value);
-        console.log("Source:" + source.position);
-        console.log("Target:" + target.position);
-        console.log("Position:" + position);
-        */
 
         // Outputted animation values
         var output = {};
@@ -102,19 +101,12 @@ effects.Interpolate = $.extend(true, {}, effects.Base, {
 
         output.scale = new THREE.Vector3(scale[0], scale[1], scale[2]);
 
-        // krusovice.utils.calculateAnimation(target.rotation, source.rotation, value);
-        if(source.rotation !== null && target.rotation !== null) {
-            var qa = new THREE.Quaternion(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
-            var qb = new THREE.Quaternion(target.rotation[0], target.rotation[1], target.rotation[2], target.rotation[3]);
-            output.rotation = new THREE.Quaternion(0, 0, 0, 1);
-            THREE.Quaternion.slerp(qa, qb, output.rotation, value);
-        } else {
-            output.rotation = null;
-        }
+        output.rotation = krusovice.utils.calculateAnimationSlerp(source.rotation, target.rotation, value);
 
         output.opacity = source.opacity + (target.opacity-source.opacity)*value;
 
         return output;
+        */
 
     }
 

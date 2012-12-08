@@ -168,6 +168,9 @@ krusovice.Design.prototype = {
             // when rendering the "falling photos" mode
             position: [0, 0, -4000],
 
+            // Normal towards camera
+            up : [0, 0, -1],
+
             // Wall texture repeat and scaling factor
             repeat : [50, 50]
 

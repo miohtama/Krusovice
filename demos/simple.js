@@ -7,11 +7,11 @@
 require([
     "krusovice/api",
     "krusovice/quickplay",
-    "krusovice/styles/wall",
+    "krusovice/directors/wall",
     "krusovice/plaintextreader",
     "bootstrap",
     "../src/thirdparty/domready!"],
-function(krusovice, quickplay, wallStyle, readPlainTextShow) {
+function(krusovice, quickplay, wallDirector, readPlainTextShow) {
 
     "use strict";
 
@@ -36,20 +36,20 @@ function(krusovice, quickplay, wallStyle, readPlainTextShow) {
 
         player : null,
 
-        style : wallStyle,
+        director : wallDirector,
 
         createDesign : function() {
 
             var plan = readPlainTextShow(source);
 
-            this.style.setupPlan(plan);
+            this.director.setupPlan(plan);
 
             var design = new krusovice.Design({
                 plan: plan,
                 songId: null
             });
 
-            this.style.setupDesign(design);
+            this.director.setupDesign(design);
 
             return design;
         },

@@ -239,15 +239,23 @@ krusovice.utils = {
     },
 
     /**
-     * Calculate scalar
+     * Calculate interpoliation  between two target 3D vectors.
+     *
+     * A helper function for effect animation.
      *
      * @param {Array} target The beginning of the animation state. Array of floats
      *
      * @param {Array} source The end of the animation state. Array of floats
      *
      * @param {Number} scale multiplier
+     *
+     * @return {THREE.Vector} Interpolated result
      */
     calculateAnimation : function(target, source, scale) {
+
+        if(!target || !source) {
+            return null;
+        }
 
         if(!$.isArray(target)) {
             console.error(target);
@@ -266,7 +274,32 @@ krusovice.utils = {
             result[i] = source[i] + (target[i] - source[i]) * scale;
         }
 
-        return result;
+        return new THREE.Vector3(result[0], result[1], result[2]);
+    },
+
+    /**
+     * Calculate spherical interpolation between two quaternions.
+     *
+     * Helper functoin. Takes in raw values
+     *
+     * @param target {Array} Array of 4
+     *
+     * @param source {Array} Array of 4
+     *
+     * @param valune {Number} 0...1
+     *
+     * @return THREE.Quaternion
+     */
+    calculateAnimationSlerp : function(target, source, value) {
+
+        if(!target || !source) {
+            return null;
+        }
+        var qa = new THREE.Quaternion(source[0], source[1], source[2], source[3]);
+        var qb = new THREE.Quaternion(target[0], target[1], target[2], target[3]);
+        var rotation = new THREE.Quaternion(0, 0, 0, 1);
+        THREE.Quaternion.slerp(qa, qb, rotation, value);
+        return rotation;
     },
 
 

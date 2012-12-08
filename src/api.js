@@ -37,8 +37,8 @@ define("krusovice/api", [
     "krusovice/showobjects/textdefinitions",
     "krusovice/showobjects/text",
 
-    "krusovice/styles/registry",
-    "krusovice/styles/wall",
+    "krusovice/directors/registry",
+    "krusovice/directors/wall",
 
     "krusovice/music",
 
